@@ -1,32 +1,23 @@
+# Variables
 NAME = minishell
-
-SRCS = minishell.c
-
-OBJS = $(SRCS:.c=.o)
-
-LIBFT_DIR = libft
-LIBFT = $(LIBFT_DIR)/libft.a
-
 CC = cc
-
 CFLAGS = -Wall -Wextra -Werror
 
-all:	$(NAME)
+SRCS = main.c cmd_parser.c builtin_commands.c exec.c signal_handling.c
+OBJS = $(SRCS:.c=.o)
 
-$(NAME): $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+# Targets
+all: $(NAME)
 
-$(LIBFT):
-	make -C $(LIBFT_DIR)
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -lreadline
 
 clean:
 	rm -f $(OBJS)
-	make -C $(LIBFT_DIR) clean
 
 fclean: clean
 	rm -f $(NAME)
-	make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
-.PHONY : all clean fclean re bonus
+.PHONY: all clean fclean re
