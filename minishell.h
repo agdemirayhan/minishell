@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/21 12:25:46 by msoklova         ###   ########.fr       */
+/*   Updated: 2024/08/24 10:31:47 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "libft/libft.h"
 # include <errno.h>
 # include <signal.h>
 # include <stdio.h>
@@ -20,7 +21,6 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
-# include "libft/libft.h"
 
 /* Readline Functions */
 # include <readline/history.h>
@@ -33,7 +33,7 @@ typedef enum e_ttype
 	WORD,
 	PIPE,
 	REDIRECTION
-}	t_ttype;
+}					t_ttype;
 
 /* save tokens somewhere */
 typedef struct s_token
@@ -41,17 +41,17 @@ typedef struct s_token
 	char			*value;
 	t_ttype			ttype;
 	struct s_token	*next;
-}	t_token;
+}					t_token;
 
 /* token functions */
-t_ttype	check_type(char *value);
+t_ttype				check_type(char *value);
 
 /* Function prototypes */
-void	init_shell(void);
-void	handle_signals(int signo);
-void	parse_command(char *input);
-void	execute_command(char **args);
-int		is_builtin(char *command);
-void	execute_builtin(char **args);
+void				init_shell(void);
+void				handle_signals(int signo);
+void				parse_command(char *input);
+void				execute_command(char **args);
+int					is_builtin(char *command);
+void				execute_builtin(char **args);
 
 #endif
