@@ -6,9 +6,6 @@ int	is_builtin(char *command)
 		|| ft_strncmp(command, "exit", ft_strlen("exit")) == 0
 		|| ft_strncmp(command, "pwd", ft_strlen("pwd")) == 0);
 }
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 void	execute_builtin(char **args)
 {
