@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/24 10:31:47 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/08/24 18:26:19 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,6 @@ void				parse_command(char *input);
 void				execute_command(char **args);
 int					is_builtin(char *command);
 void				execute_builtin(char **args);
+char	**ft_split_2(char const *s, char c);
 
 #endif

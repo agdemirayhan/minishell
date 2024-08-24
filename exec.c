@@ -7,7 +7,7 @@ void	execute_command(char **args)
 
 	char	*path_env;
 	path_env = getenv("PATH");
-	printf("%s\n",path_env);
+	// printf("%s\n",path_env);
 	if (path_env == NULL)
 	{
 		return ;

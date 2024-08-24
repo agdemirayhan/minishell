@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 15:17:10 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/24 17:48:13 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/08/24 19:06:34 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,12 @@ static int	count_words(const char *s, char c)
 		return (1);
 	while (*s)
 	{
-		if (*s == c)
+		if (*s == '-')
+		{
+			while (*s != ' ')
+				s++;
+		}
+		else if (*s == c)
 			i = 0;
 		else if (i == 0)
 		{
@@ -55,7 +60,27 @@ static char	**free_split(char **s, int i)
 	return (NULL);
 }
 
-char	**ft_split_2(char const *s, char c)
+int	dash_checker(char *s, int i[3], char **split)
+{
+	if (s[i[0]] == ' ' && s[i[0] + 1] == '-')
+	{
+		while (s[i[0]] && s[i[0]] != '-')
+		{
+			split[i[2]][i[1]++] = s[i[0]++];
+			i[0]++;
+		}
+		while (s[i[0]] && s[i[0]] != ' ')
+		{
+			split[i[2]][i[1]++] = s[i[0]++];
+			i[0]++;
+		}
+	split[i[2]][i[1]] = '\0';
+	return 1;
+	}
+	return (0);
+}
+
+char	**ft_split_2(char *s, char c)
 {
 	int		i[3];
 	char	**split;
@@ -74,7 +99,7 @@ char	**ft_split_2(char const *s, char c)
 				sizeof(char));
 		if (!split[i[2]])
 			return (free_split(split, i[2]));
-		while (s[i[0]] && s[i[0]] != c)
+		while (s[i[0]] && s[i[0]] != c && !dash_checker(s, i, split))
 			split[i[2]][i[1]++] = s[i[0]++];
 		split[i[2]][i[1]] = '\0';
 		i[2]++;
