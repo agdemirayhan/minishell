@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-// MORE TESTS 
+// MORE TESTS
 char	*token_spacer(char *s)
 {
 	char	*new_str;
@@ -68,9 +68,9 @@ void	parse_command(char *input)
 	printf("%s\n", new_str);
 	// FT_SPLIT MUST BE MODIFIED
 	args = ft_split_2(new_str, ' ');
-	while(args[i])
+	while (args[i])
 	{
-		printf("args[%d]:%s\n", i,args[i]);
+		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
 	if (args[0] == NULL)

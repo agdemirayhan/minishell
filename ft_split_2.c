@@ -6,11 +6,12 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 15:17:10 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/24 19:06:34 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/08/25 12:41:34 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdio.h>
 
 static int	count_words(const char *s, char c)
 {
@@ -23,12 +24,9 @@ static int	count_words(const char *s, char c)
 		return (1);
 	while (*s)
 	{
-		if (*s == '-')
-		{
-			while (*s != ' ')
-				s++;
-		}
-		else if (*s == c)
+		if (*s == '-' && *(s - 1) == ' ')
+			co--;
+		if (*s == c)
 			i = 0;
 		else if (i == 0)
 		{
@@ -40,71 +38,72 @@ static int	count_words(const char *s, char c)
 	return (co);
 }
 
-static int	one_word(const char *str, char c)
+static char	*duplicate_word(const char *s, char c)
 {
-	int	i;
+	size_t	len;
+	char	*dup;
 
-	i = 0;
-	while (str[i] && str[i] != c)
+	len = 0;
+	while (s[len] && s[len] != c)
+		len++;
+	if (s[len + 1] == '-')
 	{
-		i++;
+		len++;
+		while (s[len] && s[len] != c)
+			len++;
 	}
-	return (i);
+	printf("%zu\n", len);
+	dup = (char *)malloc((len + 1) * sizeof(char));
+	if (!dup)
+		return (NULL);
+	ft_strlcpy(dup, s, len + 1);
+	return (dup);
 }
 
-static char	**free_split(char **s, int i)
+int	ft_free(size_t i, char **result)
 {
-	while (i >= 0)
-		free(s[i--]);
-	free(s);
-	return (NULL);
-}
-
-int	dash_checker(char *s, int i[3], char **split)
-{
-	if (s[i[0]] == ' ' && s[i[0] + 1] == '-')
+	while (i > 0)
 	{
-		while (s[i[0]] && s[i[0]] != '-')
-		{
-			split[i[2]][i[1]++] = s[i[0]++];
-			i[0]++;
-		}
-		while (s[i[0]] && s[i[0]] != ' ')
-		{
-			split[i[2]][i[1]++] = s[i[0]++];
-			i[0]++;
-		}
-	split[i[2]][i[1]] = '\0';
-	return 1;
+		free(result[i - 1]);
+		i--;
 	}
+	free(result);
 	return (0);
 }
 
-char	**ft_split_2(char *s, char c)
+// This breaks norm. needs to be in 2 functions
+char	**ft_split_2(char const *s, char c)
 {
-	int		i[3];
-	char	**split;
+	char **result;
+	size_t i;
 
-	i[2] = 0;
-	i[0] = 0;
-	while (s[i[0]] == c && c)
-		i[0]++;
-	split = (char **)ft_calloc((count_words(s, c) + 1), sizeof(char *));
-	if (!split)
+	printf("%s\n",s);
+	result = (char **)malloc((count_words(s, c) + 1) * sizeof(char *));
+	if (!result)
 		return (NULL);
-	while (s[i[0]])
+	i = 0;
+	while (*s)
 	{
-		i[1] = 0;
-		split[i[2]] = (char *)ft_calloc((one_word(&s[i[0]], c) + 1),
-				sizeof(char));
-		if (!split[i[2]])
-			return (free_split(split, i[2]));
-		while (s[i[0]] && s[i[0]] != c && !dash_checker(s, i, split))
-			split[i[2]][i[1]++] = s[i[0]++];
-		split[i[2]][i[1]] = '\0';
-		i[2]++;
-		while (s[i[0]] && s[i[0]] == c)
-			i[0]++;
+		if (*s == c)
+			s++;
+		else
+		{
+			result[i] = duplicate_word(s, c);
+			if (!result[i++])
+			{
+				ft_free(i, result);
+				return (NULL);
+			}
+			while (*s && *s != c)
+				s++;
+			if (*(s + 1) == '-')
+			{
+				s++;
+				while (*s && *s != c)
+					s++;
+			}
+		}
 	}
-	return (split);
+	result[i] = NULL;
+	return (result);
 }
