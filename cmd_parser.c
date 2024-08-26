@@ -1,6 +1,35 @@
 #include "minishell.h"
 
 // MORE TESTS
+
+char	*space_terminator(char *s)
+{
+	char	*new_str;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (s[i] != '\0')
+	{
+		while (s[i] == ' ')
+			i++;
+		i++;
+		j++;
+	}
+	new_str = malloc(sizeof(char) * (j + 1));
+	i = 0;
+	j = 0;
+	while (s[i] != '\0')
+	{
+		while (s[i] == ' ')
+			i++;
+		new_str[j++] = s[i++];
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
 char	*token_spacer(char *s)
 {
 	char	*new_str;
@@ -66,8 +95,8 @@ void	parse_command(char *input)
 	// start = 0;
 	new_str = token_spacer(input);
 	printf("%s\n", new_str);
-	// FT_SPLIT MUST BE MODIFIED
-	args = ft_split_2(new_str, ' ');
+	// FT_SPLIT MUST NOT BE MODIFIED. I CHANGED MY MIND XD we can check the next node if it is a flag. took too long to figure this out. it is a shame. this turned out into my diary. hope patrick won't read this. anyway next job can be categorizing them.
+	args = ft_split(new_str, ' ');
 	while (args[i])
 	{
 		printf("args[%d]:%s\n", i, args[i]);
@@ -87,5 +116,5 @@ void	parse_command(char *input)
 
 // int	main(void)
 // {
-// 	printf("%s\n", line_spacer("lsttest | cat -e <<her_doc>file1 >> file2"));
+// 	printf("%s\n", space_terminator("lsttest | cat -e   <<her_doc>file1 >> file2"));
 // }
