@@ -6,7 +6,7 @@
 /*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/21 12:25:46 by msoklova         ###   ########.fr       */
+/*   Updated: 2024/08/22 11:52:07 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@ typedef struct s_token
 
 /* token functions */
 t_ttype	check_type(char *value);
+
+/* utils */
+int	ft_isspace(int c);
 
 /* Function prototypes */
 void	init_shell(void);
