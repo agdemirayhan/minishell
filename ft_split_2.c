@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split_2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 15:17:10 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/24 17:48:13 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/08/27 18:11:34 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
 static int	count_words(const char *s, char c)
 {
