@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/24 18:26:19 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/08/29 21:04:45 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,20 @@
 /* Readline Functions */
 # include <readline/history.h>
 # include <readline/readline.h>
+
+enum		QuoteState
+{
+	NO_QUOTE,
+	SINGLE_QUOTE,
+	DOUBLE_QUOTE
+};
+
+// Enum for count tracking
+enum		Counts
+{
+	COUNT_INDEX,
+	COUNT_WORDS
+};
 
 /* token type  */
 typedef enum e_ttype
