@@ -167,7 +167,7 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
-void	parse_command(char *input)
+void	parse_command(char *input, t_env *env_list)
 {
 	char	**args;
 	char	*new_str;
