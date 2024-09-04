@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/08/24 10:31:47 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/04 16:03:11 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
+
 /* token type  */
 typedef enum e_ttype
 {
@@ -43,15 +44,43 @@ typedef struct s_token
 	struct s_token	*next;
 }					t_token;
 
+typedef struct s_env
+{
+	char			*name;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
+typedef struct s_data
+{
+	int		fd_copy;
+	t_env	*env_list;
+}	t_data;
+
 /* token functions */
 t_ttype				check_type(char *value);
+
+/* env functions */
+char	*ft_strndup(const char *s1, size_t n);
+t_env	*init_env_list(char **envp);
+void	print_env_list(t_env *env);
+void	free_env_list(t_env **env);
+//void				add_env(t_data *data, char *env_var);
+//void				ft_store_env(t_data *data, char **env);
+//void				initialize(t_data *data, char **env);
+//void				free_env_list(t_data *data);
+//void				print_env(t_data *data);
+
+/* signals */
+//void	set_signal_fn(void);
+//void	set_sig(int sig);
 
 /* Function prototypes */
 void				init_shell(void);
 void				handle_signals(int signo);
-void				parse_command(char *input);
+void				parse_command(char *input, t_env *env_list);
 void				execute_command(char **args);
 int					is_builtin(char *command);
-void				execute_builtin(char **args);
+void				execute_builtin(char **args, t_env *env_list);
 
 #endif

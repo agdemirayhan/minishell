@@ -14,7 +14,7 @@ void	execute_command(char **args)
 	}
 	pid = fork();
 	if (pid == 0)
-	{                                    // Child process
+	{										// Child process
 		if (execve(path_env,args, NULL) == -1)
 			// It breaks with pwd command but this is the way
 		{

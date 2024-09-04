@@ -53,7 +53,7 @@ char	*token_spacer(char *s)
 	return (new_str);
 }
 
-void	parse_command(char *input)
+void	parse_command(char *input, t_env *env_list)
 {
 	char	**args;
 	int		i;
@@ -77,7 +77,7 @@ void	parse_command(char *input)
 		return ;
 	if (is_builtin(args[0]))
 	{
-		execute_builtin(args);
+		execute_builtin(args, env_list);
 	}
 	else
 	{

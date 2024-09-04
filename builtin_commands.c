@@ -5,15 +5,15 @@ int	is_builtin(char *command)
 	return (ft_strncmp(command, "cd", ft_strlen("cd")) == 0
 		|| ft_strncmp(command, "exit", ft_strlen("exit")) == 0
 		|| ft_strncmp(command, "pwd", ft_strlen("pwd")) == 0
-		|| ft_strncmp(command, "ech", ft_strlen("ech")) == 0
-		|| ft_strncmp(command, "export", ft_strlen("export")) == 0
-		|| ft_strncmp(command, "unset", ft_strlen("unset")) == 0
+		|| ft_strncmp(command, "echo", ft_strlen("echo")) == 0
 		|| ft_strncmp(command, "env", ft_strlen("env")) == 0
+		|| ft_strncmp(command, "unset", ft_strlen("unset")) == 0
+		|| ft_strncmp(command, "export", ft_strlen("export")) == 0
 		|| ft_strncmp(command, "etc", ft_strlen("etc")) == 0);
 }
 
 /*joins strings with spaces between them*/
-char *ft_join_with_space(char **args)
+char *join_space(char **args)
 {
 	size_t total_length = 0;
 	int i = 0;
@@ -39,7 +39,7 @@ char *ft_join_with_space(char **args)
 }
 
 /*joins two strings and frees the first one*/
-char *ft_free_strjoin(char *str1, const char *str2) {
+char *free_strjoin(char *str1, const char *str2) {
 	size_t	new_length;
 	char *result;
 
@@ -56,11 +56,12 @@ char *ft_free_strjoin(char *str1, const char *str2) {
 	return result;
 }
 
-void	execute_builtin(char **args)
+void	execute_builtin(char **args, t_env *env_list)
 {
 	char	cwd[1024];
 
 	// what happens when someone tries it with a directory which requires more than 1024 chars????? fails. using malloc for this?? eww.
+	// also it needs to handle cd ~ so it can go home ewwwwww.
 	if (ft_strncmp(args[0], "cd", ft_strlen("cd")) == 0)
 	{
 		if (chdir(args[1]) != 0)
@@ -93,11 +94,15 @@ void	execute_builtin(char **args)
 			newline = 0;
 			i = 2;
 		}
-		str = ft_join_with_space(&args[i]);
+		str = join_space(&args[i]);
 		if (newline)
-			str = ft_free_strjoin(str, "\n");
+			str = free_strjoin(str, "\n");
 		printf("%s", str);
 		free(str);
+	}
+	else if (ft_strncmp(args[0], "env", ft_strlen("env")) == 0)
+	{
+		print_env_list(env_list);
 	}
 		/*
 		OTHER CASES COME HERE ( ͡° ͜ʖ ͡° )
