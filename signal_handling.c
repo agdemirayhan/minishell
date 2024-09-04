@@ -1,5 +1,10 @@
 #include "minishell.h"
 
+//void	set_sig(int sig)
+//{
+//	(void)sig;
+//	g_sig = sig;
+//}
 void	handle_signals(int signo)
 {
 	if (signo == SIGINT)
@@ -10,3 +15,9 @@ void	handle_signals(int signo)
 		rl_redisplay();
 	}
 }
+//ctrl c needs to be implemented
+//void	set_signal_fn(void)
+//{
+//	rl_catch_signals = 0;
+//	signal(SIGQUIT, SIG_IGN);
+//}
