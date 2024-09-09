@@ -2,34 +2,10 @@
 
 // MORE TESTS
 
-// char	*space_terminator(char *s)
-// {
-// 	char	*new_str;
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = 0;
-// 	while (s[i] != '\0')
-// 	{
-// 		while (s[i] == ' ')
-// 			i++;
-// 		i++;
-// 		j++;
-// 	}
-// 	new_str = malloc(sizeof(char) * (j + 1));
-// 	i = 0;
-// 	j = 0;
-// 	while (s[i] != '\0')
-// 	{
-// 		while (s[i] == ' ')
-// 			i++;
-// 		new_str[j++] = s[i++];
-// 	}
-// 	new_str[j] = '\0';
-// 	return (new_str);
-// }
-
+/**
+ * @brief This function put spaces between tokens if necessary
+ * @return a string
+ */
 char	*token_spacer(char *s)
 {
 	char	*new_str;
@@ -117,6 +93,10 @@ static int	ft_count_words(const char *s, char *c, int i[2])
 	return (i[1]);
 }
 
+/**
+ * @brief This function splits words without removing the quotes
+ * @return array of splitted strings.
+ */
 char	**split_with_quotes(const char *s, char *del)
 {
 	char			**arr;
