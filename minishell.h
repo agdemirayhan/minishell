@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/04 21:58:59 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:35:33 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,10 @@ void				free_env_list(t_env **env);
 // void				free_env_list(t_data *data);
 // void				print_env(t_data *data);
 
+/* export functions */
+void	export_var(char **argv, t_env **env_list);
+void	execute_export(char **argv, t_data *data);
+
 /* signals */
 // void	set_signal_fn(void);
 // void	set_sig(int sig);
@@ -91,9 +95,9 @@ void				free_env_list(t_env **env);
 /* Function prototypes */
 void				init_shell(void);
 void				handle_signals(int signo);
-void				parse_command(char *input, t_env *env_list);
+void				parse_command(char *input, t_data *data);
 void				execute_command(char **args);
 int					is_builtin(char *command);
-void				execute_builtin(char **args, t_env *env_list);
+void				execute_builtin(char **args, t_data *data);
 
 #endif

@@ -16,12 +16,16 @@ char	*ft_strndup(const char *s1, size_t n)
 	return (str);
 }
 
+/**
+ * @brief Initializes and returns a linked list of environment variables from the given array.
+ * @return A pointer to the head of the linked list, or NULL if allocation fails.
+ */
 t_env *init_env_list(char **envp)
 {
 	t_env	*head;
 	t_env	*curr;
 	t_env	*new_node;
-	char	*equal_sign;
+	char	*equal;
 	int		i;
 
 	head = NULL;
@@ -32,11 +36,11 @@ t_env *init_env_list(char **envp)
 		new_node = malloc(sizeof(t_env));
 		if (!new_node)
 			return (NULL);
-		equal_sign = ft_strchr(envp[i], '=');
-		if (equal_sign)
+		equal = ft_strchr(envp[i], '=');
+		if (equal)
 		{
-			new_node->name = ft_strndup(envp[i], equal_sign - envp[i]);
-			new_node->value = ft_strdup(equal_sign + 1);
+			new_node->name = ft_strndup(envp[i], equal - envp[i]);
+			new_node->value = ft_strdup(equal + 1);
 		}
 		else
 		{
@@ -59,6 +63,9 @@ t_env *init_env_list(char **envp)
 	return (head);
 }
 
+/**
+ * @brief Prints the environment variables in the linked list
+ */
 void print_env_list(t_env *env)
 {
 	while (env != NULL)
