@@ -1,5 +1,10 @@
 #include "minishell.h"
 
+/**
+ * @brief Executes the export command
+ * @param argv The command line arguments passed to the export command
+ * @param data Contains the environment variable list
+ */
 void	execute_export(char **argv, t_data *data)
 {
 	int	i;
@@ -25,6 +30,11 @@ void	execute_export(char **argv, t_data *data)
 	}
 }
 
+/**
+ * @brief Updates or adds an environment variable.
+ * @param argv Contains the variable name and optionally value.
+ * @param env_list Points to the list of environment variables.
+ */
 void	export_var(char **argv, t_env **env_list)
 {
 
@@ -32,6 +42,7 @@ void	export_var(char **argv, t_env **env_list)
 	char *name;
 	char *value = NULL;
 	t_env *curr;
+	t_env *new_node;
 
 	if (equal)
 	{
@@ -57,7 +68,7 @@ void	export_var(char **argv, t_env **env_list)
 		}
 		curr = curr->next;
 	}
-	t_env *new_node = malloc(sizeof(t_env));
+	new_node = malloc(sizeof(t_env));
 	if (!new_node)
 		return ;
 	new_node->name = name;

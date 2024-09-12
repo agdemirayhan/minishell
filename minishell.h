@@ -6,7 +6,7 @@
 /*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/11 18:35:33 by msoklova         ###   ########.fr       */
+/*   Updated: 2024/09/12 16:20:49 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,10 @@ void				free_env_list(t_env **env);
 /* export functions */
 void	export_var(char **argv, t_env **env_list);
 void	execute_export(char **argv, t_data *data);
+
+/* unset functions */
+void	unset_var(char *name, t_env **env_list);
+void	execute_unset(char **argv, t_data *data);
 
 /* signals */
 // void	set_signal_fn(void);

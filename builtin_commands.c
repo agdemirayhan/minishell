@@ -2,14 +2,13 @@
 
 int	is_builtin(char *command)
 {
-	return (ft_strncmp(command, "cd", ft_strlen("cd")) == 0
-		|| ft_strncmp(command, "exit", ft_strlen("exit")) == 0
+	return (ft_strncmp(command, "echo", ft_strlen("echo")) == 0
+		|| ft_strncmp(command, "cd", ft_strlen("cd")) == 0
 		|| ft_strncmp(command, "pwd", ft_strlen("pwd")) == 0
-		|| ft_strncmp(command, "echo", ft_strlen("echo")) == 0
-		|| ft_strncmp(command, "env", ft_strlen("env")) == 0
 		|| ft_strncmp(command, "export", ft_strlen("export")) == 0
 		|| ft_strncmp(command, "unset", ft_strlen("unset")) == 0
-		|| ft_strncmp(command, "etc", ft_strlen("etc")) == 0);
+		|| ft_strncmp(command, "env", ft_strlen("env")) == 0
+		|| ft_strncmp(command, "exit", ft_strlen("exit")) == 0);
 }
 
 /*joins strings with spaces between them*/
@@ -68,6 +67,7 @@ void	execute_builtin(char **args, t_data *data)
 		if (chdir(args[1]) != 0)
 			perror("minishell");
 	}
+	//this probably needs fixing too
 	else if (ft_strncmp(args[0], "exit", ft_strlen("exit")) == 0)
 	{
 		exit(0);
@@ -106,9 +106,15 @@ void	execute_builtin(char **args, t_data *data)
 	{
 		print_env_list(data->env_list);
 	}
+	/* needs editing cause it shoudlnt be displayed in env if there is only name
+	without value, it should be only displayed when export is called! ughhhhh */
 	else if (ft_strncmp(args[0], "export", ft_strlen("export")) == 0)
 	{
 		execute_export(args, data);
+	}
+	else if (ft_strncmp(args[0], "unset", ft_strlen("unset")) == 0)
+	{
+		execute_unset(args, data);
 	}
 		/*
 		OTHER CASES COME HERE ( ͡° ͜ʖ ͡° )
