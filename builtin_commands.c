@@ -7,8 +7,8 @@ int	is_builtin(char *command)
 		|| ft_strncmp(command, "pwd", ft_strlen("pwd")) == 0
 		|| ft_strncmp(command, "echo", ft_strlen("echo")) == 0
 		|| ft_strncmp(command, "env", ft_strlen("env")) == 0
-		|| ft_strncmp(command, "unset", ft_strlen("unset")) == 0
 		|| ft_strncmp(command, "export", ft_strlen("export")) == 0
+		|| ft_strncmp(command, "unset", ft_strlen("unset")) == 0
 		|| ft_strncmp(command, "etc", ft_strlen("etc")) == 0);
 }
 
@@ -52,11 +52,11 @@ char *free_strjoin(char *str1, const char *str2) {
 	}
 	ft_strlcpy(result, str1, new_length);
 	ft_strlcat(result, str2, new_length);
-	free(str1); // Free the first string
+	free(str1);
 	return result;
 }
 
-void	execute_builtin(char **args, t_env *env_list)
+void	execute_builtin(char **args, t_data *data)
 {
 	char	cwd[1024];
 	int		i;
@@ -80,6 +80,7 @@ void	execute_builtin(char **args, t_env *env_list)
 		else
 			perror("minishell");
 	}
+	//need to deal with quoted echoes
 	else if (ft_strncmp(args[0], "echo", ft_strlen("echo")) == 0)
 	{
 		int i = 1;
@@ -103,7 +104,11 @@ void	execute_builtin(char **args, t_env *env_list)
 	}
 	else if (ft_strncmp(args[0], "env", ft_strlen("env")) == 0)
 	{
-		print_env_list(env_list);
+		print_env_list(data->env_list);
+	}
+	else if (ft_strncmp(args[0], "export", ft_strlen("export")) == 0)
+	{
+		execute_export(args, data);
 	}
 		/*
 		OTHER CASES COME HERE ( ͡° ͜ʖ ͡° )

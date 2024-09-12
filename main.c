@@ -9,8 +9,8 @@ void	init_shell(void)
 int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
-	//t_data	data;
-	t_env	*env_list;
+	t_data	*data;
+	//t_env	*env_list;
 	//int		i = 0;
 
 	if (argc != 1 || argv == NULL)
@@ -20,7 +20,17 @@ int	main(int argc, char **argv, char **envp)
 	//	printf("%d: %s\n", i, envp[i]);
 	//	i++;
 	//}
-	env_list = init_env_list(envp);
+	data = malloc(sizeof(t_data));
+	if (!data)
+	{
+		exit(EXIT_FAILURE);
+	}
+	data->env_list = init_env_list(envp);
+	if (!data->env_list)
+	{
+		free(data);
+		exit(EXIT_FAILURE);
+	}
 	init_shell(); // Call it here
 	while (1)
 	{
@@ -28,10 +38,11 @@ int	main(int argc, char **argv, char **envp)
 		if (!input)
 			break ;
 		add_history(input);
-		parse_command(input, env_list);
+		parse_command(input, data);
 		free(input);
 	}
-	free_env_list(&env_list);
+	free_env_list(&(data->env_list));
+	free(data);
 	//free_env_list(&data);
 	return (0);
 }
