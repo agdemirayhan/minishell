@@ -6,7 +6,7 @@
 /*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/12 16:20:49 by msoklova         ###   ########.fr       */
+/*   Updated: 2024/09/13 12:13:42 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,16 @@ typedef struct s_data
 /* token functions */
 t_ttype				check_type(char *value);
 
+/* export functions */
+void	update_pwd(t_env **env_list);
+void	update_old_pwd(t_env **env_list);
+
 /* env functions */
 char				*ft_strndup(const char *s1, size_t n);
 t_env				*init_env_list(char **envp);
 void				print_env_list(t_env *env);
 void				free_env_list(t_env **env);
+void				update_env(t_env **env_list, char *name, char *value);
 // void				add_env(t_data *data, char *env_var);
 // void				ft_store_env(t_data *data, char **env);
 // void				initialize(t_data *data, char **env);
