@@ -62,6 +62,33 @@ t_env *init_env_list(char **envp)
 	}
 	return (head);
 }
+/**
+ * @brief updates the value of the env variables
+ */
+void	update_env(t_env **env_list, char *name, char *value)
+{
+	t_env	*temp;
+	//t_env	*new_node;
+
+	temp = *env_list;
+	while (temp != NULL)
+	{
+		if (ft_strncmp(temp->name, name, ft_strlen(name)) == 0)
+		{
+			free(temp->value);
+			temp->value = ft_strdup(value);
+			return ;
+		}
+		temp = temp->next;
+	}
+	//new_node = malloc(sizeof(t_env));
+	//if (!new_node)
+	//	return ;
+	//new_node->name = ft_strdup(name);
+	//new_node->value = ft_strdup(value);
+	//new_node->next = *env_list;
+	//*env_list = new_node;
+}
 
 /**
  * @brief Prints the environment variables in the linked list
