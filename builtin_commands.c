@@ -12,7 +12,7 @@ int	is_builtin(char *command)
 }
 
 /*joins strings with spaces between them*/
-char *join_space(char **args)
+char	*join_space(char **args)
 {
 	size_t total_length = 0;
 	int i = 0;
@@ -38,7 +38,8 @@ char *join_space(char **args)
 }
 
 /*joins two strings and frees the first one*/
-char *free_strjoin(char *str1, const char *str2) {
+char	*free_strjoin(char *str1, const char *str2)
+{
 	size_t	new_length;
 	char *result;
 
