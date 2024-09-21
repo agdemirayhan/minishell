@@ -63,7 +63,8 @@ static int	ft_count_words(const char *s, char *c, int i[2])
 	enum QuoteState	quote_state;
 
 	quote_state = NO_QUOTE;
-	printf("ft_count_words: %s\n", s); /*this needs to be removed its triggering me :( */
+	printf("ft_count_words: %s\n", s);
+	/*this needs to be removed its triggering me :( */
 	while (s[i[0]] != '\0')
 	{
 		// Check if not a delimiter or within quotes
@@ -153,6 +154,7 @@ void	parse_command(char *input, t_data *data)
 	char	*new_str;
 	char	*expanded_str;
 	int		i;
+	char	*trimmed_arg;
 
 	i = 0;
 	new_str = token_spacer(input);
@@ -164,6 +166,9 @@ void	parse_command(char *input, t_data *data)
 	free(expanded_str);
 	while (args[i])
 	{
+		trimmed_arg = ft_strtrim_all(args[i]);
+		free(args[i]);
+		args[i] = trimmed_arg;
 		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
@@ -177,7 +182,13 @@ void	parse_command(char *input, t_data *data)
 	{
 		execute_command(args);
 	}
-	// we must free the args array.
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
 }
 
 // int	main(void)
