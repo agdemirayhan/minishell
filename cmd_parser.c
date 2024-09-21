@@ -152,6 +152,7 @@ void	parse_command(char *input, t_data *data)
 {
 	char	**args;
 	char	*new_str;
+	char	*expanded_str;
 	int		i;
 	char	*trimmed_arg;
 
@@ -159,12 +160,12 @@ void	parse_command(char *input, t_data *data)
 	new_str = token_spacer(input);
 	if (!new_str)
 		return ;
-	args = split_with_quotes(new_str, " ");
+	expanded_str = expand_env_vars(new_str, data);
+	free(new_str);
+	args = split_with_quotes(expanded_str, " ");
+	free(expanded_str);
 	while (args[i])
 	{
-		trimmed_arg = ft_strtrim_all(args[i]);
-		free(args[i]); 
-		args[i] = trimmed_arg;
 		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
