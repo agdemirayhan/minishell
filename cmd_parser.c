@@ -166,6 +166,9 @@ void	parse_command(char *input, t_data *data)
 	free(expanded_str);
 	while (args[i])
 	{
+		trimmed_arg = ft_strtrim_all(args[i]);
+		free(args[i]);
+		args[i] = trimmed_arg;
 		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
