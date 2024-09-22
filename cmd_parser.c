@@ -144,9 +144,58 @@ char	**split_with_quotes(const char *s, char *del)
 		else
 			arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
 	}
+	if (quote_state != NO_QUOTE)
+	{
+		fprintf(stderr, "Error: Unclosed quotes detected\n");
+		free(arr); // Free the allocated memory if an error occurs
+		return (NULL);
+	}
 	arr[words_len] = NULL;
 	return (arr);
 }
+
+// void	handle_heredoc(char *delimiter, t_data *data)
+// {
+// 	char	*line;
+// 	int		pipe_fds[2];
+// 	size_t	delimiter_len;
+// 	char	buffer[1024];
+// 	ssize_t	bytes_read;
+
+// 	// Get the length of the delimiter
+// 	delimiter_len = ft_strlen(delimiter);
+// 	// Create a pipe to redirect heredoc content as input
+// 	if (pipe(pipe_fds) == -1)
+// 	{
+// 		perror("pipe");
+// 		exit(1);
+// 	}
+// 	// Continuously read input until delimiter is encountered
+// 	while (1)
+// 	{
+// 		line = readline("> "); // readline to get user input
+// 		if (!line || ft_strncmp(line, delimiter, delimiter_len) == 0)
+// 		{
+// 			free(line);
+// 			break ;
+// 		}
+// 		// Write the input line to the pipe
+// 		write(pipe_fds[1], line, ft_strlen(line));
+// 		write(pipe_fds[1], "\n", 1); // Write newline after each line
+// 		free(line);
+// 	}
+// 	close(pipe_fds[1]); // Close the write end of the pipe
+// 	// Redirect the read end of the pipe to STDIN_FILENO
+// 	dup2(pipe_fds[0], STDIN_FILENO);
+// 	// Print the heredoc content (simulate what bash does)
+// 	// Read from the pipe and write to STDOUT (or process as needed)
+// 	while ((bytes_read = read(pipe_fds[0], buffer, sizeof(buffer) - 1)) > 0)
+// 	{
+// 		buffer[bytes_read] = '\0';                // Null-terminate the buffer
+// 		write(STDOUT_FILENO, buffer, bytes_read); // Output the buffer content
+// 	}
+// 	close(pipe_fds[0]); // Close the read end of the pipe
+// }
 
 void	parse_command(char *input, t_data *data)
 {
@@ -155,14 +204,37 @@ void	parse_command(char *input, t_data *data)
 	char	*expanded_str;
 	int		i;
 	char	*trimmed_arg;
+	int		has_heredoc;
+	char	*delimiter;
+	char	*heredoc_pos;
 
+	has_heredoc = 0;
+	delimiter = NULL;
 	i = 0;
 	new_str = token_spacer(input);
 	if (!new_str)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
+	// Find heredoc (<<) in the expanded string using ft_strncmp
+	// heredoc_pos = expanded_str;
+	// while (*heredoc_pos)
+	// {
+	// 	// Use ft_strncmp to check if the next two characters are `<<`
+	// 	if (ft_strncmp(heredoc_pos, "<<", 2) == 0)
+	// 	{
+	// 		has_heredoc = 1;
+	// 		// Extract the delimiter after `<<`
+	// 		delimiter = ft_strtrim(heredoc_pos + 2, " ");
+	// 		*heredoc_pos = '\0';
+	// 		// Terminate the string before the heredoc for the command
+	// 		break ;
+	// 	}
+	// 	heredoc_pos++;
+	// }
 	args = split_with_quotes(expanded_str, " ");
+	if (!args)
+		return ;
 	free(expanded_str);
 	while (args[i])
 	{
@@ -172,8 +244,15 @@ void	parse_command(char *input, t_data *data)
 		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
+	// Handle heredoc if detected
+	// if (has_heredoc && delimiter)
+	// {
+	// 	handle_heredoc(delimiter, data);
+	// 	free(delimiter);
+	// }
 	if (args[0] == NULL)
 		return ;
+	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{
 		execute_builtin(args, data);
@@ -182,6 +261,7 @@ void	parse_command(char *input, t_data *data)
 	{
 		execute_command(args);
 	}
+	// Free the argument array
 	i = 0;
 	while (args[i])
 	{
