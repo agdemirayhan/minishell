@@ -154,19 +154,23 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
-t_stack fill_nodes(char **args, int i)
+t_stack	*fill_nodes(char **args)
 {
-	t_stack *cmds[2];
-	
-	cmds[0] = NULL;
-	while(args[i])
+	int	i;
+
+	t_stack *cmds; // Only one pointer is needed to track the head of the list
+	i = 0;
+	cmds = NULL; // Initialize the head to NULL, since the list starts empty
+	while (args[i])
 	{
-		cmds[1] = insertattail(cmds[0],args[i]);
+		printf("args:[%i]:%s\n", i, args[i]);
+		cmds = insert_at_tail(cmds, args[i]);
+			// Update the head after each insertion
 		i++;
 	}
-	
+	print_cmds(cmds); // Assuming print_cmds prints the entire list
+	return (cmds);    // Return the head of the list
 }
-
 
 void	parse_command(char *input, t_data *data)
 {
@@ -178,6 +182,7 @@ void	parse_command(char *input, t_data *data)
 	int		has_heredoc;
 	char	*delimiter;
 	char	*heredoc_pos;
+	t_stack	*cmds;
 
 	has_heredoc = 0;
 	delimiter = NULL;
@@ -201,7 +206,8 @@ void	parse_command(char *input, t_data *data)
 	}
 	if (args[0] == NULL)
 		return ;
-	
+	cmds = fill_nodes(args);
+	print_cmds(cmds);
 	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{

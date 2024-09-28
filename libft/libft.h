@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 14:14:05 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/28 17:42:35 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/28 18:55:58 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void				ft_putnbr_fd(int n, int fd);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
 int					ft_lstsize(t_stack *list);
 void				ft_lstclear(t_stack **list);
-t_stack				*insert_at_tail(t_stack *stack, int new_value);
-t_stack	*ft_lsttraverse(t_stack *lst);
+t_stack				*ft_lsttraverse(t_stack *stack);
+t_stack *insert_at_tail(t_stack *stack,
+						char *new);
 
 #endif
