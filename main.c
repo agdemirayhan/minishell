@@ -35,6 +35,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = readline("minishell> ");
+		// input = "echo << EOF";
 		if (!input)
 			break ;
 		add_history(input);

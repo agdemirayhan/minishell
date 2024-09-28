@@ -144,9 +144,16 @@ char	**split_with_quotes(const char *s, char *del)
 		else
 			arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
 	}
+	if (quote_state != NO_QUOTE)
+	{
+		fprintf(stderr, "Error: Unclosed quotes detected\n");
+		free(arr); // Free the allocated memory if an error occurs
+		return (NULL);
+	}
 	arr[words_len] = NULL;
 	return (arr);
 }
+
 
 void	parse_command(char *input, t_data *data)
 {
@@ -155,7 +162,12 @@ void	parse_command(char *input, t_data *data)
 	char	*expanded_str;
 	int		i;
 	char	*trimmed_arg;
+	int		has_heredoc;
+	char	*delimiter;
+	char	*heredoc_pos;
 
+	has_heredoc = 0;
+	delimiter = NULL;
 	i = 0;
 	new_str = token_spacer(input);
 	if (!new_str)
@@ -163,6 +175,8 @@ void	parse_command(char *input, t_data *data)
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
+	if (!args)
+		return ;
 	free(expanded_str);
 	while (args[i])
 	{
@@ -174,6 +188,7 @@ void	parse_command(char *input, t_data *data)
 	}
 	if (args[0] == NULL)
 		return ;
+	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{
 		execute_builtin(args, data);
@@ -182,6 +197,7 @@ void	parse_command(char *input, t_data *data)
 	{
 		execute_command(args);
 	}
+	// Free the argument array
 	i = 0;
 	while (args[i])
 	{
