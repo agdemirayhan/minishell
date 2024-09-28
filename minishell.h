@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/21 11:38:25 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/28 08:38:04 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,13 @@
 /* Readline Functions */
 # include <readline/history.h>
 # include <readline/readline.h>
+
+typedef struct s_prompt
+{
+	t_list			*cmds;
+	char			**envp;
+	pid_t			pid;
+}					t_prompt;
 
 enum				QuoteState
 {
@@ -117,6 +124,6 @@ int					is_builtin(char *command);
 void				execute_builtin(char **args, t_data *data);
 
 /* Trim Functions */
-char	*ft_strtrim_all(const char *s1);
+char				*ft_strtrim_all(const char *s1);
 
 #endif

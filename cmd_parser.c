@@ -154,6 +154,8 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
+
+
 // void	handle_heredoc(char *delimiter, t_data *data)
 // {
 // 	char	*line;
@@ -216,22 +218,6 @@ void	parse_command(char *input, t_data *data)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
-	// Find heredoc (<<) in the expanded string using ft_strncmp
-	// heredoc_pos = expanded_str;
-	// while (*heredoc_pos)
-	// {
-	// 	// Use ft_strncmp to check if the next two characters are `<<`
-	// 	if (ft_strncmp(heredoc_pos, "<<", 2) == 0)
-	// 	{
-	// 		has_heredoc = 1;
-	// 		// Extract the delimiter after `<<`
-	// 		delimiter = ft_strtrim(heredoc_pos + 2, " ");
-	// 		*heredoc_pos = '\0';
-	// 		// Terminate the string before the heredoc for the command
-	// 		break ;
-	// 	}
-	// 	heredoc_pos++;
-	// }
 	args = split_with_quotes(expanded_str, " ");
 	if (!args)
 		return ;
@@ -244,12 +230,6 @@ void	parse_command(char *input, t_data *data)
 		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
-	// Handle heredoc if detected
-	// if (has_heredoc && delimiter)
-	// {
-	// 	handle_heredoc(delimiter, data);
-	// 	free(delimiter);
-	// }
 	if (args[0] == NULL)
 		return ;
 	// Check if the command is a builtin or external command
