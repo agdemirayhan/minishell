@@ -154,6 +154,19 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
+t_stack fill_nodes(char **args, int i)
+{
+	t_stack *cmds[2];
+	
+	cmds[0] = NULL;
+	while(args[i])
+	{
+		cmds[1] = insertattail(cmds[0],args[i]);
+		i++;
+	}
+	
+}
+
 
 void	parse_command(char *input, t_data *data)
 {
@@ -188,6 +201,7 @@ void	parse_command(char *input, t_data *data)
 	}
 	if (args[0] == NULL)
 		return ;
+	
 	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{

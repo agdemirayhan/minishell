@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 14:14:05 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/24 21:53:00 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/28 17:42:35 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-typedef struct s_list
+typedef struct s_stack
 {
 	void			*content;
-	struct s_list	*next;
-}					t_list;
+	struct s_stack	*next;
+}					t_stack;
 
 int					ft_isalnum(int c);
 int					ft_isalpha(int c);
@@ -57,7 +57,9 @@ void				ft_putstr_fd(char *s, int fd);
 void				ft_putendl_fd(char *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
-int					ft_lstsize(t_list *list);
-void				ft_lstclear(t_list **list);
+int					ft_lstsize(t_stack *list);
+void				ft_lstclear(t_stack **list);
+t_stack				*insert_at_tail(t_stack *stack, int new_value);
+t_stack	*ft_lsttraverse(t_stack *lst);
 
 #endif
