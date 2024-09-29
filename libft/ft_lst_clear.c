@@ -1,26 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstsize.c                                       :+:      :+:    :+:   */
+/*   ft_lst_clear.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/28 09:39:14 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/09/28 09:39:16 by aagdemir         ###   ########.fr       */
+/*   Created: 2024/09/28 09:39:24 by aagdemir          #+#    #+#             */
+/*   Updated: 2024/09/28 17:42:27 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_lstsize(t_list *list)
+void	ft_lstclear(t_stack **list)
 {
-	int size;
+	t_stack *temp;
 
-	size = 0;
-	while (list)
+	if (!list || !*list)
+		return ;
+	while (*list)
 	{
-		list = list->next;
-		size++;
+		temp = (*list)->next;
+		free((*list)->content);
+		free(*list);
+		*list = temp;
 	}
-	return (size);
 }

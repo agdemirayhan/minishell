@@ -154,6 +154,42 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
+/**
+ * @brief Creates linked lists of commands split by pipes ('|').
+ * Parses the input `args` array and creates separate linked 
+ * lists for each set of commands
+ * and arguments divided by pipes. Returns an array of linked lists.
+ * @param args Array of strings representing the parsed command input.
+ * @return An array of linked lists,
+ * each representing a command chain. The array ends with NULL.
+ */
+t_stack	**fill_nodes(char **args)
+{
+	int		i;
+	int		list_index;
+	t_stack	**cmds;
+
+	i = 0;
+	list_index = 0;
+	cmds = malloc(sizeof(t_stack *) * 11);
+	if (!cmds)
+		return (NULL);
+	while (list_index < 10)
+		cmds[list_index++] = NULL;
+	list_index = 0;
+	while (args[i])
+	{
+		if (args[i][0] == '|' && args[i + 1] && args[i + 1][0])
+		{
+			i++;
+			list_index++;
+		}
+		cmds[list_index] = insert_at_tail(cmds[list_index], args[i]);
+		i++;
+	}
+	cmds[list_index + 1] = NULL;
+	return (cmds);
+}
 
 void	parse_command(char *input, t_data *data)
 {
@@ -165,6 +201,7 @@ void	parse_command(char *input, t_data *data)
 	int		has_heredoc;
 	char	*delimiter;
 	char	*heredoc_pos;
+	t_stack	**cmds;
 
 	has_heredoc = 0;
 	delimiter = NULL;
@@ -188,6 +225,8 @@ void	parse_command(char *input, t_data *data)
 	}
 	if (args[0] == NULL)
 		return ;
+	cmds = fill_nodes(args);
+	print_cmds(cmds);
 	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{

@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/28 08:38:04 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/29 08:33:49 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,14 @@
 
 typedef struct s_prompt
 {
-	t_list			*cmds;
-	char			**envp;
-	pid_t			pid;
+	t_stack			*cmds;
 }					t_prompt;
+
+typedef struct s_mini
+{
+	char			**full_cmd;
+
+}					t_mini;
 
 enum				QuoteState
 {
@@ -125,5 +129,8 @@ void				execute_builtin(char **args, t_data *data);
 
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);
+
+/* Print Functions */
+void	print_cmds(t_stack **cmds);
 
 #endif
