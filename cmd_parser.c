@@ -154,22 +154,41 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
-t_stack	*fill_nodes(char **args)
+/**
+ * @brief Creates linked lists of commands split by pipes ('|').
+ * Parses the input `args` array and creates separate linked 
+ * lists for each set of commands
+ * and arguments divided by pipes. Returns an array of linked lists.
+ * @param args Array of strings representing the parsed command input.
+ * @return An array of linked lists,
+ * each representing a command chain. The array ends with NULL.
+ */
+t_stack	**fill_nodes(char **args)
 {
-	int	i;
+	int		i;
+	int		list_index;
+	t_stack	**cmds;
 
-	t_stack *cmds; // Only one pointer is needed to track the head of the list
 	i = 0;
-	cmds = NULL; // Initialize the head to NULL, since the list starts empty
+	list_index = 0;
+	cmds = malloc(sizeof(t_stack *) * 11);
+	if (!cmds)
+		return (NULL);
+	while (list_index < 10)
+		cmds[list_index++] = NULL;
+	list_index = 0;
 	while (args[i])
 	{
-		printf("args:[%i]:%s\n", i, args[i]);
-		cmds = insert_at_tail(cmds, args[i]);
-			// Update the head after each insertion
+		if (args[i][0] == '|' && args[i + 1] && args[i + 1][0])
+		{
+			i++;
+			list_index++;
+		}
+		cmds[list_index] = insert_at_tail(cmds[list_index], args[i]);
 		i++;
 	}
-	print_cmds(cmds); // Assuming print_cmds prints the entire list
-	return (cmds);    // Return the head of the list
+	cmds[list_index + 1] = NULL;
+	return (cmds);
 }
 
 void	parse_command(char *input, t_data *data)
@@ -182,7 +201,7 @@ void	parse_command(char *input, t_data *data)
 	int		has_heredoc;
 	char	*delimiter;
 	char	*heredoc_pos;
-	t_stack	*cmds;
+	t_stack	**cmds;
 
 	has_heredoc = 0;
 	delimiter = NULL;

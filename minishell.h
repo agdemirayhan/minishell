@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/28 18:37:50 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/29 08:33:49 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,6 @@ void				execute_builtin(char **args, t_data *data);
 char				*ft_strtrim_all(const char *s1);
 
 /* Print Functions */
-void	print_cmds(t_stack *cmds);
+void	print_cmds(t_stack **cmds);
 
 #endif
