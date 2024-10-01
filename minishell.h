@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/29 08:33:49 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/01 12:25:55 by msoklova         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,9 @@ char				*expand_env_vars(char *input, t_data *data);
 void				init_shell(void);
 void				handle_signals(int signo);
 void				parse_command(char *input, t_data *data);
+void				free_strarray(char **array);
+char				*find_slash(char *comm);
+char				*find_exec(char *comm);
 void				execute_command(char **args);
 int					is_builtin(char *command);
 void				execute_builtin(char **args, t_data *data);

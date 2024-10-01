@@ -47,6 +47,11 @@ t_env *init_env_list(char **envp)
 			new_node->name = ft_strdup(envp[i]);
 			new_node->value = NULL;
 		}
+		if (ft_strncmp(new_node->name, "_", 1) == 0)
+		{
+			free(new_node->value); // Free any allocated value if it exists
+			new_node->value = ft_strdup("/usr/bin/env"); // Set value to /usr/bin/env
+		}
 		new_node->next = NULL;
 		if (head == NULL)
 		{
@@ -97,10 +102,15 @@ void print_env_list(t_env *env)
 {
 	while (env != NULL)
 	{
-		if (env->value)
-			printf("%s=%s\n", env->name, env->value);
+		if (ft_strncmp(env->name, "_", 1) == 0)
+			printf("_=/usr/bin/env\n");
 		else
-			printf("%s\n", env->name);
+		{
+			if (env->value)
+				printf("%s=%s\n", env->name, env->value);
+			else
+				printf("%s\n", env->name);
+		}
 		env = env->next;
 	}
 }
