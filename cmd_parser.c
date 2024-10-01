@@ -63,7 +63,8 @@ static int	ft_count_words(const char *s, char *c, int i[2])
 	enum QuoteState	quote_state;
 
 	quote_state = NO_QUOTE;
-	printf("ft_count_words: %s\n", s); /*this needs to be removed its triggering me :( */
+	printf("ft_count_words: %s\n", s);
+	/*this needs to be removed its triggering me :( */
 	while (s[i[0]] != '\0')
 	{
 		// Check if not a delimiter or within quotes
@@ -143,8 +144,51 @@ char	**split_with_quotes(const char *s, char *del)
 		else
 			arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
 	}
+	if (quote_state != NO_QUOTE)
+	{
+		fprintf(stderr, "Error: Unclosed quotes detected\n");
+		free(arr); // Free the allocated memory if an error occurs
+		return (NULL);
+	}
 	arr[words_len] = NULL;
 	return (arr);
+}
+
+/**
+ * @brief Creates linked lists of commands split by pipes ('|').
+ * Parses the input `args` array and creates separate linked 
+ * lists for each set of commands
+ * and arguments divided by pipes. Returns an array of linked lists.
+ * @param args Array of strings representing the parsed command input.
+ * @return An array of linked lists,
+ * each representing a command chain. The array ends with NULL.
+ */
+t_stack	**fill_nodes(char **args)
+{
+	int		i;
+	int		list_index;
+	t_stack	**cmds;
+
+	i = 0;
+	list_index = 0;
+	cmds = malloc(sizeof(t_stack *) * 11);
+	if (!cmds)
+		return (NULL);
+	while (list_index < 10)
+		cmds[list_index++] = NULL;
+	list_index = 0;
+	while (args[i])
+	{
+		if (args[i][0] == '|' && args[i + 1] && args[i + 1][0])
+		{
+			i++;
+			list_index++;
+		}
+		cmds[list_index] = insert_at_tail(cmds[list_index], args[i]);
+		i++;
+	}
+	cmds[list_index + 1] = NULL;
+	return (cmds);
 }
 
 void	parse_command(char *input, t_data *data)
@@ -153,7 +197,14 @@ void	parse_command(char *input, t_data *data)
 	char	*new_str;
 	char	*expanded_str;
 	int		i;
+	char	*trimmed_arg;
+	int		has_heredoc;
+	char	*delimiter;
+	char	*heredoc_pos;
+	t_stack	**cmds;
 
+	has_heredoc = 0;
+	delimiter = NULL;
 	i = 0;
 	new_str = token_spacer(input);
 	if (!new_str)
@@ -161,14 +212,22 @@ void	parse_command(char *input, t_data *data)
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
+	if (!args)
+		return ;
 	free(expanded_str);
 	while (args[i])
 	{
+		trimmed_arg = ft_strtrim_all(args[i]);
+		free(args[i]);
+		args[i] = trimmed_arg;
 		printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
 	if (args[0] == NULL)
 		return ;
+	cmds = fill_nodes(args);
+	print_cmds(cmds);
+	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{
 		execute_builtin(args, data);
@@ -177,8 +236,14 @@ void	parse_command(char *input, t_data *data)
 	{
 		execute_command(args);
 	}
-	free_strarray(args);
-	// we must free the args array.
+	// Free the argument array
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
 }
 
 // int	main(void)

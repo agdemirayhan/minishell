@@ -122,6 +122,7 @@ int	heredoc_handler(char *str[2], char *del[2])
 	return (fd[0]);
 }
 
+
 // int	main(void)
 // {
 // 	char *str[2] = {NULL, NULL};
