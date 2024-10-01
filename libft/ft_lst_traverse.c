@@ -1,8 +1,8 @@
 #include "libft.h"
 
-t_stack	*ft_lsttraverse(t_stack *stack)
+t_list	*ft_lsttraverse(t_list *stack)
 {
-	t_stack *last;
+	t_list *last;
 
 	if (!stack)
 		return (NULL);

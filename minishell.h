@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/29 13:01:37 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/30 21:44:40 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include "libft/libft.h"
 # include <errno.h>
-# include <fcntl.h>
 # include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -29,16 +28,17 @@
 
 typedef struct s_prompt
 {
-	t_stack			*cmds;
+	t_list			*cmds;
+	char			**envp;
+	pid_t			pid;
 }					t_prompt;
 
 typedef struct s_mini
 {
 	char			**full_cmd;
+	char			*full_path;
 	int				infile;
 	int				outfile;
-	int				append;
-	struct s_mini	*next;
 }					t_mini;
 
 enum				QuoteState
@@ -135,6 +135,6 @@ void				execute_builtin(char **args, t_data *data);
 char				*ft_strtrim_all(const char *s1);
 
 /* Print Functions */
-void				print_cmds(t_stack **cmds);
+void	print_cmds(t_list *cmds);
 
 #endif

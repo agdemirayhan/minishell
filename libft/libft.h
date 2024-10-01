@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 14:14:05 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/29 16:38:07 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/30 21:37:49 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-typedef struct s_stack
+typedef struct s_list
 {
 	void			*content;
-	struct s_stack	*next;
-}					t_stack;
+	struct s_list	*next;
+}					t_list;
 
 int					ft_isalnum(int c);
 int					ft_isalpha(int c);
@@ -57,10 +57,12 @@ void				ft_putstr_fd(char *s, int fd);
 void				ft_putendl_fd(char *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
-int					ft_lstsize(t_stack *list);
-void				ft_lstclear(t_stack **list);
-t_stack				*ft_lsttraverse(t_stack *stack);
-t_stack				*insert_at_tail(t_stack *stack, void *new);
-t_stack				*ft_lstnew(void *content);
+int					ft_lstsize(t_list *list);
+void				ft_lstclear(t_list **lst, void (*del)(void *));
+t_list				*ft_lsttraverse(t_list *stack);
+t_list				*insert_at_tail(t_list *stack, char *new);
+t_list				*ft_lstnew(void *content);
+t_list				*ft_lstlast(t_list *lst);
+void	ft_lstadd_back(t_list **lst, t_list *newnode);
 
 #endif
