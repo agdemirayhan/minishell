@@ -177,6 +177,7 @@ void	parse_command(char *input, t_data *data)
 	{
 		execute_command(args);
 	}
+	free_strarray(args);
 	// we must free the args array.
 }
 
