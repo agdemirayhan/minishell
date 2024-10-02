@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 14:14:05 by msoklova          #+#    #+#             */
-/*   Updated: 2024/09/30 21:37:49 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/02 21:15:07 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ int					ft_lstsize(t_list *list);
 void				ft_lstclear(t_list **lst, void (*del)(void *));
 t_list				*ft_lsttraverse(t_list *stack);
 t_list				*insert_at_tail(t_list *stack, char *new);
-t_list				*ft_lstnew(void *content);
-t_list				*ft_lstlast(t_list *lst);
-void	ft_lstadd_back(t_list **lst, t_list *newnode);
+t_list				*ft_lst_newlist(void *content);
+t_list				*ft_lsttraverse(t_list *lst);
+void	ft_lst_insertattail(t_list **lst, t_list *newnode);
 
 #endif

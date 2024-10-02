@@ -192,34 +192,6 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	return (new_matrix);
 }
 
-void	get_parameters(t_mini **node, char **args, int *i)
-{
-	// Check if the current argument is a redirection operator
-	if (args[*i])
-	{
-		// Double redirection '>>' (append to output file)
-		if (args[*i][0] == '>' && args[*i][1] && args[*i][1] == '>')
-		{
-			printf("Outfile1\n");
-		}
-		// Single redirection '>' (overwrite output file)
-		else if (args[*i][0] == '>')
-		{
-			printf("Outfile2\n");
-		}
-		// Double redirection '<<' (heredoc)
-		else if (args[*i][0] == '<' && args[*i][1] && args[*i][1] == '<')
-		{
-			printf("Infile2\n");
-		}
-		// Single redirection '<' (input file)
-		else if (args[*i][0] == '<')
-		{
-			printf("Infile1\n");
-		}
-	}
-}
-
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -242,16 +214,16 @@ t_list	*fill_nodes(char **args)
 	temp[1] = args;
 	while (args[++i])
 	{
-		last_cmd = ft_lstlast(cmds);
+		last_cmd = ft_lsttraverse(cmds);
 		if (i == 0 || (args[i][0] == '|' && args[i + 1] && args[i + 1][0]))
 		{
 			i += (args[i][0] == '|');
-			ft_lstadd_back(&cmds, ft_lstnew(mini_init()));
-			last_cmd = ft_lstlast(cmds);
+			ft_lst_insertattail(&cmds, ft_lst_newlist(mini_init()));
+			last_cmd = ft_lsttraverse(cmds);
 		}
 		first_mini = (t_mini *)last_cmd->content;
 		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[i]);
-		get_parameters(&first_mini, args, &i);
+		get_redir(&first_mini, args, &i);
 		printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
 			break ;

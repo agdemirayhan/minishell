@@ -1,16 +1,16 @@
 #include "libft.h"
 
-t_list	*ft_lsttraverse(t_list *stack)
+t_list	*ft_lsttraverse(t_list *lst)
 {
 	t_list *last;
 
-	if (!stack)
+	if (!lst)
 		return (NULL);
-	while (stack)
+	while (lst)
 	{
-		if (!stack->next)
-			last = stack;
-		stack = stack->next;
+		if (!lst->next)
+			last = lst;
+		lst = lst->next;
 	}
 	return (last);
 }
