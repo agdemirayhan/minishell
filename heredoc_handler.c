@@ -112,7 +112,7 @@ int	heredoc_handler(char *str[2], char *del[2])
 	// Initialize the file descriptors
 	if (pipe(fd) == -1)
 	{
-		fprintf(stderr, "Error creating pipe.\n");
+		fprintf(stderr, "Error creating pipe.\n"); // no fprintffing
 		return (-1);
 	}
 	str[1] = heredoc_str(str, 0, del[0]);
