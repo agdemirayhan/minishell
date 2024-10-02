@@ -1,10 +1,10 @@
 #include "libft.h"
 
-t_stack	*ft_lstnew(void *content)
+t_list	*ft_lst_newlist(void *content)
 {
-	t_stack *s1;
+	t_list *s1;
 
-	s1 = (t_stack *)malloc(sizeof(t_stack));
+	s1 = (t_list *)malloc(sizeof(t_list));
 	if (!s1)
 		return (NULL);
 	s1->content = content;

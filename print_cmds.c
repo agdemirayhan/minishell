@@ -1,38 +1,43 @@
 #include "minishell.h"
 
-/**
- * @brief Prints the contents of an array of linked lists.
- * Iterates over an array of linked lists `cmds` and
- * prints each command and argument in every list.
- * Each linked list represents a sequence of
- * commands/arguments, and multiple lists are divided by pipes.
- * @param cmds Array of linked lists,
- * each containing command nodes with string content.
- */
-void	print_cmds(t_stack **cmds)
+void	print_cmds(t_list *cmds)
 {
-	t_stack	*current;
-	int		list_index;
-	int		node_index;
+	t_list	*current;
+	t_mini	*cmd_data;
+	int		cmd_index;
 
-	list_index = 0;
-	while (cmds[list_index])
+	cmd_index = 0;
+	current = cmds;
+	while (current != NULL)
 	{
-		printf("cmds[%d]: ", list_index);
-		current = cmds[list_index];
-		node_index = 0;
-		while (current != NULL)
+		cmd_data = (t_mini *)current->content;
+		printf("Command %d:\n", cmd_index);
+		// Print infile and outfile
+		printf("\tinfile: %d\n", cmd_data->infile);
+		printf("\toutfile: %d\n", cmd_data->outfile);
+		// Print full_path (if applicable)
+		if (cmd_data->full_path)
+			printf("\tfull_path: %s\n", cmd_data->full_path);
+		else
+			printf("\tfull_path: (builtin or not set)\n");
+		// Print the full command
+		if (cmd_data->full_cmd)
 		{
-			if (current->content == NULL)
-				printf("(NULL)");
-			else
-				printf("%s", (char *)current->content);
-			if (current->next)
-				printf(" ");
-			current = current->next;
-			node_index++;
+			printf("\tfull_cmd: {");
+			for (int i = 0; cmd_data->full_cmd[i] != NULL; i++)
+			{
+				printf("%s", cmd_data->full_cmd[i]);
+				if (cmd_data->full_cmd[i + 1] != NULL)
+					printf(", ");
+			}
+			printf("}\n");
 		}
-		printf("\n");
-		list_index++;
+		else
+		{
+			printf("\tfull_cmd: (none)\n");
+		}
+		// Move to the next command
+		current = current->next;
+		cmd_index++;
 	}
 }

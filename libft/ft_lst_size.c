@@ -6,13 +6,13 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 09:39:14 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/09/28 17:42:20 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/09/30 21:36:25 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_lstsize(t_stack *list)
+int	ft_lstsize(t_list *list)
 {
 	int size;
 

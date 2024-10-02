@@ -2,6 +2,20 @@
 
 // MORE TESTS
 
+static t_mini	*mini_init(void)
+{
+	t_mini	*mini;
+
+	mini = malloc(sizeof(t_mini));
+	if (!mini)
+		return (NULL);
+	mini->full_cmd = NULL;
+	mini->full_path = NULL;
+	mini->infile = STDIN_FILENO;
+	mini->outfile = STDOUT_FILENO;
+	return (mini);
+}
+
 /**
  * @brief This function put spaces between tokens if necessary
  * @return a string
@@ -154,54 +168,80 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
+char	**ft_extend_matrix(char **matrix, char *new_entry)
+{
+	int		i;
+	char	**new_matrix;
+
+	i = 0;
+	while (matrix && matrix[i]) // Count existing elements
+		i++;
+	// Allocate memory for new matrix (existing elements + 1 new entry + NULL)
+	new_matrix = malloc((i + 2) * sizeof(char *));
+	if (!new_matrix)
+		return (NULL);
+	i = 0;
+	while (matrix && matrix[i])
+	{
+		new_matrix[i] = matrix[i]; // Copy old entries
+		i++;
+	}
+	new_matrix[i] = ft_strdup(new_entry); // Add new entry
+	new_matrix[i + 1] = NULL;             // Null-terminate the array
+	free(matrix);
+	return (new_matrix);
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
- * Parses the input `args` array and creates separate linked 
+ * Parses the input `args` array and creates separate linked
  * lists for each set of commands
  * and arguments divided by pipes. Returns an array of linked lists.
  * @param args Array of strings representing the parsed command input.
  * @return An array of linked lists,
  * each representing a command chain. The array ends with NULL.
  */
-t_stack	**fill_nodes(char **args)
+t_list	*fill_nodes(char **args)
 {
+	t_list	*cmds;
+	t_list	*last_cmd;
+	char	**temp[2];
 	int		i;
-	int		list_index;
-	t_stack	**cmds;
+	t_mini	*first_mini;
 
-	i = 0;
-	list_index = 0;
-	cmds = malloc(sizeof(t_stack *) * 11);
-	if (!cmds)
-		return (NULL);
-	while (list_index < 10)
-		cmds[list_index++] = NULL;
-	list_index = 0;
-	while (args[i])
+	i = -1;
+	cmds = NULL;
+	temp[1] = args;
+	while (args[++i])
 	{
-		if (args[i][0] == '|' && args[i + 1] && args[i + 1][0])
+		last_cmd = ft_lsttraverse(cmds);
+		if (i == 0 || (args[i][0] == '|' && args[i + 1] && args[i + 1][0]))
 		{
-			i++;
-			list_index++;
+			i += (args[i][0] == '|');
+			ft_lst_insertattail(&cmds, ft_lst_newlist(mini_init()));
+			last_cmd = ft_lsttraverse(cmds);
 		}
-		cmds[list_index] = insert_at_tail(cmds[list_index], args[i]);
-		i++;
+		first_mini = (t_mini *)last_cmd->content;
+		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[i]);
+		get_redir(&first_mini, args, &i);
+		printf("args[%d]: %s\n", i, args[i]);
+		if (!args[i])
+			break ;
 	}
-	cmds[list_index + 1] = NULL;
 	return (cmds);
 }
 
 void	parse_command(char *input, t_data *data)
 {
-	char	**args;
-	char	*new_str;
-	char	*expanded_str;
-	int		i;
-	char	*trimmed_arg;
-	int		has_heredoc;
-	char	*delimiter;
-	char	*heredoc_pos;
-	t_stack	**cmds;
+	char		**args;
+	char		*new_str;
+	char		*expanded_str;
+	int			i;
+	char		*trimmed_arg;
+	int			has_heredoc;
+	char		*delimiter;
+	char		*heredoc_pos;
+	t_prompt	test;
 
 	has_heredoc = 0;
 	delimiter = NULL;
@@ -220,13 +260,14 @@ void	parse_command(char *input, t_data *data)
 		trimmed_arg = ft_strtrim_all(args[i]);
 		free(args[i]);
 		args[i] = trimmed_arg;
-		printf("args[%d]:%s\n", i, args[i]);
+		// printf("args[%d]:%s\n", i, args[i]);
 		i++;
 	}
 	if (args[0] == NULL)
 		return ;
-	cmds = fill_nodes(args);
-	print_cmds(cmds);
+	test.cmds = fill_nodes(args);
+	print_cmds(test.cmds);
+	// print_cmds(cmds);
 	// Check if the command is a builtin or external command
 	if (is_builtin(args[0]))
 	{

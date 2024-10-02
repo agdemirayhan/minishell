@@ -15,6 +15,7 @@
 
 # include "libft/libft.h"
 # include <errno.h>
+# include <fcntl.h>
 # include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -28,13 +29,17 @@
 
 typedef struct s_prompt
 {
-	t_stack			*cmds;
+	t_list			*cmds;
+	char			**envp;
+	pid_t			pid;
 }					t_prompt;
 
 typedef struct s_mini
 {
 	char			**full_cmd;
-
+	char			*full_path;
+	int				infile;
+	int				outfile;
 }					t_mini;
 
 enum				QuoteState
@@ -133,7 +138,12 @@ void				execute_builtin(char **args, t_data *data);
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);
 
+/* Redirection Functions */
+int					get_fd(int oldfd, char *path, int flags[2]);
+void				outfile1(t_mini **node, char **args, int *i);
+void				get_redir(t_mini **node, char **args, int *i);
+
 /* Print Functions */
-void	print_cmds(t_stack **cmds);
+void				print_cmds(t_list *cmds);
 
 #endif
