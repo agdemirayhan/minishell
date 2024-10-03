@@ -123,7 +123,8 @@ char				*find_exec(char *comm);
 void				execute_command(char **args);
 int					is_builtin(char *command);
 void				execute_builtin(char **args, t_data *data);
-int	heredoc_handler(char *str[2], char *del);
+int					heredoc_handler(char *str[2], char *del);
+void				execute_pipes(t_list *cmds);
 
 	/* Trim Functions */
 	char *ft_strtrim_all(const char *s1);
