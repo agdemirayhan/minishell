@@ -105,7 +105,7 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 	return (s[1]);
 }
 
-int	heredoc_handler(char *str[2], char *del[2])
+int	heredoc_handler(char *str[2], char *del)
 {
 	int	fd[2];
 
@@ -115,7 +115,7 @@ int	heredoc_handler(char *str[2], char *del[2])
 		fprintf(stderr, "Error creating pipe.\n"); // no fprintffing
 		return (-1);
 	}
-	str[1] = heredoc_str(str, 0, del[0]);
+	str[1] = heredoc_str(str, 0, del);
 	write(fd[1], str[1], ft_strlen(str[1]));
 	free(str[1]);
 	close(fd[1]);

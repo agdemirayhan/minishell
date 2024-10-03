@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 14:16:08 by msoklova          #+#    #+#             */
-/*   Updated: 2024/10/01 12:25:55 by msoklova         ###   ########.fr       */
+/*   Updated: 2024/10/03 09:13:15 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,10 @@ char				*find_exec(char *comm);
 void				execute_command(char **args);
 int					is_builtin(char *command);
 void				execute_builtin(char **args, t_data *data);
+int	heredoc_handler(char *str[2], char *del);
 
-/* Trim Functions */
-char				*ft_strtrim_all(const char *s1);
+	/* Trim Functions */
+	char *ft_strtrim_all(const char *s1);
 
 /* Redirection Functions */
 int					get_fd(int oldfd, char *path, int flags[2]);
