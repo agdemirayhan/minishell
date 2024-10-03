@@ -2,6 +2,20 @@
 
 // MORE TESTS
 
+static t_mini	*mini_init(void)
+{
+	t_mini	*mini;
+
+	mini = malloc(sizeof(t_mini));
+	if (!mini)
+		return (NULL);
+	mini->full_cmd = NULL;
+	mini->full_path = NULL;
+	mini->infile = STDIN_FILENO;
+	mini->outfile = STDOUT_FILENO;
+	return (mini);
+}
+
 /**
  * @brief This function put spaces between tokens if necessary
  * @return a string
@@ -154,6 +168,30 @@ char	**split_with_quotes(const char *s, char *del)
 	return (arr);
 }
 
+char	**ft_extend_matrix(char **matrix, char *new_entry)
+{
+	int		i;
+	char	**new_matrix;
+
+	i = 0;
+	while (matrix && matrix[i]) // Count existing elements
+		i++;
+	// Allocate memory for new matrix (existing elements + 1 new entry + NULL)
+	new_matrix = malloc((i + 2) * sizeof(char *));
+	if (!new_matrix)
+		return (NULL);
+	i = 0;
+	while (matrix && matrix[i])
+	{
+		new_matrix[i] = matrix[i]; // Copy old entries
+		i++;
+	}
+	new_matrix[i] = ft_strdup(new_entry); // Add new entry
+	new_matrix[i + 1] = NULL;             // Null-terminate the array
+	free(matrix);
+	return (new_matrix);
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -163,81 +201,64 @@ char	**split_with_quotes(const char *s, char *del)
  * @return An array of linked lists,
  * each representing a command chain. The array ends with NULL.
  */
-t_stack	**fill_nodes(char **args)
+t_list	*fill_nodes(char **args)
 {
+	t_list	*cmds;
+	t_list	*last_cmd;
+	char	**temp[2];
 	int		i;
-	int		list_index;
-	t_stack	**cmds;
+	t_mini	*first_mini;
 
-	i = 0;
-	list_index = 0;
-	cmds = malloc(sizeof(t_stack *) * 11);
-	if (!cmds)
-		return (NULL);
-	while (list_index < 10)
-		cmds[list_index++] = NULL;
-	list_index = 0;
-	while (args[i])
+	i = -1;
+	cmds = NULL;
+	temp[1] = args;
+	while (args[++i])
 	{
-		if (args[i][0] == '|' && args[i + 1] && args[i + 1][0])
+		last_cmd = ft_lsttraverse(cmds);
+		if (i == 0 || (args[i][0] == '|' && args[i + 1] && args[i + 1][0]))
 		{
-			i++;
-			list_index++;
+			i += (args[i][0] == '|');
+			ft_lst_insertattail(&cmds, ft_lst_newlist(mini_init()));
+			last_cmd = ft_lsttraverse(cmds);
 		}
-		cmds[list_index] = insert_at_tail(cmds[list_index], args[i]);
-		i++;
+		first_mini = (t_mini *)last_cmd->content;
+		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[i]);
+		get_redir(&first_mini, args, &i);
+		printf("args[%d]: %s\n", i, args[i]);
+		if (!args[i])
+			break ;
 	}
-	cmds[list_index + 1] = NULL;
 	return (cmds);
 }
 
 void	parse_command(char *input, t_data *data)
 {
-	char	**args;
-	char	*new_str;
-	char	*expanded_str;
-	int		i;
-	char	*trimmed_arg;
-	int		has_heredoc;
-	char	*delimiter;
-	char	*heredoc_pos;
-	t_stack	**cmds;
+	t_prompt	test;
+	char		*new_str;
+	char		*expanded_str;
+	int			has_heredoc;
+	char		*delimiter;
+	char		*heredoc_pos;
+	char		**args;
+	int			i;
+	t_list		*cmd_node;
+	t_mini		*mini_cmd;
 
 	has_heredoc = 0;
 	delimiter = NULL;
-	i = 0;
 	new_str = token_spacer(input);
 	if (!new_str)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
-	if (!args)
-		return ;
 	free(expanded_str);
-	while (args[i])
+	if (!args || args[0] == NULL)
 	{
-		trimmed_arg = ft_strtrim_all(args[i]);
-		free(args[i]);
-		args[i] = trimmed_arg;
-		printf("args[%d]:%s\n", i, args[i]);
-		i++;
-	}
-	if (args[0] == NULL)
+		free(args);
 		return ;
-	cmds = fill_nodes(args);
-	print_cmds(cmds);
-	// Check if the command is a builtin or external command
-	if (is_builtin(args[0]))
-	{
-		execute_builtin(args, data);
 	}
-	else
-	{
-		execute_command(args);
-	}
-	//free_strarray(args);
-	// Free the argument array
+	test.cmds = fill_nodes(args);
 	i = 0;
 	while (args[i])
 	{
@@ -245,6 +266,24 @@ void	parse_command(char *input, t_data *data)
 		i++;
 	}
 	free(args);
+	print_cmds(test.cmds);
+	cmd_node = test.cmds;
+	while (cmd_node)
+	{
+		mini_cmd = (t_mini *)cmd_node->content;
+		if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
+		{
+			if (is_builtin(mini_cmd->full_cmd[0]))
+			{
+				execute_builtin(mini_cmd->full_cmd, data);
+			}
+			else
+			{
+				execute_command(mini_cmd->full_cmd);
+			}
+		}
+		cmd_node = cmd_node->next;
+	}
 }
 
 // int	main(void)
