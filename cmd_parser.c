@@ -233,51 +233,32 @@ t_list	*fill_nodes(char **args)
 
 void	parse_command(char *input, t_data *data)
 {
-	char		**args;
+	t_prompt	test;
 	char		*new_str;
 	char		*expanded_str;
-	int			i;
-	char		*trimmed_arg;
 	int			has_heredoc;
 	char		*delimiter;
 	char		*heredoc_pos;
-	t_prompt	test;
+	char		**args;
+	int			i;
+	t_list		*cmd_node;
+	t_mini		*mini_cmd;
 
 	has_heredoc = 0;
 	delimiter = NULL;
-	i = 0;
 	new_str = token_spacer(input);
 	if (!new_str)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
-	if (!args)
-		return ;
 	free(expanded_str);
-	while (args[i])
+	if (!args || args[0] == NULL)
 	{
-		trimmed_arg = ft_strtrim_all(args[i]);
-		free(args[i]);
-		args[i] = trimmed_arg;
-		// printf("args[%d]:%s\n", i, args[i]);
-		i++;
-	}
-	if (args[0] == NULL)
+		free(args);
 		return ;
+	}
 	test.cmds = fill_nodes(args);
-	print_cmds(test.cmds);
-	// print_cmds(cmds);
-	// Check if the command is a builtin or external command
-	if (is_builtin(args[0]))
-	{
-		execute_builtin(args, data);
-	}
-	else
-	{
-		execute_command(args);
-	}
-	// Free the argument array
 	i = 0;
 	while (args[i])
 	{
@@ -285,6 +266,24 @@ void	parse_command(char *input, t_data *data)
 		i++;
 	}
 	free(args);
+	print_cmds(test.cmds);
+	cmd_node = test.cmds;
+	while (cmd_node)
+	{
+		mini_cmd = (t_mini *)cmd_node->content;
+		if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
+		{
+			if (is_builtin(mini_cmd->full_cmd[0]))
+			{
+				execute_builtin(mini_cmd->full_cmd, data);
+			}
+			else
+			{
+				execute_command(mini_cmd->full_cmd);
+			}
+		}
+		cmd_node = cmd_node->next;
+	}
 }
 
 // int	main(void)

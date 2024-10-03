@@ -77,31 +77,27 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 	char	*temp;
 	char	*result;
 
+	if (s[1] == NULL)
+		s[1] = ft_strdup("");
 	result = s[1];
 	while ((!s[0] || ft_strncmp(s[0], lim, len) || ft_strlen(lim) != len))
 	{
-		temp = s[1];
-		s[1] = ft_strjoin(s[1], s[0]);
-		free(temp);
 		free(s[0]);
 		s[0] = readline("heredoc> ");
 		if (s[0] == NULL)
 		{
 			fprintf(stderr, "Error: readline failed.\n");
-			return (result); // Return the accumulated text
+			return (result);
 		}
 		temp = s[0];
 		s[0] = ft_strjoin(s[0], "\n");
 		free(temp);
+		temp = s[1];
+		s[1] = ft_strjoin(s[1], s[0]);
+		free(temp);
 		len = ft_strlen(s[0]) - 1;
 	}
 	free(s[0]);
-	// Check if s[1] is NULL before returning
-	if (s[1] == NULL)
-	{
-		fprintf(stderr, "Error: s[1] is NULL.\n");
-		return (NULL);
-	}
 	return (s[1]);
 }
 
@@ -121,7 +117,6 @@ int	heredoc_handler(char *str[2], char *del)
 	close(fd[1]);
 	return (fd[0]);
 }
-
 
 // int	main(void)
 // {
