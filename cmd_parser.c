@@ -156,7 +156,7 @@ char	**split_with_quotes(const char *s, char *del)
 
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
- * Parses the input `args` array and creates separate linked 
+ * Parses the input `args` array and creates separate linked
  * lists for each set of commands
  * and arguments divided by pipes. Returns an array of linked lists.
  * @param args Array of strings representing the parsed command input.
@@ -236,6 +236,7 @@ void	parse_command(char *input, t_data *data)
 	{
 		execute_command(args);
 	}
+	//free_strarray(args);
 	// Free the argument array
 	i = 0;
 	while (args[i])
