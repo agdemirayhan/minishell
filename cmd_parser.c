@@ -231,78 +231,81 @@ t_list	*fill_nodes(char **args)
 	return (cmds);
 }
 
-void parse_command(char *input, t_data *data)
+void	parse_command(char *input, t_data *data)
 {
-    t_prompt test;
-    char *new_str;
-    char *expanded_str;
-    char **args;
-    int i;
-    t_list *cmd_node;
-    t_mini *mini_cmd;
-    int has_pipe = 0;
+	t_prompt	test;
+	char		*new_str;
+	char		*expanded_str;
+	char		**args;
+	int			i;
+	t_list		*cmd_node;
+	t_mini		*mini_cmd;
+	char		*trimmed_arg;
 
-    new_str = token_spacer(input);
-    if (!new_str)
-        return;
-
-    expanded_str = expand_env_vars(new_str, data);
-    free(new_str);
-
-    args = split_with_quotes(expanded_str, " ");
-    free(expanded_str);
-
-    if (!args || args[0] == NULL) {
-        free(args);
-        return;
-    }
-
-    test.cmds = fill_nodes(args);
-    cmd_node = test.cmds;
-
-    // Check if any command contains a pipe
-    while (cmd_node) {
-        mini_cmd = (t_mini *)cmd_node->content;
-        if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0]) {
-            // Here we check for the presence of pipes
-            if (ft_strchr(mini_cmd->full_cmd[0], '|')) {
-                has_pipe = 1;
-                break;
-            }
-        }
-        cmd_node = cmd_node->next;
-    }
-
-    // Execute commands based on presence of pipes
-    if (has_pipe) {
-        // Call to the execute_pipes function to handle piped commands
-        execute_pipes(test.cmds); // Make sure this function processes the commands as expected
-    } else {
-        // If there are no pipes, execute the commands normally
-        cmd_node = test.cmds;
-        while (cmd_node) {
-            mini_cmd = (t_mini *)cmd_node->content;
-            if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0]) {
-                if (is_builtin(mini_cmd->full_cmd[0])) {
-                    execute_builtin(mini_cmd->full_cmd, data);
-                } else {
-                    execute_command(mini_cmd->full_cmd);
-                }
-            }
-            cmd_node = cmd_node->next;
-        }
-    }
-
-    // Freeing memory for arguments
-    i = 0;
-    while (args[i]) {
-        free(args[i]);
-        i++;
-    }
-    free(args);
-
-    // Optionally free the linked list of commands if necessary
-    // free_cmd_list(test.cmds);
+	new_str = token_spacer(input);
+	if (!new_str)
+		return;
+	expanded_str = expand_env_vars(new_str, data);
+	free(new_str);
+	args = split_with_quotes(expanded_str, " ");
+	free(expanded_str);
+	if (!args || args[0] == NULL) {
+		free(args);
+		return;
+	}
+	i = 0;
+	while (args[i])
+	{
+		trimmed_arg = ft_strtrim_all(args[i]);
+		free(args[i]);
+		args[i] = trimmed_arg;
+		i++;
+	}
+	test.cmds = fill_nodes(args);
+	if (test.cmds && test.cmds->next != NULL)
+	{
+		execute_pipes(test.cmds, data);
+	}
+	else
+	{
+		cmd_node = test.cmds;
+		while (cmd_node)
+		{
+			mini_cmd = (t_mini *)cmd_node->content;
+			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
+			{
+				if (is_builtin(mini_cmd->full_cmd[0]))
+				{
+					execute_builtin(mini_cmd->full_cmd, data);
+				}
+				else
+				{
+					pid_t pid = fork();
+					if (pid == 0)
+					{
+						execute_command(mini_cmd->full_cmd);
+						exit(EXIT_FAILURE);
+					}
+					else if (pid < 0)
+					{
+						perror("minishell");
+					}
+					else
+					{
+						int status;
+						waitpid(pid, &status, 0);
+					}
+				}
+			}
+			cmd_node = cmd_node->next;
+		}
+	}
+	i = 0;
+	while (args[i]) {
+		free(args[i]);
+		i++;
+	}
+	free(args);
 }
 
 
