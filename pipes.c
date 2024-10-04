@@ -1,17 +1,21 @@
 #include "minishell.h"
 
-void execute_pipes(t_list *cmds)
+void execute_pipes(t_list *cmds, t_data *data)
 {
 	int		pipefd[2];
 	int		in_fd = 0;
 	pid_t	pid;
-	int		status;
 	t_list	*cmd_node = cmds;
 	t_mini	*mini_cmd;
+	int		status;
+	pid_t	child_pids[1024];
+	int		child_count = 0;
+	int		i;
 
 	while (cmd_node)
 	{
 		mini_cmd = (t_mini *)cmd_node->content;
+
 		if (cmd_node->next != NULL)
 		{
 			if (pipe(pipefd) == -1)
@@ -20,6 +24,7 @@ void execute_pipes(t_list *cmds)
 				exit(EXIT_FAILURE);
 			}
 		}
+
 		pid = fork();
 		if (pid == -1)
 		{
@@ -30,27 +35,67 @@ void execute_pipes(t_list *cmds)
 		{
 			if (in_fd != 0)
 			{
-				dup2(in_fd, STDIN_FILENO);
+				if (dup2(in_fd, STDIN_FILENO) == -1)
+				{
+					perror("dup2 in_fd");
+					exit(EXIT_FAILURE);
+				}
 				close(in_fd);
 			}
 			if (cmd_node->next != NULL)
 			{
-				dup2(pipefd[1], STDOUT_FILENO);
-				close(pipefd[0]);
+				close(pipefd[0]); // Close unused read end
+				if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+				{
+					perror("dup2 pipefd[1]");
+					exit(EXIT_FAILURE);
+				}
+				close(pipefd[1]);
 			}
-			execute_command(mini_cmd->full_cmd);
-			perror("execve");
-			exit(EXIT_FAILURE);
+
+			// Execute built-in commands or external commands
+			if (is_builtin(mini_cmd->full_cmd[0]))
+			{
+				execute_builtin(mini_cmd->full_cmd, data);
+				exit(EXIT_SUCCESS);
+			}
+			else
+			{
+				char *e_path = find_exec(mini_cmd->full_cmd[0]);
+				if (!e_path)
+				{
+					fprintf(stderr, "minishell: command not found: %s\n", mini_cmd->full_cmd[0]);
+					exit(EXIT_FAILURE);
+				}
+				if (execve(e_path, mini_cmd->full_cmd, NULL) == -1)
+				{
+					perror("execve");
+					exit(EXIT_FAILURE);
+				}
+			}
 		}
 		else // Parent process
 		{
+			child_pids[child_count++] = pid;
+			if (in_fd != 0)
+				close(in_fd);
 			if (cmd_node->next != NULL)
 			{
 				close(pipefd[1]);
+				in_fd = pipefd[0];
 			}
-			in_fd = pipefd[0];
+			else
+			{
+				if (pipefd[0] > 0)
+					close(pipefd[0]);
+			}
 			cmd_node = cmd_node->next;
 		}
 	}
+	i = 0;
+	while (i < child_count)
+	{
+		waitpid(child_pids[i], &status, 0);
+		i++;
+	}
 }
-
