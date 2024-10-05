@@ -10,12 +10,12 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
 	t_data	*data;
-	//t_env	*env_list;
-	//int		i = 0;
 
+	// t_env	*env_list;
+	// int		i = 0;
 	if (argc != 1 || argv == NULL)
 		exit(EXIT_FAILURE);
-	//while (envp[i] != NULL)
+	// while (envp[i] != NULL)
 	//{
 	//	printf("%d: %s\n", i, envp[i]);
 	//	i++;
@@ -32,18 +32,31 @@ int	main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	init_shell(); // Call it here
-	while (1)
+	if (DEBUG)
 	{
-		input = readline("minishell> ");
-		// input = "cat main.c";
-		if (!input)
-			break ;
+		input = getenv("DEBUG_INPUT");
+		if (input == NULL)
+		{
+			input = "echo << test";
+		}
+		printf("Debug mode with input: %s\n", input);
 		add_history(input);
 		parse_command(input, data);
-		free(input);
 	}
-	free_env_list(&(data->env_list));
-	free(data);
+	else
+	{
+		while (1)
+		{
+			input = readline("minishell> ");
+			if (!input)
+				break ;
+			add_history(input);
+			parse_command(input, data);
+			free(input);
+		}
+		free_env_list(&(data->env_list));
+		free(data);
+	}
 	// free_env_list(&data);
 	return (0);
 }

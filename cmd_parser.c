@@ -326,7 +326,6 @@ void	parse_command(char *input, t_data *data)
 					saved_stdin = dup(STDIN_FILENO);
 					saved_stdout = dup(STDOUT_FILENO);
 					// Apply redirection for built-ins
-					// Apply redirection for built-ins
 					if (mini_cmd->infile != STDIN_FILENO)
 					{
 						dup2(mini_cmd->infile, STDIN_FILENO);
