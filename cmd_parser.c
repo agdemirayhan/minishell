@@ -231,6 +231,27 @@ t_list	*fill_nodes(char **args)
 	return (cmds);
 }
 
+int	is_redirection(char *arg)
+{
+	// Check for redirection operators
+	if (!arg)
+		return (0);
+	// Single output redirection '>'
+	if (arg[0] == '>' && arg[1] == '\0')
+		return (1);
+	// Double output redirection '>>'
+	if (arg[0] == '>' && arg[1] == '>' && arg[2] == '\0')
+		return (1);
+	// Single input redirection '<'
+	if (arg[0] == '<' && arg[1] == '\0')
+		return (1);
+	// Double input redirection '<<' (heredoc)
+	if (arg[0] == '<' && arg[1] == '<' && arg[2] == '\0')
+		return (1);
+	// If none of the above match, it's not a redirection operator
+	return (0);
+}
+
 void	parse_command(char *input, t_data *data)
 {
 	t_prompt	test;
@@ -241,28 +262,51 @@ void	parse_command(char *input, t_data *data)
 	t_list		*cmd_node;
 	t_mini		*mini_cmd;
 	char		*trimmed_arg;
+	int			saved_stdin;
+	int			saved_stdout;
+	pid_t		pid;
+	int			status;
 
 	new_str = token_spacer(input);
 	if (!new_str)
-		return;
+		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
 	free(expanded_str);
-	if (!args || args[0] == NULL) {
+	if (!args || args[0] == NULL)
+	{
 		free(args);
-		return;
+		return ;
 	}
 	i = 0;
 	while (args[i])
 	{
-		printf("args:%s\n",args[i]);
+		printf("args:%s\n", args[i]);
 		trimmed_arg = ft_strtrim_all(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
 	test.cmds = fill_nodes(args);
+	cmd_node = test.cmds;
+	while (cmd_node)
+	{
+		mini_cmd = (t_mini *)cmd_node->content;
+		i = 0;
+		// Process each argument and handle redirection
+		while (args[i])
+		{
+			if (is_redirection(args[i]))
+			{
+				get_redir(&mini_cmd, args, &i);
+				// Call your redirection function
+			}
+			i++;
+		}
+		cmd_node = cmd_node->next;
+	}
 	print_cmds(test.cmds);
+	// Execute commands, with or without pipes
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
@@ -275,15 +319,50 @@ void	parse_command(char *input, t_data *data)
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
+				// Check if it's a built-in command
 				if (is_builtin(mini_cmd->full_cmd[0]))
 				{
+					// Save original file descriptors for stdin and stdout
+					saved_stdin = dup(STDIN_FILENO);
+					saved_stdout = dup(STDOUT_FILENO);
+					// Apply redirection for built-ins
+					// Apply redirection for built-ins
+					if (mini_cmd->infile != STDIN_FILENO)
+					{
+						dup2(mini_cmd->infile, STDIN_FILENO);
+						close(mini_cmd->infile);
+					}
+					if (mini_cmd->outfile != STDOUT_FILENO)
+					{
+						dup2(mini_cmd->outfile, STDOUT_FILENO);
+						close(mini_cmd->outfile);
+					}
+					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
+					// Restore standard input/output after the built-in execution
+					dup2(saved_stdin, STDIN_FILENO);
+					dup2(saved_stdout, STDOUT_FILENO);
+					// Close saved descriptors
+					close(saved_stdin);
+					close(saved_stdout);
 				}
 				else
 				{
-					pid_t pid = fork();
+					// For non-built-in commands (external commands)
+					pid = fork();
 					if (pid == 0)
 					{
+						// Apply redirection before executing the command
+						if (mini_cmd->infile != STDIN_FILENO)
+						{
+							dup2(mini_cmd->infile, STDIN_FILENO);
+							close(mini_cmd->infile);
+						}
+						if (mini_cmd->outfile != STDOUT_FILENO)
+						{
+							dup2(mini_cmd->outfile, STDOUT_FILENO);
+							close(mini_cmd->outfile);
+						}
 						execute_command(mini_cmd->full_cmd);
 						exit(EXIT_FAILURE);
 					}
@@ -293,7 +372,6 @@ void	parse_command(char *input, t_data *data)
 					}
 					else
 					{
-						int status;
 						waitpid(pid, &status, 0);
 					}
 				}
@@ -302,15 +380,15 @@ void	parse_command(char *input, t_data *data)
 		}
 	}
 	i = 0;
-	while (args[i]) {
+	while (args[i])
+	{
 		free(args[i]);
 		i++;
 	}
 	free(args);
 }
 
-
-//void	parse_command(char *input, t_data *data)
+// void	parse_command(char *input, t_data *data)
 //{
 //	t_prompt	test;
 //	char		*new_str;

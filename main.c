@@ -35,7 +35,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = readline("minishell> ");
-		// input = "echo << EOF";
+		// input = "cat main.c";
 		if (!input)
 			break ;
 		add_history(input);
@@ -44,6 +44,6 @@ int	main(int argc, char **argv, char **envp)
 	}
 	free_env_list(&(data->env_list));
 	free(data);
-	//free_env_list(&data);
+	// free_env_list(&data);
 	return (0);
 }
