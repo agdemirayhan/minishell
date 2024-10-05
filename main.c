@@ -2,8 +2,9 @@
 
 void	init_shell(void)
 {
-	signal(SIGINT, handle_signals);
-	signal(SIGQUIT, SIG_IGN); // Ignore quit signal
+	// Set up signal handling for SIGINT (Ctrl+C) and SIGQUIT (Ctrl+\)
+	signal(SIGINT, handle_signals); // Catch Ctrl+C
+	signal(SIGQUIT, SIG_IGN);       // Ignore Ctrl+\ (quit signal)
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -11,27 +12,19 @@ int	main(int argc, char **argv, char **envp)
 	char	*input;
 	t_data	*data;
 
-	// t_env	*env_list;
-	// int		i = 0;
 	if (argc != 1 || argv == NULL)
 		exit(EXIT_FAILURE);
-	// while (envp[i] != NULL)
-	//{
-	//	printf("%d: %s\n", i, envp[i]);
-	//	i++;
-	//}
 	data = malloc(sizeof(t_data));
 	if (!data)
-	{
 		exit(EXIT_FAILURE);
-	}
 	data->env_list = init_env_list(envp);
 	if (!data->env_list)
 	{
 		free(data);
 		exit(EXIT_FAILURE);
 	}
-	init_shell(); // Call it here
+	// Initialize shell and set up signal handling
+	init_shell();
 	if (DEBUG)
 	{
 		input = getenv("DEBUG_INPUT");
@@ -57,6 +50,5 @@ int	main(int argc, char **argv, char **envp)
 		free_env_list(&(data->env_list));
 		free(data);
 	}
-	// free_env_list(&data);
 	return (0);
 }

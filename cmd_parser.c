@@ -282,6 +282,11 @@ void	parse_command(char *input, t_data *data)
 	i = 0;
 	while (args[i])
 	{
+		if (is_redirection(args[i]))
+		{
+			get_redir(&mini_cmd, args, &i);
+			// Call your redirection function
+		}
 		printf("args:%s\n", args[i]);
 		trimmed_arg = ft_strtrim_all(args[i]);
 		args[i] = trimmed_arg;
