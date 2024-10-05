@@ -256,12 +256,13 @@ void	parse_command(char *input, t_data *data)
 	i = 0;
 	while (args[i])
 	{
+		printf("args:%s\n",args[i]);
 		trimmed_arg = ft_strtrim_all(args[i]);
-		free(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
 	test.cmds = fill_nodes(args);
+	print_cmds(test.cmds);
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
