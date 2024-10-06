@@ -192,16 +192,15 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	return (new_matrix);
 }
 
-int ft_strcmp(const char *s1, const char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (s1[i] && s2[i] && s1[i] == s2[i])
-        i++;
-    return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
-
 
 int	is_redirection(char *arg)
 {
@@ -275,6 +274,8 @@ void	parse_command(char *input, t_data *data)
 	char		*trimmed_arg;
 	pid_t		pid;
 	int			status;
+	int			saved_stdin;
+	int			saved_stdout;
 
 	new_str = token_spacer(input);
 	if (!new_str)
@@ -310,15 +311,49 @@ void	parse_command(char *input, t_data *data)
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
+				// Check if it's a built-in command
 				if (is_builtin(mini_cmd->full_cmd[0]))
 				{
+					// Save original file descriptors for stdin and stdout
+					saved_stdin = dup(STDIN_FILENO);
+					saved_stdout = dup(STDOUT_FILENO);
+					// Apply redirection for built-ins
+					if (mini_cmd->infile != STDIN_FILENO)
+					{
+						dup2(mini_cmd->infile, STDIN_FILENO);
+						close(mini_cmd->infile);
+					}
+					if (mini_cmd->outfile != STDOUT_FILENO)
+					{
+						dup2(mini_cmd->outfile, STDOUT_FILENO);
+						close(mini_cmd->outfile);
+					}
+					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
+					// Restore standard input/output after the built-in execution
+					dup2(saved_stdin, STDIN_FILENO);
+					dup2(saved_stdout, STDOUT_FILENO);
+					// Close saved descriptors
+					close(saved_stdin);
+					close(saved_stdout);
 				}
 				else
 				{
+					// For non-built-in commands (external commands)
 					pid = fork();
 					if (pid == 0)
 					{
+						// Apply redirection before executing the command
+						if (mini_cmd->infile != STDIN_FILENO)
+						{
+							dup2(mini_cmd->infile, STDIN_FILENO);
+							close(mini_cmd->infile);
+						}
+						if (mini_cmd->outfile != STDOUT_FILENO)
+						{
+							dup2(mini_cmd->outfile, STDOUT_FILENO);
+							close(mini_cmd->outfile);
+						}
 						execute_command(mini_cmd->full_cmd);
 						exit(EXIT_FAILURE);
 					}
