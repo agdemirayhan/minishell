@@ -88,7 +88,8 @@ void	execute_builtin(char **args, t_data *data)
 	char	*dir;
 	int		newline;
 	char	*str;
-
+	char	*new_value;
+	char	*var_value;
 
 	// what happens when someone tries it with a directory which requires more than 1024 chars????? fails. using malloc for this?? eww. <--this is actually ok
 	// also it needs to handle cd ~ so it can go home ewwwwww.
@@ -111,7 +112,18 @@ void	execute_builtin(char **args, t_data *data)
 	// this probably needs fixing too
 	else if (ft_strncmp(args[0], "exit", ft_strlen("exit")) == 0)
 	{
-		exit(0);
+		i = data->mini_count;
+		if (i == 1)
+			exit(0);
+		else
+		{
+			i--;
+			data->mini_count = i;
+			new_value = ft_itoa(i);
+			update_env(&(data->env_list), "SHLVL", new_value);
+			free(new_value);
+			return ;
+		}
 	}
 	else if (ft_strncmp(args[0], "pwd", ft_strlen("pwd")) == 0)
 	{

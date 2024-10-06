@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-void	init_shell(void)
+void	init_shell(t_data *data)
 {
-	// Set up signal handling for SIGINT (Ctrl+C) and SIGQUIT (Ctrl+\)
-	signal(SIGINT, handle_signals); // Catch Ctrl+C
-	signal(SIGQUIT, SIG_IGN);       // Ignore Ctrl+\ (quit signal)
+	signal(SIGINT, handle_signals);
+	signal(SIGQUIT, SIG_IGN); // Ignore quit signal
+	data->mini_count = 1;
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -23,8 +23,9 @@ int	main(int argc, char **argv, char **envp)
 		free(data);
 		exit(EXIT_FAILURE);
 	}
-	// Initialize shell and set up signal handling
-	init_shell();
+	//init_shlvl(&shlvl, data);
+	//check_shlvl(data, 1);
+	init_shell(data); // Call it here
 	if (DEBUG)
 	{
 		input = getenv("DEBUG_INPUT");
