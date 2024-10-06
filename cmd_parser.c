@@ -192,6 +192,30 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	return (new_matrix);
 }
 
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
+int	is_redirection(char *arg)
+{
+	if (!arg)
+		return (0);                  // Null argument is not a redirection
+	if (ft_strcmp(arg, ">") == 0 ||  // Output redirection
+		ft_strcmp(arg, ">>") == 0 || // Append output redirection
+		ft_strcmp(arg, "<") == 0 ||  // Input redirection
+		ft_strcmp(arg, "<<") == 0)   // Here-document redirection
+	{
+		return (1); // It is a redirection operator
+	}
+	return (0); // Not a redirection operator
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -222,7 +246,14 @@ t_list	*fill_nodes(char **args)
 			last_cmd = ft_lsttraverse(cmds);
 		}
 		first_mini = (t_mini *)last_cmd->content;
-		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[i]);
+		// Check if the current argument is a redirection operator
+		if (!is_redirection(args[i])) // Skip if it's a redirection
+		{
+			// Only add to full_cmd if it's not a redirection
+			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
+					args[i]);
+		}
+		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
@@ -288,25 +319,8 @@ void	parse_command(char *input, t_data *data)
 		i++;
 	}
 	test.cmds = fill_nodes(args);
-	cmd_node = test.cmds;
-	while (cmd_node)
-	{
-		mini_cmd = (t_mini *)cmd_node->content;
-		i = 0;
-		// Process each argument and handle redirection
-		while (args[i])
-		{
-			if (is_redirection(args[i]))
-			{
-				get_redir(&mini_cmd, args, &i);
-				// Call your redirection function
-			}
-			i++;
-		}
-		cmd_node = cmd_node->next;
-	}
 	print_cmds(test.cmds);
-	// Execute commands, with or without pipes
+
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
