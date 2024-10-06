@@ -126,8 +126,8 @@ void				execute_builtin(char **args, t_data *data);
 int					heredoc_handler(char *str[2], char *del);
 void				execute_pipes(t_list *cmds, t_data *data);
 
-	/* Trim Functions */
-	char *ft_strtrim_all(const char *s1);
+/* Trim Functions */
+char				*ft_strtrim_all(const char *s1);
 
 /* Redirection Functions */
 int					get_fd(int oldfd, char *path, int flags[2]);
@@ -136,5 +136,9 @@ void				get_redir(t_mini **node, char **args, int *i);
 
 /* Print Functions */
 void				print_cmds(t_list *cmds);
+
+# ifndef DEBUG
+#  define DEBUG 0
+# endif
 
 #endif

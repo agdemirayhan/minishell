@@ -192,6 +192,31 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	return (new_matrix);
 }
 
+int ft_strcmp(const char *s1, const char *s2)
+{
+    int i;
+
+    i = 0;
+    while (s1[i] && s2[i] && s1[i] == s2[i])
+        i++;
+    return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
+
+int	is_redirection(char *arg)
+{
+	if (!arg)
+		return (0);                  // Null argument is not a redirection
+	if (ft_strcmp(arg, ">") == 0 ||  // Output redirection
+		ft_strcmp(arg, ">>") == 0 || // Append output redirection
+		ft_strcmp(arg, "<") == 0 ||  // Input redirection
+		ft_strcmp(arg, "<<") == 0)   // Here-document redirection
+	{
+		return (1); // It is a redirection operator
+	}
+	return (0); // Not a redirection operator
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -222,7 +247,14 @@ t_list	*fill_nodes(char **args)
 			last_cmd = ft_lsttraverse(cmds);
 		}
 		first_mini = (t_mini *)last_cmd->content;
-		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[i]);
+		// Check if the current argument is a redirection operator
+		if (!is_redirection(args[i])) // Skip if it's a redirection
+		{
+			// Only add to full_cmd if it's not a redirection
+			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
+					args[i]);
+		}
+		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
@@ -241,17 +273,20 @@ void	parse_command(char *input, t_data *data)
 	t_list		*cmd_node;
 	t_mini		*mini_cmd;
 	char		*trimmed_arg;
+	pid_t		pid;
+	int			status;
 
 	new_str = token_spacer(input);
 	if (!new_str)
-		return;
+		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
 	free(expanded_str);
-	if (!args || args[0] == NULL) {
+	if (!args || args[0] == NULL)
+	{
 		free(args);
-		return;
+		return ;
 	}
 	i = 0;
 	while (args[i])
@@ -262,6 +297,7 @@ void	parse_command(char *input, t_data *data)
 		i++;
 	}
 	test.cmds = fill_nodes(args);
+	print_cmds(test.cmds);
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
@@ -280,7 +316,7 @@ void	parse_command(char *input, t_data *data)
 				}
 				else
 				{
-					pid_t pid = fork();
+					pid = fork();
 					if (pid == 0)
 					{
 						execute_command(mini_cmd->full_cmd);
@@ -292,7 +328,6 @@ void	parse_command(char *input, t_data *data)
 					}
 					else
 					{
-						int status;
 						waitpid(pid, &status, 0);
 					}
 				}
@@ -301,15 +336,15 @@ void	parse_command(char *input, t_data *data)
 		}
 	}
 	i = 0;
-	while (args[i]) {
+	while (args[i])
+	{
 		free(args[i]);
 		i++;
 	}
 	free(args);
 }
 
-
-//void	parse_command(char *input, t_data *data)
+// void	parse_command(char *input, t_data *data)
 //{
 //	t_prompt	test;
 //	char		*new_str;
