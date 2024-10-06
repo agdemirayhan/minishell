@@ -192,6 +192,20 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	return (new_matrix);
 }
 
+int	is_redirection(char *arg)
+{
+	if (!arg)
+		return (0);                  // Null argument is not a redirection
+	if (ft_strcmp(arg, ">") == 0 ||  // Output redirection
+		ft_strcmp(arg, ">>") == 0 || // Append output redirection
+		ft_strcmp(arg, "<") == 0 ||  // Input redirection
+		ft_strcmp(arg, "<<") == 0)   // Here-document redirection
+	{
+		return (1); // It is a redirection operator
+	}
+	return (0); // Not a redirection operator
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -222,96 +236,20 @@ t_list	*fill_nodes(char **args)
 			last_cmd = ft_lsttraverse(cmds);
 		}
 		first_mini = (t_mini *)last_cmd->content;
-		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[i]);
+		// Check if the current argument is a redirection operator
+		if (!is_redirection(args[i])) // Skip if it's a redirection
+		{
+			// Only add to full_cmd if it's not a redirection
+			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
+					args[i]);
+		}
+		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
 			break ;
 	}
 	return (cmds);
-}
-
-int	is_redirection(char *arg)
-{
-	// Check for redirection operators
-	if (!arg)
-		return (0);
-	// Single output redirection '>'
-	if (arg[0] == '>' && arg[1] == '\0')
-		return (1);
-	// Double output redirection '>>'
-	if (arg[0] == '>' && arg[1] == '>' && arg[2] == '\0')
-		return (1);
-	// Single input redirection '<'
-	if (arg[0] == '<' && arg[1] == '\0')
-		return (1);
-	// Double input redirection '<<' (heredoc)
-	if (arg[0] == '<' && arg[1] == '<' && arg[2] == '\0')
-		return (1);
-	// If none of the above match, it's not a redirection operator
-	return (0);
-}
-
-t_list	*delete_node_by_index(t_list *head, int index)
-{
-	t_list	*current;
-	t_list	*prev;
-	t_list	*temp;
-	int		i;
-
-	if (index == 0) // Handle the case where the head node is to be deleted
-	{
-		temp = head->next;
-		free(head->content); // Free the content if necessary
-		free(head);
-		return (temp); // Return the new head of the list
-	}
-	current = head;
-	prev = NULL;
-	i = 0;
-	// Traverse the list to find the node at the given index
-	while (current != NULL && i < index)
-	{
-		prev = current;
-		current = current->next;
-		i++;
-	}
-	if (current != NULL) // If the node at the index exists
-	{
-		prev->next = current->next; // Remove the node from the list
-		free(current->content);     // Free the content if necessary
-		free(current);              // Free the node itself
-	}
-	return (head); // Return the (possibly new) head of the list
-}
-
-void	process_and_delete_redirections(t_list **cmd_list, char **args,
-		t_mini *mini_cmd)
-{
-	t_list	*cmd_node;
-	int		i;
-	int		current_index;
-	t_list	*head;
-
-	head = *cmd_list;
-	cmd_node = head;
-	current_index = 0;          // Track the current index of the node
-	while (args[current_index]) // Traverse the args array
-	{
-		if (is_redirection(args[current_index]))
-		// Check if the argument is a redirection
-		{
-			get_redir(&mini_cmd, args, &current_index); // Handle redirection
-			// Delete the node by its index
-			head = delete_node_by_index(head, current_index);
-		}
-		else
-		{
-			current_index++; // Only increment if no deletion was done
-		}
-	}
-	// Update the head of the list in case the head node was deleted
-	*cmd_list = head;
 }
 
 void	parse_command(char *input, t_data *data)
@@ -358,18 +296,8 @@ void	parse_command(char *input, t_data *data)
 	}
 	// Step 3: Fill command nodes based on the arguments
 	test.cmds = fill_nodes(args);
-	cmd_node = test.cmds;
-	// Step 4: Process and delete redirections
-	while (cmd_node)
-	{
-		mini_cmd = (t_mini *)cmd_node->content;
-		// Call process_and_delete_redirections to process redirections and delete nodes
-		process_and_delete_redirections(&test.cmds, args, mini_cmd);
-		cmd_node = cmd_node->next;
-	}
-	// Step 5: Print the commands for debugging
 	print_cmds(test.cmds);
-	// Step 6: Execute commands, with or without pipes
+
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);

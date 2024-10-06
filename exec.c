@@ -133,7 +133,6 @@ void	execute_command(char **args)
 		// Child process
 		if (execve(e_path, args, NULL) == -1)
 		{
-			// It breaks with pwd command but this is the way
 			perror("minishell");
 		}
 		exit(EXIT_FAILURE);

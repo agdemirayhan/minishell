@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msoklova <msoklova@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/12 15:17:10 by msoklova          #+#    #+#             */
-/*   Updated: 2024/03/19 11:27:52 by msoklova         ###   ########.fr       */
+/*   Updated: 2024/10/06 15:29:19 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
