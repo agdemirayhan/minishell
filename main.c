@@ -37,7 +37,7 @@ int	main(int argc, char **argv, char **envp)
 		input = getenv("DEBUG_INPUT");
 		if (input == NULL)
 		{
-			input = "echo << test";
+			input = "cat << test | grep te";
 		}
 		printf("Debug mode with input: %s\n", input);
 		add_history(input);
@@ -47,6 +47,8 @@ int	main(int argc, char **argv, char **envp)
 	{
 		while (1)
 		{
+			signal(SIGINT, handle_signals);
+			signal(SIGQUIT, SIG_IGN);
 			input = readline("minishell> ");
 			if (!input)
 				break ;

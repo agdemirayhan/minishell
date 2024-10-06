@@ -1,23 +1,16 @@
 #include "minishell.h"
 
-//void	set_sig(int sig)
-//{
-//	(void)sig;
-//	g_sig = sig;
-//}
+int		g_status;
+
 void	handle_signals(int signo)
 {
 	if (signo == SIGINT)
 	{
+		g_status = 130;
 		printf("\n");
 		rl_on_new_line();
-		rl_replace_line("", 0);
+		rl_replace_line("\n", 0);
 		rl_redisplay();
 	}
+	exit(g_status);
 }
-//ctrl c needs to be implemented
-//void	set_signal_fn(void)
-//{
-//	rl_catch_signals = 0;
-//	signal(SIGQUIT, SIG_IGN);
-//}
