@@ -73,6 +73,7 @@ typedef struct s_data
 {
 	int				fd_copy;
 	t_env			*env_list;
+	int				mini_count;
 }					t_data;
 
 /* token functions */
@@ -114,7 +115,8 @@ void				*find_env_ref(t_env *env_list, char *name);
 char				*expand_env_vars(char *input, t_data *data);
 
 /* Function prototypes */
-void				init_shell(void);
+//void				init_shell(void);
+void	init_shell(t_data *data);
 void				handle_signals(int signo);
 void				parse_command(char *input, t_data *data);
 void				free_strarray(char **array);
@@ -125,7 +127,8 @@ int					is_builtin(char *command);
 void				execute_builtin(char **args, t_data *data);
 int					heredoc_handler(char *str[2], char *del);
 void				execute_pipes(t_list *cmds, t_data *data);
-void				check_shlvl(t_data *data, t_mini *mini_cmd);
+void				update_shlvl(t_data *data, t_mini *mini_cmd);
+void check_and_update_shlvl(t_data *data, t_mini *mini_cmd);
 
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);

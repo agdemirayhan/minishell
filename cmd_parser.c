@@ -262,26 +262,26 @@ t_list	*fill_nodes(char **args)
 	return (cmds);
 }
 
-int	is_redirection(char *arg)
-{
-	// Check for redirection operators
-	if (!arg)
-		return (0);
-	// Single output redirection '>'
-	if (arg[0] == '>' && arg[1] == '\0')
-		return (1);
-	// Double output redirection '>>'
-	if (arg[0] == '>' && arg[1] == '>' && arg[2] == '\0')
-		return (1);
-	// Single input redirection '<'
-	if (arg[0] == '<' && arg[1] == '\0')
-		return (1);
-	// Double input redirection '<<' (heredoc)
-	if (arg[0] == '<' && arg[1] == '<' && arg[2] == '\0')
-		return (1);
-	// If none of the above match, it's not a redirection operator
-	return (0);
-}
+//int	is_redirection(char *arg)
+//{
+//	// Check for redirection operators
+//	if (!arg)
+//		return (0);
+//	// Single output redirection '>'
+//	if (arg[0] == '>' && arg[1] == '\0')
+//		return (1);
+//	// Double output redirection '>>'
+//	if (arg[0] == '>' && arg[1] == '>' && arg[2] == '\0')
+//		return (1);
+//	// Single input redirection '<'
+//	if (arg[0] == '<' && arg[1] == '\0')
+//		return (1);
+//	// Double input redirection '<<' (heredoc)
+//	if (arg[0] == '<' && arg[1] == '<' && arg[2] == '\0')
+//		return (1);
+//	// If none of the above match, it's not a redirection operator
+//	return (0);
+//}
 
 void	parse_command(char *input, t_data *data)
 {
@@ -388,6 +388,7 @@ void	parse_command(char *input, t_data *data)
 						waitpid(pid, &status, 0);
 					}
 				}
+				check_and_update_shlvl(data, mini_cmd); // it's here the shlvl checking!!!!!!
 			}
 			cmd_node = cmd_node->next;
 		}
