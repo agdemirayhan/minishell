@@ -1,14 +1,13 @@
 #include "minishell.h"
-
 #include <sys/stat.h>
 
-void free_strarray(char **array)
+void	free_strarray(char **array)
 {
 	int	i;
 
 	i = 0;
 	if (!array)
-		return;
+		return ;
 	while (array[i])
 	{
 		free(array[i]);
@@ -17,7 +16,7 @@ void free_strarray(char **array)
 	free(array);
 }
 
-//char *find_executable(char *command)
+// char *find_executable(char *command)
 //{
 //	char	*path_env = getenv("PATH");
 //	char	**paths;
@@ -26,12 +25,12 @@ void free_strarray(char **array)
 //	int i = 0;
 
 //	if (!path_env)
-//		return NULL;
+//		return (NULL);
 
 //	// Split the PATH variable into directories
 //	paths = ft_split(path_env, ':');
 //	if (!paths)
-//		return NULL;
+//		return (NULL);
 
 //	// Loop through each directory in PATH
 //	while (paths[i])
@@ -42,16 +41,16 @@ void free_strarray(char **array)
 //		if (stat(full_path, &buffer) == 0 && (buffer.st_mode & S_IXUSR))
 //		{
 //			free_strarray(paths); // Free the split array
-//			return full_path;
+//			return (full_path);
 //		}
 //		free(full_path); // Free full_path for this iteration
 //		i++;
 //	}
 //	free_strarray(paths); // Free the split array
-//	return NULL; // Return NULL if command not found
+//	return (NULL); // Return NULL if command not found
 //}
 
-char *join_path(const char *dir, const char *comm)
+char	*join_path(const char *dir, const char *comm)
 {
 	char	*path;
 	size_t	len;
@@ -59,7 +58,7 @@ char *join_path(const char *dir, const char *comm)
 	len = ft_strlen(dir) + ft_strlen(comm) + 2; // +1 for '/' and +1 for '\0'
 	path = malloc(len);
 	if (!path)
-		return NULL;
+		return (NULL);
 	ft_strlcpy(path, dir, len);
 	ft_strlcat(path, "/", len);
 	ft_strlcat(path, comm, len);
@@ -81,10 +80,10 @@ char	*find_slash(char *comm)
 // Function to search for the command in the PATH directories using access()
 char	*find_exec(char *comm)
 {
-	char *path_env;
-	char **dirs;
-	char *path;
-	int i;
+	char	*path_env;
+	char	**dirs;
+	char	*path;
+	int		i;
 
 	path = find_slash(comm);
 	if (path)
@@ -108,26 +107,26 @@ char	*find_exec(char *comm)
 		i++;
 	}
 	free_strarray(dirs);
-	return NULL;
+	return (NULL);
 }
 
-void execute_command(char **args)
+void	execute_command(char **args)
 {
 	pid_t	pid;
 	int		status;
 	char	*e_path;
 
+
 	if (args[0] == NULL)
 	{
-		return;
+		return ;
 	}
 	e_path = find_exec(args[0]);
 	if (!e_path)
 	{
 		printf("minishell: command not found: %s\n", args[0]);
-		return;
+		return ;
 	}
-
 	pid = fork();
 	if (pid == 0)
 	{
@@ -152,7 +151,7 @@ void execute_command(char **args)
 		{
 			waitpid(pid, &status, WUNTRACED);
 		}
-		//do
+		// do
 		//{
 		//	waitpid(pid, &status, WUNTRACED);
 		//} while (!WIFEXITED(status) && !WIFSIGNALED(status));
@@ -160,7 +159,7 @@ void execute_command(char **args)
 	free(e_path);
 }
 
-//void	execute_command(char **args)
+// void	execute_command(char **args)
 //{
 //	pid_t	pid;
 //	int		status;

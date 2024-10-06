@@ -262,6 +262,27 @@ t_list	*fill_nodes(char **args)
 	return (cmds);
 }
 
+int	is_redirection(char *arg)
+{
+	// Check for redirection operators
+	if (!arg)
+		return (0);
+	// Single output redirection '>'
+	if (arg[0] == '>' && arg[1] == '\0')
+		return (1);
+	// Double output redirection '>>'
+	if (arg[0] == '>' && arg[1] == '>' && arg[2] == '\0')
+		return (1);
+	// Single input redirection '<'
+	if (arg[0] == '<' && arg[1] == '\0')
+		return (1);
+	// Double input redirection '<<' (heredoc)
+	if (arg[0] == '<' && arg[1] == '<' && arg[2] == '\0')
+		return (1);
+	// If none of the above match, it's not a redirection operator
+	return (0);
+}
+
 void	parse_command(char *input, t_data *data)
 {
 	t_prompt	test;
@@ -272,10 +293,10 @@ void	parse_command(char *input, t_data *data)
 	t_list		*cmd_node;
 	t_mini		*mini_cmd;
 	char		*trimmed_arg;
-	pid_t		pid;
-	int			status;
 	int			saved_stdin;
 	int			saved_stdout;
+	pid_t		pid;
+	int			status;
 
 	new_str = token_spacer(input);
 	if (!new_str)
@@ -292,13 +313,14 @@ void	parse_command(char *input, t_data *data)
 	i = 0;
 	while (args[i])
 	{
+		printf("args:%s\n", args[i]);
 		trimmed_arg = ft_strtrim_all(args[i]);
-		free(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
 	test.cmds = fill_nodes(args);
 	print_cmds(test.cmds);
+
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);

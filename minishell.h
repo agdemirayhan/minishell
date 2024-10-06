@@ -125,6 +125,7 @@ int					is_builtin(char *command);
 void				execute_builtin(char **args, t_data *data);
 int					heredoc_handler(char *str[2], char *del);
 void				execute_pipes(t_list *cmds, t_data *data);
+void				check_shlvl(t_data *data, t_mini *mini_cmd);
 
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);

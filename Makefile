@@ -16,7 +16,7 @@ endif
 
 SRCS =	main.c cmd_parser.c builtin_commands.c exec.c signal_handling.c e_env.c e_export.c \
 		e_unset.c e_pwd.c exp_env_var.c remove_quotes.c print_cmds.c redir.c heredoc_handler.c \
-		pipes.c
+		pipes.c shlvl.c
 OBJS = $(SRCS:.c=.o)
 
 LIBFT_DIR = libft
@@ -44,6 +44,5 @@ re: fclean all
 debug: $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
 	@echo "\033[0;31mDebug mode activated. DEBUG=$(DEBUG_FLAG)\033[0m"
-
 
 .PHONY: all clean fclean re
