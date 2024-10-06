@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+extern int	g_status;
+
 int	get_fd(int oldfd, char *path, int flags[2])
 {
 	int	fd;
@@ -53,7 +55,7 @@ void	infile1(t_mini **node, char **args, int *i)
 		(*node)->infile = get_fd((*node)->infile, args[*i], flags);
 }
 
-void 	infile2(t_mini **node, char **args, int *i)
+void	infile2(t_mini **node, char **args, int *i)
 {
 	char	*del;
 	char	*str[2];
@@ -61,14 +63,21 @@ void 	infile2(t_mini **node, char **args, int *i)
 	str[0] = NULL;
 	str[1] = NULL;
 	del = NULL;
-		printf("YES1\n");
-
+	printf("YES1\n");
 	(*i)++;
 	if (args[(*i)])
 	{
 		del = args[*i];
 		(*node)->infile = heredoc_handler(str, del);
-	
+	}
+	if (!args[*i] || (*node)->infile == -1)
+	{
+		*i = -1;
+		if ((*node)->infile != -1)
+		{
+			ft_putendl_fd("test", 2);
+			g_status = 2;
+		}
 	}
 }
 
@@ -91,7 +100,7 @@ void	get_redir(t_mini **node, char **args, int *i)
 		// Double redirection '<<' (heredoc)
 		else if (args[*i][0] == '<' && args[*i][1] && args[*i][1] == '<')
 		{
-			infile2(node,args,i);
+			infile2(node, args, i);
 			printf("Infile2\n");
 		}
 		// Single redirection '<' (input file)

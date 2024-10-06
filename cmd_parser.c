@@ -328,6 +328,10 @@ void	parse_command(char *input, t_data *data)
 	int			saved_stdout;
 	pid_t		pid;
 	int			status;
+	int			saved_stdin;
+	int			saved_stdout;
+	pid_t		pid;
+	int			status;
 
 	// Step 1: Tokenize input and handle environment variables
 	new_str = token_spacer(input);
@@ -340,6 +344,7 @@ void	parse_command(char *input, t_data *data)
 	if (!args || args[0] == NULL)
 	{
 		free(args);
+		return ;
 		return ;
 	}
 	// Step 2: Trim and prepare arguments
@@ -395,7 +400,28 @@ void	parse_command(char *input, t_data *data)
 						close(mini_cmd->outfile);
 					}
 					// Execute the built-in command
+					// Save original file descriptors for stdin and stdout
+					saved_stdin = dup(STDIN_FILENO);
+					saved_stdout = dup(STDOUT_FILENO);
+					// Apply redirection for built-ins
+					if (mini_cmd->infile != STDIN_FILENO)
+					{
+						dup2(mini_cmd->infile, STDIN_FILENO);
+						close(mini_cmd->infile);
+					}
+					if (mini_cmd->outfile != STDOUT_FILENO)
+					{
+						dup2(mini_cmd->outfile, STDOUT_FILENO);
+						close(mini_cmd->outfile);
+					}
+					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
+					// Restore standard input/output after the built-in execution
+					dup2(saved_stdin, STDIN_FILENO);
+					dup2(saved_stdout, STDOUT_FILENO);
+					// Close saved descriptors
+					close(saved_stdin);
+					close(saved_stdout);
 					// Restore standard input/output after the built-in execution
 					dup2(saved_stdin, STDIN_FILENO);
 					dup2(saved_stdout, STDOUT_FILENO);
@@ -409,6 +435,17 @@ void	parse_command(char *input, t_data *data)
 					pid = fork();
 					if (pid == 0)
 					{
+						// Apply redirection before executing the command
+						if (mini_cmd->infile != STDIN_FILENO)
+						{
+							dup2(mini_cmd->infile, STDIN_FILENO);
+							close(mini_cmd->infile);
+						}
+						if (mini_cmd->outfile != STDOUT_FILENO)
+						{
+							dup2(mini_cmd->outfile, STDOUT_FILENO);
+							close(mini_cmd->outfile);
+						}
 						// Apply redirection before executing the command
 						if (mini_cmd->infile != STDIN_FILENO)
 						{
@@ -438,6 +475,8 @@ void	parse_command(char *input, t_data *data)
 	}
 	// Step 9: Free arguments after use
 	i = 0;
+	while (args[i])
+	{
 	while (args[i])
 	{
 		free(args[i]);
