@@ -1,6 +1,16 @@
 #include "minishell.h"
 
-void	check_shlvl(t_data *data, t_mini *mini_cmd)
+
+void check_and_update_shlvl(t_data *data, t_mini *mini_cmd)
+{
+	if (mini_cmd && mini_cmd->full_cmd && ft_strncmp(mini_cmd->full_cmd[0], "./minishell", ft_strlen("./minishell") + 1) == 0)
+	 {
+		data->mini_count++;
+		update_shlvl(data, mini_cmd);
+	}
+}
+
+void	update_shlvl(t_data *data, t_mini *mini_cmd)
 {
 	char	*var_value;
 	int		i;
@@ -10,22 +20,16 @@ void	check_shlvl(t_data *data, t_mini *mini_cmd)
 	if (!var_value)
 		return ;
 	i = ft_atoi(var_value);
-	while (i > 1)
+	if (ft_strncmp(mini_cmd->full_cmd[0], "./minishell", ft_strlen("./minishell") + 1) == 0)
 	{
-		if (ft_strncmp(mini_cmd->full_cmd[0], "exit", ft_strlen("exit") + 1) == 0)
-		{
-			i--;
-			new_value = ft_itoa(i);
-			if (!new_value)
-				return ;
-			update_env(&(data->env_list), "SHLVL", new_value);
-			free(new_value);
-			break ;
-		}
-		else
-		{
-			break;
-		}
+		i++;
+		new_value = ft_itoa(i);
+		if (!new_value)
+			return ;
+		update_env(&(data->env_list), "SHLVL", new_value);
+		free(new_value);
 	}
 }
+
+
 

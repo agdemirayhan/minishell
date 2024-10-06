@@ -367,6 +367,7 @@ void	parse_command(char *input, t_data *data)
 						waitpid(pid, &status, 0);
 					}
 				}
+				check_and_update_shlvl(data, mini_cmd); // it's here the shlvl checking!!!!!!
 			}
 			cmd_node = cmd_node->next;
 		}
