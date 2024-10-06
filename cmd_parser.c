@@ -231,6 +231,89 @@ t_list	*fill_nodes(char **args)
 	return (cmds);
 }
 
+int	is_redirection(char *arg)
+{
+	// Check for redirection operators
+	if (!arg)
+		return (0);
+	// Single output redirection '>'
+	if (arg[0] == '>' && arg[1] == '\0')
+		return (1);
+	// Double output redirection '>>'
+	if (arg[0] == '>' && arg[1] == '>' && arg[2] == '\0')
+		return (1);
+	// Single input redirection '<'
+	if (arg[0] == '<' && arg[1] == '\0')
+		return (1);
+	// Double input redirection '<<' (heredoc)
+	if (arg[0] == '<' && arg[1] == '<' && arg[2] == '\0')
+		return (1);
+	// If none of the above match, it's not a redirection operator
+	return (0);
+}
+
+t_list	*delete_node_by_index(t_list *head, int index)
+{
+	t_list	*current;
+	t_list	*prev;
+	t_list	*temp;
+	int		i;
+
+	if (index == 0) // Handle the case where the head node is to be deleted
+	{
+		temp = head->next;
+		free(head->content); // Free the content if necessary
+		free(head);
+		return (temp); // Return the new head of the list
+	}
+	current = head;
+	prev = NULL;
+	i = 0;
+	// Traverse the list to find the node at the given index
+	while (current != NULL && i < index)
+	{
+		prev = current;
+		current = current->next;
+		i++;
+	}
+	if (current != NULL) // If the node at the index exists
+	{
+		prev->next = current->next; // Remove the node from the list
+		free(current->content);     // Free the content if necessary
+		free(current);              // Free the node itself
+	}
+	return (head); // Return the (possibly new) head of the list
+}
+
+void	process_and_delete_redirections(t_list **cmd_list, char **args,
+		t_mini *mini_cmd)
+{
+	t_list	*cmd_node;
+	int		i;
+	int		current_index;
+	t_list	*head;
+
+	head = *cmd_list;
+	cmd_node = head;
+	current_index = 0;          // Track the current index of the node
+	while (args[current_index]) // Traverse the args array
+	{
+		if (is_redirection(args[current_index]))
+		// Check if the argument is a redirection
+		{
+			get_redir(&mini_cmd, args, &current_index); // Handle redirection
+			// Delete the node by its index
+			head = delete_node_by_index(head, current_index);
+		}
+		else
+		{
+			current_index++; // Only increment if no deletion was done
+		}
+	}
+	// Update the head of the list in case the head node was deleted
+	*cmd_list = head;
+}
+
 void	parse_command(char *input, t_data *data)
 {
 	t_prompt	test;
@@ -241,28 +324,47 @@ void	parse_command(char *input, t_data *data)
 	t_list		*cmd_node;
 	t_mini		*mini_cmd;
 	char		*trimmed_arg;
+	int			saved_stdin;
+	int			saved_stdout;
+	pid_t		pid;
+	int			status;
 
+	// Step 1: Tokenize input and handle environment variables
 	new_str = token_spacer(input);
 	if (!new_str)
-		return;
+		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	args = split_with_quotes(expanded_str, " ");
 	free(expanded_str);
-	if (!args || args[0] == NULL) {
+	if (!args || args[0] == NULL)
+	{
 		free(args);
-		return;
+		return ;
 	}
+	// Step 2: Trim and prepare arguments
 	i = 0;
 	while (args[i])
 	{
-		printf("args:%s\n",args[i]);
+		printf("args:%s\n", args[i]);
 		trimmed_arg = ft_strtrim_all(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
+	// Step 3: Fill command nodes based on the arguments
 	test.cmds = fill_nodes(args);
+	cmd_node = test.cmds;
+	// Step 4: Process and delete redirections
+	while (cmd_node)
+	{
+		mini_cmd = (t_mini *)cmd_node->content;
+		// Call process_and_delete_redirections to process redirections and delete nodes
+		process_and_delete_redirections(&test.cmds, args, mini_cmd);
+		cmd_node = cmd_node->next;
+	}
+	// Step 5: Print the commands for debugging
 	print_cmds(test.cmds);
+	// Step 6: Execute commands, with or without pipes
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
@@ -275,15 +377,49 @@ void	parse_command(char *input, t_data *data)
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
+				// Step 7: Handle built-in commands
 				if (is_builtin(mini_cmd->full_cmd[0]))
 				{
+					// Save original file descriptors for stdin and stdout
+					saved_stdin = dup(STDIN_FILENO);
+					saved_stdout = dup(STDOUT_FILENO);
+					// Apply redirection for built-ins
+					if (mini_cmd->infile != STDIN_FILENO)
+					{
+						dup2(mini_cmd->infile, STDIN_FILENO);
+						close(mini_cmd->infile);
+					}
+					if (mini_cmd->outfile != STDOUT_FILENO)
+					{
+						dup2(mini_cmd->outfile, STDOUT_FILENO);
+						close(mini_cmd->outfile);
+					}
+					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
+					// Restore standard input/output after the built-in execution
+					dup2(saved_stdin, STDIN_FILENO);
+					dup2(saved_stdout, STDOUT_FILENO);
+					// Close saved descriptors
+					close(saved_stdin);
+					close(saved_stdout);
 				}
 				else
 				{
-					pid_t pid = fork();
+					// Step 8: Handle non-built-in (external) commands
+					pid = fork();
 					if (pid == 0)
 					{
+						// Apply redirection before executing the command
+						if (mini_cmd->infile != STDIN_FILENO)
+						{
+							dup2(mini_cmd->infile, STDIN_FILENO);
+							close(mini_cmd->infile);
+						}
+						if (mini_cmd->outfile != STDOUT_FILENO)
+						{
+							dup2(mini_cmd->outfile, STDOUT_FILENO);
+							close(mini_cmd->outfile);
+						}
 						execute_command(mini_cmd->full_cmd);
 						exit(EXIT_FAILURE);
 					}
@@ -293,7 +429,6 @@ void	parse_command(char *input, t_data *data)
 					}
 					else
 					{
-						int status;
 						waitpid(pid, &status, 0);
 					}
 				}
@@ -301,16 +436,17 @@ void	parse_command(char *input, t_data *data)
 			cmd_node = cmd_node->next;
 		}
 	}
+	// Step 9: Free arguments after use
 	i = 0;
-	while (args[i]) {
+	while (args[i])
+	{
 		free(args[i]);
 		i++;
 	}
 	free(args);
 }
 
-
-//void	parse_command(char *input, t_data *data)
+// void	parse_command(char *input, t_data *data)
 //{
 //	t_prompt	test;
 //	char		*new_str;
