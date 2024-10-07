@@ -132,7 +132,6 @@ void	execute_builtin(char **args, t_data *data)
 		else
 			perror("minishell");
 	}
-	// need to deal with quoted echoes
 	else if (ft_strncmp(args[0], "echo", ft_strlen("echo")) == 0)
 	{
 		i = 1;

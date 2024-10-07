@@ -49,7 +49,7 @@ t_env *init_env_list(char **envp)
 			new_node->name = ft_strdup(envp[i]);
 			new_node->value = NULL;
 		}
-		if (ft_strncmp(new_node->name, "SHLVL", 6) == 0)
+		if (ft_strncmp(new_node->name, "SHLVL", 6) == 0) //shlvl setter
 		{
 			is_shlvl = 1;
 			free(new_node->value);
