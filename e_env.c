@@ -27,10 +27,12 @@ t_env *init_env_list(char **envp)
 	t_env	*new_node;
 	char	*equal;
 	int		i;
+	int		is_shlvl;
 
 	head = NULL;
 	curr = NULL;
 	i = 0;
+	is_shlvl = 0;
 	while (envp[i] != NULL)
 	{
 		new_node = malloc(sizeof(t_env));
@@ -47,10 +49,16 @@ t_env *init_env_list(char **envp)
 			new_node->name = ft_strdup(envp[i]);
 			new_node->value = NULL;
 		}
+		if (ft_strncmp(new_node->name, "SHLVL", 6) == 0) //shlvl setter
+		{
+			is_shlvl = 1;
+			free(new_node->value);
+			new_node->value = ft_strdup("2");
+		}
 		if (ft_strncmp(new_node->name, "_", 1) == 0)
 		{
-			free(new_node->value); // Free any allocated value if it exists
-			new_node->value = ft_strdup("/usr/bin/env"); // Set value to /usr/bin/env
+			free(new_node->value);
+			new_node->value = ft_strdup("/usr/bin/env");
 		}
 		new_node->next = NULL;
 		if (head == NULL)
