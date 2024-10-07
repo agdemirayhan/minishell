@@ -113,7 +113,7 @@ void	execute_builtin(char **args, t_data *data)
 	else if (ft_strncmp(args[0], "exit", ft_strlen("exit")) == 0)
 	{
 		i = data->mini_count;
-		if (i == 1)
+		if (i == 2)
 			exit(0);
 		else
 		{
@@ -132,7 +132,6 @@ void	execute_builtin(char **args, t_data *data)
 		else
 			perror("minishell");
 	}
-	// need to deal with quoted echoes
 	else if (ft_strncmp(args[0], "echo", ft_strlen("echo")) == 0)
 	{
 		i = 1;
