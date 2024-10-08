@@ -266,10 +266,6 @@ void	parse_command(char *input, t_data *data)
 	int			saved_stdout;
 	pid_t		pid;
 	int			status;
-	int			saved_stdin;
-	int			saved_stdout;
-	pid_t		pid;
-	int			status;
 
 	// Step 1: Tokenize input and handle environment variables
 	new_str = token_spacer(input);
@@ -412,6 +408,7 @@ void	parse_command(char *input, t_data *data)
 		i++;
 	}
 	free(args);
+}
 }
 
 // void	parse_command(char *input, t_data *data)
