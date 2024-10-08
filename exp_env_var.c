@@ -29,13 +29,14 @@ void	*find_env_ref(t_env *env_list, char *name)
  */
 char	*expand_env_vars(char *input, t_data *data)
  {
-	size_t total_size = 1;
-	size_t i = 0;
-	size_t start;
-	char *var_name;
-	char *var_value;
-	char *result;
-	size_t result_len;
+	size_t	total_size = 1;
+	size_t	i = 0;
+	size_t	start;
+	char	*var_name;
+	char	*var_value;
+	char	*result;
+	size_t	result_len;
+	char	*exit_stat;
 
 	while (input[i] != '\0')
 	{
@@ -43,22 +44,31 @@ char	*expand_env_vars(char *input, t_data *data)
 		if (input[i] == '$' && input[i + 1] != '\0')
 		{
 			i++;
-			start = i;
-			while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+			if (input[i] == '?')
 			{
+				exit_stat = ft_itoa(data->prev_exit_stat);
+				total_size += ft_strlen(exit_stat);
 				i++;
-			}
-			var_name = ft_strndup(input + start, i - start);
-			var_value = find_env_ref(data->env_list, var_name);
-			if (var_value)
-			{
-				total_size += ft_strlen(var_value);
 			}
 			else
 			{
-				total_size += i - start;
+				start = i;
+				while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+				{
+					i++;
+				}
+				var_name = ft_strndup(input + start, i - start);
+				var_value = find_env_ref(data->env_list, var_name);
+				if (var_value)
+				{
+					total_size += ft_strlen(var_value);
+				}
+				else
+				{
+					total_size += i - start;
+				}
+				free(var_name);
 			}
-			free(var_name);
 		}
 		else
 		{
@@ -76,18 +86,27 @@ char	*expand_env_vars(char *input, t_data *data)
 		if (input[i] == '$' && input[i + 1] != '\0')
 		{
 			i++;
-			start = i;
-			while (input[i] && (ft_isalnum(input[i]) || input[i] == '_')) {
+			if (input[i] == '?')
+			{
+				ft_strlcpy(result + result_len, exit_stat, total_size - result_len);
+				result_len += ft_strlen(exit_stat);
 				i++;
 			}
-			var_name = ft_strndup(input + start, i - start);
-			var_value = find_env_ref(data->env_list, var_name);
-			if (var_value)
-			 {
-				ft_strlcpy(result + result_len, var_value, total_size - result_len);
-				result_len += ft_strlen(var_value);
+			else
+			{
+				start = i;
+				while (input[i] && (ft_isalnum(input[i]) || input[i] == '_')) {
+					i++;
+				}
+				var_name = ft_strndup(input + start, i - start);
+				var_value = find_env_ref(data->env_list, var_name);
+				if (var_value)
+				{
+					ft_strlcpy(result + result_len, var_value, total_size - result_len);
+					result_len += ft_strlen(var_value);
+				}
+				free(var_name);
 			}
-			free(var_name);
 		}
 		else
 		{

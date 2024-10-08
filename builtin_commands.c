@@ -112,14 +112,38 @@ void	execute_builtin(char **args, t_data *data)
 	// this probably needs fixing too
 	else if (ft_strncmp(args[0], "exit", ft_strlen("exit")) == 0)
 	{
-		i = data->mini_count;
-		if (i == 2)
-			exit(0);
+		int exit_code = 0;
+		if (args[1] != NULL)
+		{
+			exit_code = ft_atoi(args[1]);
+			if (args[2] != NULL)
+			{
+				ft_putstr_fd("exit: too many arguments\n", 2);
+				data->prev_exit_stat = 1;
+				return ;
+			}
+			if (exit_code < 0 || exit_code > 255)
+			{
+				ft_putstr_fd("exit: numeric argument required\n", 2);
+				data->prev_exit_stat = 1;
+				return;
+			}
+			data->prev_exit_stat = exit_code;
+		}
 		else
 		{
-			i--;
-			data->mini_count = i;
-			new_value = ft_itoa(i);
+			data->prev_exit_stat = 0;
+		}
+		int current_shlvl = ft_atoi(find_env_ref(data->env_list, "SHLVL"));
+		if (data->mini_count == 1)
+		{
+			exit(data->prev_exit_stat);
+		}
+		else
+		{
+			data->mini_count--; //count is acting up its annoying
+			current_shlvl--;
+			new_value = ft_itoa(current_shlvl);
 			update_env(&(data->env_list), "SHLVL", new_value);
 			free(new_value);
 			return ;
