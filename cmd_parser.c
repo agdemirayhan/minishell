@@ -267,7 +267,6 @@ void	parse_command(char *input, t_data *data)
 	pid_t		pid;
 	int			status;
 
-	// Step 1: Tokenize input and handle environment variables
 	new_str = token_spacer(input);
 	if (!new_str)
 		return ;
@@ -281,7 +280,6 @@ void	parse_command(char *input, t_data *data)
 		return ;
 		return ;
 	}
-	// Step 2: Trim and prepare arguments
 	i = 0;
 	while (args[i])
 	{
@@ -290,10 +288,8 @@ void	parse_command(char *input, t_data *data)
 		args[i] = trimmed_arg;
 		i++;
 	}
-	// Step 3: Fill command nodes based on the arguments
 	test.cmds = fill_nodes(args);
 	print_cmds(test.cmds);
-
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
@@ -306,13 +302,10 @@ void	parse_command(char *input, t_data *data)
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
-				// Step 7: Handle built-in commands
 				if (is_builtin(mini_cmd->full_cmd[0]))
 				{
-					// Save original file descriptors for stdin and stdout
 					saved_stdin = dup(STDIN_FILENO);
 					saved_stdout = dup(STDOUT_FILENO);
-					// Apply redirection for built-ins
 					if (mini_cmd->infile != STDIN_FILENO)
 					{
 						dup2(mini_cmd->infile, STDIN_FILENO);
@@ -323,11 +316,8 @@ void	parse_command(char *input, t_data *data)
 						dup2(mini_cmd->outfile, STDOUT_FILENO);
 						close(mini_cmd->outfile);
 					}
-					// Execute the built-in command
-					// Save original file descriptors for stdin and stdout
 					saved_stdin = dup(STDIN_FILENO);
 					saved_stdout = dup(STDOUT_FILENO);
-					// Apply redirection for built-ins
 					if (mini_cmd->infile != STDIN_FILENO)
 					{
 						dup2(mini_cmd->infile, STDIN_FILENO);
@@ -338,28 +328,21 @@ void	parse_command(char *input, t_data *data)
 						dup2(mini_cmd->outfile, STDOUT_FILENO);
 						close(mini_cmd->outfile);
 					}
-					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
-					// Restore standard input/output after the built-in execution
 					dup2(saved_stdin, STDIN_FILENO);
 					dup2(saved_stdout, STDOUT_FILENO);
-					// Close saved descriptors
 					close(saved_stdin);
 					close(saved_stdout);
-					// Restore standard input/output after the built-in execution
 					dup2(saved_stdin, STDIN_FILENO);
 					dup2(saved_stdout, STDOUT_FILENO);
-					// Close saved descriptors
 					close(saved_stdin);
 					close(saved_stdout);
 				}
 				else
 				{
-					// Step 8: Handle non-built-in (external) commands
 					pid = fork();
 					if (pid == 0)
 					{
-						// Apply redirection before executing the command
 						if (mini_cmd->infile != STDIN_FILENO)
 						{
 							dup2(mini_cmd->infile, STDIN_FILENO);
@@ -370,7 +353,6 @@ void	parse_command(char *input, t_data *data)
 							dup2(mini_cmd->outfile, STDOUT_FILENO);
 							close(mini_cmd->outfile);
 						}
-						// Apply redirection before executing the command
 						if (mini_cmd->infile != STDIN_FILENO)
 						{
 							dup2(mini_cmd->infile, STDIN_FILENO);
@@ -393,22 +375,21 @@ void	parse_command(char *input, t_data *data)
 						waitpid(pid, &status, 0);
 					}
 				}
-				check_and_update_shlvl(data, mini_cmd); // it's here the shlvl checking!!!!!!
+				check_and_update_shlvl(data, mini_cmd);
 			}
 			cmd_node = cmd_node->next;
 		}
 	}
-	// Step 9: Free arguments after use
 	i = 0;
 	while (args[i])
 	{
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
+		while (args[i])
+		{
+			free(args[i]);
+			i++;
+		}
+		// free(args);
 	}
-	free(args);
-}
 }
 
 // void	parse_command(char *input, t_data *data)

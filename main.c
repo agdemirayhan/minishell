@@ -3,7 +3,7 @@
 void	init_shell(t_data *data)
 {
 	signal(SIGINT, handle_signals);
-	signal(SIGQUIT, SIG_IGN); // Ignore quit signal
+	signal(SIGQUIT, SIG_IGN);
 	data->mini_count = 1;
 }
 
@@ -23,9 +23,7 @@ int	main(int argc, char **argv, char **envp)
 		free(data);
 		exit(EXIT_FAILURE);
 	}
-	//init_shlvl(&shlvl, data);
-	//check_shlvl(data, 1);
-	init_shell(data); // Call it here
+	init_shell(data);
 	if (DEBUG)
 	{
 		input = getenv("DEBUG_INPUT");
@@ -45,8 +43,12 @@ int	main(int argc, char **argv, char **envp)
 			signal(SIGQUIT, SIG_IGN);
 			input = readline("minishell> ");
 			if (!input)
+			{
+				printf("exit\n");
 				break ;
-			add_history(input);
+			}
+			if (input[0] != '\0')
+				add_history(input);
 			parse_command(input, data);
 			free(input);
 		}

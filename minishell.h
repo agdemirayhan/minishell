@@ -9,6 +9,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <sys/ioctl.h>
 # include <sys/wait.h>
 # include <unistd.h>
 
@@ -116,8 +117,8 @@ void				*find_env_ref(t_env *env_list, char *name);
 char				*expand_env_vars(char *input, t_data *data);
 
 /* Function prototypes */
-//void				init_shell(void);
-void	init_shell(t_data *data);
+// void				init_shell(void);
+void				init_shell(t_data *data);
 void				handle_signals(int signo);
 void				parse_command(char *input, t_data *data);
 void				free_strarray(char **array);
@@ -129,7 +130,7 @@ void				execute_builtin(char **args, t_data *data);
 int					heredoc_handler(char *str[2], char *del);
 void				execute_pipes(t_list *cmds, t_data *data);
 void				update_shlvl(t_data *data, t_mini *mini_cmd);
-void check_and_update_shlvl(t_data *data, t_mini *mini_cmd);
+void				check_and_update_shlvl(t_data *data, t_mini *mini_cmd);
 
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);

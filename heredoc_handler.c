@@ -23,6 +23,8 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 	char	*temp;
 	char	*result;
 
+	signal(SIGINT, handle_signals);
+	signal(SIGQUIT, SIG_IGN);
 	if (s[1] == NULL)
 		s[1] = ft_strdup(""); // Duplicate empty string
 	if (s[1] == NULL)
@@ -49,7 +51,7 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 			return (result); // Return current result on failure
 		}
 		free(s[0]);
-			// Free the original s[0] before assigning the new concatenated value
+		// Free the original s[0] before assigning the new concatenated value
 		s[0] = temp;
 		// Safely concatenate the input line to the result
 		temp = ft_strjoin(s[1], s[0]);
@@ -60,11 +62,9 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 			fprintf(stderr, "Error: Memory allocation failed.\n");
 			return (result); // Return current result on failure
 		}
-		free(s[1]); // Free the old result string before updating it
+		// free(s[1]); // Free the old result string before updating it
 		s[1] = temp;
 		len = ft_strlen(s[0]) - 1;
-		signal(SIGINT, handle_signals);
-		signal(SIGQUIT, handle_signals);
 	}
 	free(s[0]); // Free the last input line after exiting the loop
 	return (s[1]);

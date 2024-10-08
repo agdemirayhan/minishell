@@ -2,15 +2,13 @@
 
 int		g_status;
 
-void	handle_signals(int signo)
+void	handle_signals(int sig)
 {
-	if (signo == SIGINT)
+	if (sig == SIGINT)
 	{
-		g_status = 130;
-		printf("\n");
+		write(STDOUT_FILENO, "\nminishell> ", 12);
 		rl_on_new_line();
-		rl_replace_line("\n", 0);
+		rl_replace_line("", 0);
 		rl_redisplay();
 	}
-	exit(g_status);
 }

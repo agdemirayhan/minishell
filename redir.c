@@ -94,7 +94,7 @@ void	get_redir(t_mini **node, char **args, int *i)
 		// Single redirection '>' (overwrite output file)
 		else if (args[*i][0] == '>')
 		{
-			printf("Outfile2\n");
+			printf("Outfile1\n");
 			outfile1(node, args, i);
 		}
 		// Double redirection '<<' (heredoc)
