@@ -74,6 +74,7 @@ typedef struct s_data
 	int				fd_copy;
 	t_env			*env_list;
 	int				mini_count;
+	int				prev_exit_stat;
 }					t_data;
 
 /* token functions */

@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-
 void check_and_update_shlvl(t_data *data, t_mini *mini_cmd)
 {
 	if (mini_cmd && mini_cmd->full_cmd && ft_strncmp(mini_cmd->full_cmd[0], "./minishell", ft_strlen("./minishell") + 1) == 0)
@@ -20,6 +19,7 @@ void	update_shlvl(t_data *data, t_mini *mini_cmd)
 	if (!var_value)
 		return ;
 	i = ft_atoi(var_value);
+	//this needs to be changed, cause it should cound from export number too, not just go back to original mini number
 	if (ft_strncmp(mini_cmd->full_cmd[0], "./minishell", ft_strlen("./minishell") + 1) == 0)
 	{
 		i++;
