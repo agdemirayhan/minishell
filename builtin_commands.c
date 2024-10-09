@@ -112,15 +112,51 @@ void	execute_builtin(char **args, t_data *data)
 	// this probably needs fixing too
 	else if (ft_strncmp(args[0], "exit", ft_strlen("exit")) == 0)
 	{
-		int exit_code = 0;
-		if (args[1] != NULL)
-		{
+		//int exit_code = 0;
+		//if (args[1] != NULL)
+		//{
+		//	exit_code = ft_atoi(args[1]);
+		//	if (args[2] != NULL)
+		//	{
+		//		ft_putstr_fd("exit: too many arguments\n", 2);
+		//		data->prev_exit_stat = 1;
+		//		return ;
+		//	}
+		//	if (exit_code < 0 || exit_code > 255)
+		//	{
+		//		ft_putstr_fd("exit: numeric argument required\n", 2);
+		//		data->prev_exit_stat = 1;
+		//		return;
+		//	}
+		//	data->prev_exit_stat = exit_code;
+		//}
+		//else
+		//{
+		//	data->prev_exit_stat = 0;
+		//}
+		//int current_shlvl = ft_atoi(find_env_ref(data->env_list, "SHLVL"));
+		//if (data->mini_count == 1)
+		//{
+		//	exit(data->prev_exit_stat);
+		//}
+		//else
+		//{
+		//	data->mini_count--; //count is acting up its annoying
+		//	current_shlvl--;
+		//	new_value = ft_itoa(current_shlvl);
+		//	update_env(&(data->env_list), "SHLVL", new_value);
+		//	free(new_value);
+		//	return ;
+		//}
+		int	exit_code = 0;
+
+		if (args[1] != NULL) {
 			exit_code = ft_atoi(args[1]);
 			if (args[2] != NULL)
 			{
 				ft_putstr_fd("exit: too many arguments\n", 2);
 				data->prev_exit_stat = 1;
-				return ;
+				return;
 			}
 			if (exit_code < 0 || exit_code > 255)
 			{
@@ -134,19 +170,53 @@ void	execute_builtin(char **args, t_data *data)
 		{
 			data->prev_exit_stat = 0;
 		}
-		int current_shlvl = ft_atoi(find_env_ref(data->env_list, "SHLVL"));
-		if (data->mini_count == 1)
-		{
-			exit(data->prev_exit_stat);
+		if (data->shlvl_history)
+		 {
+			int previous_shlvl = 0;
+			if (data->shlvl_history)
+			{
+				previous_shlvl = data->shlvl_history->shlvl_value;
+			}
+			t_shlvl_node *temp_node = data->shlvl_history;
+			if (data->shlvl_history)
+			{
+				data->shlvl_history = data->shlvl_history->next;
+			}
+			else
+			{
+				data->shlvl_history = NULL;
+			}
+			free(temp_node);
+
+			if (data->mini_count == 1)
+			{
+				exit(data->prev_exit_stat);
+			}
+			else
+			{
+				data->mini_count--;
+				if (previous_shlvl > 0)
+				{
+					char *new_value = ft_itoa(previous_shlvl);
+					if (new_value)
+					{
+						update_env(&(data->env_list), "SHLVL", new_value);
+						free(new_value);
+					}
+				}
+				return;
+			}
 		}
 		else
 		{
-			data->mini_count--; //count is acting up its annoying
-			current_shlvl--;
-			new_value = ft_itoa(current_shlvl);
-			update_env(&(data->env_list), "SHLVL", new_value);
-			free(new_value);
-			return ;
+			if (data->mini_count == 1)
+			{
+				exit(data->prev_exit_stat);
+			}
+			else
+			{
+				data->mini_count--;
+			}
 		}
 	}
 	else if (ft_strncmp(args[0], "pwd", ft_strlen("pwd")) == 0)
