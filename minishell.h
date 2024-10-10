@@ -137,6 +137,7 @@ void				execute_pipes(t_list *cmds, t_data *data);
 void				update_shlvl(t_data *data, t_mini *mini_cmd);
 void				check_and_update_shlvl(t_data *data, t_mini *mini_cmd);
 void free_shlvl_history(t_data *data);
+void clean_up(t_data *data);
 
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);
