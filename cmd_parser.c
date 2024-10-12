@@ -240,7 +240,7 @@ void	free_content(void *content)
 static t_list	*stop_fill(t_list *cmds, char **args, char **temp)
 {
 	ft_lstclear(&cmds, free_content);
-	ft_free_matrix(&temp);
+	// ft_free_matrix(&temp);
 	ft_free_matrix(&args);
 	return (NULL);
 }
@@ -403,13 +403,13 @@ void	parse_command(char *input, t_data *data)
 			cmd_node = cmd_node->next;
 		}
 	}
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
+// 	i = 0;
+// 	while (args[i])
+// 	{
+// 		free(args[i]);
+// 		i++;
+// 	}
+// 	free(args);
 }
 
 // void	parse_command(char *input, t_data *data)

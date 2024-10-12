@@ -55,6 +55,7 @@ int	heredoc_handler(char *str[2], char *del)
 {
 	int fd[2];
 
+	g_status = 0;
 	if (pipe(fd) == -1)
 	{
 		fprintf(stderr, "Error creating pipe.\n");
@@ -67,6 +68,7 @@ int	heredoc_handler(char *str[2], char *del)
 	close(fd[1]);
 	signal(SIGINT, handle_signals);
 	signal(SIGQUIT, handle_signals);
+	printf("g_status:%d\n", g_status);
 	if (g_status == 130)
 	{
 		close(fd[0]);
