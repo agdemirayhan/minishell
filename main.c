@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+
 void	init_shell(t_data *data)
 {
 	signal(SIGINT, handle_signals);
@@ -33,7 +34,7 @@ int	main(int argc, char **argv, char **envp)
 		input = getenv("DEBUG_INPUT");
 		if (input == NULL)
 		{
-			input = "cat << test | grep te";
+			input = ft_strdup("echo HelloWorld | grep Hello");
 		}
 		printf("Debug mode with input: %s\n", input);
 		add_history(input);

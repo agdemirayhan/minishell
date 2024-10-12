@@ -7,10 +7,10 @@ void	remove_delimiter(char **str, const char *del)
 	char	*del_pos;
 	size_t	del_len;
 
-	del_pos = ft_strnstr(*str, del, del_len);
+	del_len = ft_strlen(del);
+	del_pos = ft_strnstr(*str, del, ft_strlen(*str));
 	if (del_pos != NULL)
 	{
-		del_len = ft_strlen(del);
 		if (del_pos[del_len] == '\n')
 			del_len++;
 		ft_memmove(del_pos, del_pos + del_len, ft_strlen(del_pos + del_len)

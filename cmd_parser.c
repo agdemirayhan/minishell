@@ -237,10 +237,9 @@ void	free_content(void *content)
 	free(node);
 }
 
-static t_list	*stop_fill(t_list *cmds, char **args, char **temp)
+static t_list	*stop_fill(t_list *cmds, char **args)
 {
 	ft_lstclear(&cmds, free_content);
-	// ft_free_matrix(&temp);
 	ft_free_matrix(&args);
 	return (NULL);
 }
@@ -285,7 +284,7 @@ t_list	*fill_nodes(char **args)
 		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		if (i < 0)
-			return (stop_fill(cmds, args, temp[1]));
+			return (stop_fill(cmds, args));
 		printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
 			break ;

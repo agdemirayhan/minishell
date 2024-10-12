@@ -88,12 +88,10 @@ void	execute_builtin(char **args, t_data *data)
 	char	*dir;
 	int		newline;
 	char	*str;
-	char	*new_value;
-	char	*var_value;
 
 	// what happens when someone tries it with a directory which requires more than 1024 chars????? fails. using malloc for this?? eww. <--this is actually ok
 	// also it needs to handle cd ~ so it can go home ewwwwww.
-	if (ft_strncmp(args[0], "cd", ft_strlen("cd")) == 0)
+	if (ft_strncmp(args[0], "cd", ft_strlen("cd") + 1) == 0)
 	{
 		// if (chdir(args[1]) != 0)
 		//	perror("minishell");
@@ -110,7 +108,7 @@ void	execute_builtin(char **args, t_data *data)
 		free(dir);
 	}
 	// this probably needs fixing too
-	else if (ft_strncmp(args[0], "exit", ft_strlen("exit")) == 0)
+	else if (ft_strncmp(args[0], "exit", ft_strlen("exit") + 1) == 0)
 	{
 		int	exit_code = 0;
 
@@ -174,14 +172,14 @@ void	execute_builtin(char **args, t_data *data)
 			}
 		}
 	}
-	else if (ft_strncmp(args[0], "pwd", ft_strlen("pwd")) == 0)
+	else if (ft_strncmp(args[0], "pwd", ft_strlen("pwd") + 1) == 0)
 	{
 		if (getcwd(cwd, sizeof(cwd)) != NULL)
 			printf("%s\n", cwd);
 		else
 			perror("minishell");
 	}
-	else if (ft_strncmp(args[0], "echo", ft_strlen("echo")) == 0)
+	else if (ft_strncmp(args[0], "echo", ft_strlen("echo") + 1) == 0)
 	{
 		i = 1;
 		newline = 1;
@@ -191,7 +189,7 @@ void	execute_builtin(char **args, t_data *data)
 			printf("\n");
 			return ;
 		}
-		if (ft_strncmp(args[1], "-n", ft_strlen(args[1])) == 0)
+		if (ft_strncmp(args[1], "-n", ft_strlen(args[1]) + 1) == 0)
 		{
 			newline = 0;
 			i = 2;
@@ -202,17 +200,17 @@ void	execute_builtin(char **args, t_data *data)
 		printf("%s", str);
 		free(str);
 	}
-	else if (ft_strncmp(args[0], "env", ft_strlen("env")) == 0)
+	else if (ft_strncmp(args[0], "env", ft_strlen("env") + 1) == 0)
 	{
 		print_env_list(data->env_list);
 	}
 	/* needs editing cause it shoudlnt be displayed in env if there is only name
 	without value, it should be only displayed when export is called! ughhhhh */
-	else if (ft_strncmp(args[0], "export", ft_strlen("export")) == 0)
+	else if (ft_strncmp(args[0], "export", ft_strlen("export") + 1) == 0)
 	{
 		execute_export(args, data);
 	}
-	else if (ft_strncmp(args[0], "unset", ft_strlen("unset")) == 0)
+	else if (ft_strncmp(args[0], "unset", ft_strlen("unset") + 1) == 0)
 	{
 		execute_unset(args, data);
 	}
