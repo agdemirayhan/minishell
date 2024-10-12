@@ -52,8 +52,6 @@ void execute_pipes(t_list *cmds, t_data *data)
 				}
 				close(pipefd[1]);
 			}
-
-			// Execute built-in commands or external commands
 			if (is_builtin(mini_cmd->full_cmd[0]))
 			{
 				execute_builtin(mini_cmd->full_cmd, data);
@@ -64,7 +62,7 @@ void execute_pipes(t_list *cmds, t_data *data)
 				char *e_path = find_exec(mini_cmd->full_cmd[0]);
 				if (!e_path)
 				{
-					fprintf(stderr, "minishell: command not found: %s\n", mini_cmd->full_cmd[0]);
+					printf("minishell: command not found: %s\n", mini_cmd->full_cmd[0]);
 					exit(EXIT_FAILURE);
 				}
 				if (execve(e_path, mini_cmd->full_cmd, NULL) == -1)

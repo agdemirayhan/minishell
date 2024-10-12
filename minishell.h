@@ -70,12 +70,18 @@ typedef struct s_env
 	struct s_env	*next;
 }					t_env;
 
+typedef struct s_shlvl_node {
+	int					shlvl_value;
+	struct s_shlvl_node	*next;
+}						t_shlvl_node;
+
 typedef struct s_data
 {
 	int				fd_copy;
 	t_env			*env_list;
 	int				mini_count;
 	int				prev_exit_stat;
+	t_shlvl_node	*shlvl_history;
 }					t_data;
 
 /* token functions */
@@ -117,7 +123,7 @@ void				*find_env_ref(t_env *env_list, char *name);
 char				*expand_env_vars(char *input, t_data *data);
 
 /* Function prototypes */
-// void				init_shell(void);
+//void				init_shell(void);
 void				init_shell(t_data *data);
 void				handle_signals(int signo);
 void				parse_command(char *input, t_data *data);
@@ -131,6 +137,8 @@ int					heredoc_handler(char *str[2], char *del);
 void				execute_pipes(t_list *cmds, t_data *data);
 void				update_shlvl(t_data *data, t_mini *mini_cmd);
 void				check_and_update_shlvl(t_data *data, t_mini *mini_cmd);
+void free_shlvl_history(t_data *data);
+void clean_up(t_data *data);
 
 /* Trim Functions */
 char				*ft_strtrim_all(const char *s1);

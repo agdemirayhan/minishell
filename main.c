@@ -17,6 +17,11 @@ int	main(int argc, char **argv, char **envp)
 	data = malloc(sizeof(t_data));
 	if (!data)
 		exit(EXIT_FAILURE);
+	}
+	data->shlvl_history = NULL;
+	data->env_list = NULL;
+	data->mini_count = 1;
+	data->prev_exit_stat = 0;
 	data->env_list = init_env_list(envp);
 	if (!data->env_list)
 	{
