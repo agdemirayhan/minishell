@@ -206,6 +206,45 @@ int	is_redirection(char *arg)
 	return (0); // Not a redirection operator
 }
 
+void	ft_free_matrix(char ***m)
+{
+	int	i;
+
+	i = 0;
+	while (m && m[0] && m[0][i])
+	{
+		free(m[0][i]);
+		i++;
+	}
+	if (m)
+	{
+		free(m[0]);
+		*m = NULL;
+	}
+}
+
+void	free_content(void *content)
+{
+	t_mini	*node;
+
+	node = content;
+	ft_free_matrix(&node->full_cmd);
+	free(node->full_path);
+	if (node->infile != STDIN_FILENO)
+		close(node->infile);
+	if (node->outfile != STDOUT_FILENO)
+		close(node->outfile);
+	free(node);
+}
+
+static t_list	*stop_fill(t_list *cmds, char **args, char **temp)
+{
+	ft_lstclear(&cmds, free_content);
+	// ft_free_matrix(&temp);
+	ft_free_matrix(&args);
+	return (NULL);
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -245,6 +284,8 @@ t_list	*fill_nodes(char **args)
 		}
 		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
+		if (i < 0)
+			return (stop_fill(cmds, args, temp[1]));
 		printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
 			break ;
@@ -289,7 +330,6 @@ void	parse_command(char *input, t_data *data)
 	}
 	test.cmds = fill_nodes(args);
 	print_cmds(test.cmds);
-
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
@@ -357,18 +397,19 @@ void	parse_command(char *input, t_data *data)
 						waitpid(pid, &status, 0);
 					}
 				}
-				check_and_update_shlvl(data, mini_cmd); // it's here the shlvl checking!!!!!!
+				check_and_update_shlvl(data, mini_cmd);
+				// it's here the shlvl checking!!!!!!
 			}
 			cmd_node = cmd_node->next;
 		}
 	}
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
+// 	i = 0;
+// 	while (args[i])
+// 	{
+// 		free(args[i]);
+// 		i++;
+// 	}
+// 	free(args);
 }
 
 // void	parse_command(char *input, t_data *data)

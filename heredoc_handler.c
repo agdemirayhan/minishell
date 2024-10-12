@@ -2,13 +2,6 @@
 
 extern int	g_status;
 
-// void	handler_exit(int sig)
-// {
-// 	if (sig == SIGINT)
-// 		g_status = 130;
-
-// }
-
 void	remove_delimiter(char **str, const char *del)
 {
 	char	*del_pos;
@@ -49,7 +42,7 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 		free(temp);
 		temp = s[1];
 		s[1] = ft_strjoin(s[1], s[0]);
-		free(temp);
+		// free(temp);
 		len = ft_strlen(s[0]) - 1;
 		signal(SIGINT, handle_signals);
 		signal(SIGQUIT, handle_signals);
@@ -62,6 +55,7 @@ int	heredoc_handler(char *str[2], char *del)
 {
 	int fd[2];
 
+	g_status = 0;
 	if (pipe(fd) == -1)
 	{
 		fprintf(stderr, "Error creating pipe.\n");
@@ -74,5 +68,11 @@ int	heredoc_handler(char *str[2], char *del)
 	close(fd[1]);
 	signal(SIGINT, handle_signals);
 	signal(SIGQUIT, handle_signals);
+	printf("g_status:%d\n", g_status);
+	if (g_status == 130)
+	{
+		close(fd[0]);
+		return (-1);
+	}
 	return (fd[0]);
 }
