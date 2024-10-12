@@ -6,9 +6,9 @@ void	handle_signals(int sig)
 {
 	if (sig == SIGINT)
 	{
-		write(STDOUT_FILENO, "\nminishell> ", 12);
-		rl_on_new_line();
+		g_status = 130;
+		ioctl(STDIN_FILENO, TIOCSTI, "\n");
 		rl_replace_line("", 0);
-		rl_redisplay();
+		rl_on_new_line();
 	}
 }
