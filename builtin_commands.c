@@ -81,6 +81,33 @@ char	*get_dir(char **args)
 	return (ft_strdup(args[1]));
 }
 
+static int	check_exit_num(char *arg, int *exit_code)
+{
+	int	i;
+	int	num;
+
+	i = 0;
+	while (arg[i] == ' ' || arg[i] == '\t')
+		i++;
+	num = i;
+	while (arg[num] != '\0')
+	{
+		if (arg[num] != '-' && arg[num] != '+'
+			&& !ft_isdigit(arg[num]))
+		{
+			ft_putstr_fd("exit: numeric argument required\n", 2);
+			return (1);
+		}
+		num++;
+	}
+	*exit_code = ft_atoi(&arg[i]);
+	if (*exit_code > 255)
+		*exit_code = *exit_code % 256;
+	if (*exit_code < 0)
+		*exit_code = 256 + *exit_code;
+	return (0);
+}
+
 void	execute_builtin(char **args, t_data *data)
 {
 	char	cwd[1024];
@@ -114,17 +141,55 @@ void	execute_builtin(char **args, t_data *data)
 	{
 		int	exit_code = 0;
 
-		if (args[1] != NULL) {
-			exit_code = ft_atoi(args[1]);
+		printf("exit\n");
+		if (args[1] != NULL)
+		{
+			if (check_exit_num(args[1], &exit_code))
+			{
+				data->prev_exit_stat = 1;
+				if (data->shlvl_history)
+				{
+					int previous_shlvl = data->shlvl_history->shlvl_value;
+					t_shlvl_node *temp = data->shlvl_history;
+					data->shlvl_history = data->shlvl_history->next;
+					free(temp);
+					if (data->mini_count == 1)
+					{
+						clean_up(data);
+						exit(data->prev_exit_stat);
+					}
+					else
+					{
+						data->mini_count--;
+						if (previous_shlvl > 0)
+						{
+							char *new_value = ft_itoa(previous_shlvl);
+							if (new_value)
+							{
+								update_env(&(data->env_list), "SHLVL", new_value);
+								free(new_value);
+							}
+						}
+						return;
+					}
+				}
+				else
+				{
+					if (data->mini_count == 1)
+					{
+						clean_up(data);
+						exit(data->prev_exit_stat);
+					}
+					else
+					{
+						data->mini_count--;
+						return ;
+					}
+				}
+			}
 			if (args[2] != NULL)
 			{
 				ft_putstr_fd("exit: too many arguments\n", 2);
-				data->prev_exit_stat = 1;
-				return;
-			}
-			if (exit_code < 0 || exit_code > 255)
-			{
-				ft_putstr_fd("exit: numeric argument required\n", 2);
 				data->prev_exit_stat = 1;
 				return;
 			}

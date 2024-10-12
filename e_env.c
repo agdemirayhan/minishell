@@ -110,7 +110,7 @@ void print_env_list(t_env *env)
 {
 	while (env != NULL)
 	{
-		if (ft_strncmp(env->name, "_", 1) == 0)
+		if (ft_strncmp(env->name, "_", 1) == 0 && !(ft_strncmp(env->name, "__", 2) == 0))
 			printf("_=/usr/bin/env\n");
 		else
 		{
