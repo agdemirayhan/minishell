@@ -110,7 +110,7 @@ char	*find_exec(char *comm)
 	return (NULL);
 }
 
-void	execute_command(char **args)
+void	execute_command(char **args, t_data *data)
 {
 	pid_t	pid;
 	int		status;
@@ -124,7 +124,8 @@ void	execute_command(char **args)
 	e_path = find_exec(args[0]);
 	if (!e_path)
 	{
-		printf("minishell: command not found: %s\n", args[0]);
+		printf("minishell: %s: command not found\n", args[0]);
+		data->prev_exit_stat = 127;
 		return ;
 	}
 	pid = fork();
@@ -151,10 +152,6 @@ void	execute_command(char **args)
 		{
 			waitpid(pid, &status, WUNTRACED);
 		}
-		// do
-		//{
-		//	waitpid(pid, &status, WUNTRACED);
-		//} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
 	free(e_path);
 }

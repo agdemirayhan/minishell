@@ -394,7 +394,7 @@ void	parse_command(char *input, t_data *data)
 							dup2(mini_cmd->outfile, STDOUT_FILENO);
 							close(mini_cmd->outfile);
 						}
-						execute_command(mini_cmd->full_cmd);
+						execute_command(mini_cmd->full_cmd, data);
 						exit(EXIT_FAILURE);
 					}
 					else if (pid < 0)
