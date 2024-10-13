@@ -20,17 +20,30 @@ static t_mini	*mini_init(void)
  * @brief This function put spaces between tokens if necessary
  * @return a string
  */
+#include <stdlib.h>
+
 char	*token_spacer(char *s)
 {
 	char	*new_str;
 	int		i;
 	int		j;
+	int		in_double_quotes;
+	int		in_single_quotes;
 
 	i = 0;
 	j = 0;
+	in_double_quotes = 0; // Variable to track if we are inside double quotes
+	in_single_quotes = 0; // Variable to track if we are inside single quotes
 	while (s[i] != '\0')
 	{
-		if (s[i] == '\\' || s[i] == '<' || s[i] == '|' || s[i] == '>')
+		// Toggle double quotes when encountering a double quote and not in single quotes
+		if (s[i] == '"' && !in_single_quotes)
+			in_double_quotes = !in_double_quotes;
+		// Toggle single quotes when encountering a single quote and not in double quotes
+		if (s[i] == '\'' && !in_double_quotes)
+			in_single_quotes = !in_single_quotes;
+		if (!in_double_quotes && !in_single_quotes && (s[i] == '\\'
+				|| s[i] == '<' || s[i] == '|' || s[i] == '>'))
 		{
 			if (i > 0 && s[i - 1] != ' ')
 				j++;
@@ -47,9 +60,22 @@ char	*token_spacer(char *s)
 		return (NULL);
 	i = 0;
 	j = 0;
+	in_double_quotes = 0;
+	in_single_quotes = 0;
 	while (s[i] != '\0')
 	{
-		if (s[i] == '\\' || s[i] == '<' || s[i] == '|' || s[i] == '>')
+		if (s[i] == '"' && !in_single_quotes)
+		{
+			in_double_quotes = !in_double_quotes;
+			new_str[j++] = s[i];
+		}
+		else if (s[i] == '\'' && !in_double_quotes)
+		{
+			in_single_quotes = !in_single_quotes;
+			new_str[j++] = s[i];
+		}
+		else if (!in_double_quotes && !in_single_quotes && (s[i] == '\\'
+				|| s[i] == '<' || s[i] == '|' || s[i] == '>'))
 		{
 			if (i > 0 && s[i - 1] != ' ')
 				new_str[j++] = ' ';
