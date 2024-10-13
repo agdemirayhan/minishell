@@ -267,6 +267,20 @@ t_list	*fill_nodes(char **args)
 	temp[1] = args;
 	while (args[++i])
 	{
+		if ((args[i][0] == '|' && i == 0) || (args[i][0] == '|' && !args[i + 1]))
+		{
+			ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
+			ft_lstclear(&cmds, free_content);
+			return (NULL);
+		}
+		if (is_redirection(args[i]) && (!args[i + 1] || is_redirection(args[i + 1])))
+		{
+			ft_putstr_fd("syntax error near unexpected token '", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putstr_fd("'\n", 2);
+			ft_lstclear(&cmds, free_content);
+			return (NULL);
+		}
 		last_cmd = ft_lsttraverse(cmds);
 		if (i == 0 || (args[i][0] == '|' && args[i + 1] && args[i + 1][0]))
 		{
@@ -275,14 +289,11 @@ t_list	*fill_nodes(char **args)
 			last_cmd = ft_lsttraverse(cmds);
 		}
 		first_mini = (t_mini *)last_cmd->content;
-		// Check if the current argument is a redirection operator
-		if (!is_redirection(args[i])) // Skip if it's a redirection
+		if (!is_redirection(args[i]))
 		{
-			// Only add to full_cmd if it's not a redirection
 			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
 					args[i]);
 		}
-		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		if (i < 0)
 			return (stop_fill(cmds, args, temp[1]));
@@ -320,6 +331,12 @@ void	parse_command(char *input, t_data *data)
 		free(args);
 		return ;
 	}
+	if (args[0][0] == '|' && args[1] == NULL)
+	{
+		ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
+		free(args);
+		return ;
+	}
 	i = 0;
 	while (args[i])
 	{
@@ -342,13 +359,10 @@ void	parse_command(char *input, t_data *data)
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
-				// Check if it's a built-in command
 				if (is_builtin(mini_cmd->full_cmd[0]))
 				{
-					// Save original file descriptors for stdin and stdout
 					saved_stdin = dup(STDIN_FILENO);
 					saved_stdout = dup(STDOUT_FILENO);
-					// Apply redirection for built-ins
 					if (mini_cmd->infile != STDIN_FILENO)
 					{
 						dup2(mini_cmd->infile, STDIN_FILENO);
@@ -359,22 +373,17 @@ void	parse_command(char *input, t_data *data)
 						dup2(mini_cmd->outfile, STDOUT_FILENO);
 						close(mini_cmd->outfile);
 					}
-					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
-					// Restore standard input/output after the built-in execution
 					dup2(saved_stdin, STDIN_FILENO);
 					dup2(saved_stdout, STDOUT_FILENO);
-					// Close saved descriptors
 					close(saved_stdin);
 					close(saved_stdout);
 				}
 				else
 				{
-					// For non-built-in commands (external commands)
 					pid = fork();
 					if (pid == 0)
 					{
-						// Apply redirection before executing the command
 						if (mini_cmd->infile != STDIN_FILENO)
 						{
 							dup2(mini_cmd->infile, STDIN_FILENO);
