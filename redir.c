@@ -35,9 +35,7 @@ void	outfile1(t_mini **node, char **args, int *i)
 void	outfile2(t_mini **node, char **args, int *i)
 {
 	int		flags[2];
-	char	*nl;
 
-	nl = "minishell: syntax error near unexpected token `newline'";
 	flags[0] = 1;
 	flags[1] = 1;
 	if (args[++(*i)])
