@@ -7,10 +7,10 @@ void	remove_delimiter(char **str, const char *del)
 	char	*del_pos;
 	size_t	del_len;
 
-	del_len = ft_strlen(del);
-	del_pos = ft_strnstr(*str, del, ft_strlen(*str));
+	del_pos = ft_strnstr(*str, del, del_len);
 	if (del_pos != NULL)
 	{
+		del_len = ft_strlen(del);
 		if (del_pos[del_len] == '\n')
 			del_len++;
 		ft_memmove(del_pos, del_pos + del_len, ft_strlen(del_pos + del_len)
@@ -33,12 +33,16 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 			free(s[0]);
 		s[0] = readline("heredoc> ");
 		if (s[0] == NULL)
-			return (fprintf(stderr, "Error: readline failed.\n"), result);
+		{
+			fprintf(stderr, "Error: readline failed.\n");
+			return (result);
+		}
 		temp = s[0];
 		s[0] = ft_strjoin(s[0], "\n");
 		free(temp);
 		temp = s[1];
 		s[1] = ft_strjoin(s[1], s[0]);
+		// free(temp);
 		len = ft_strlen(s[0]) - 1;
 		signal(SIGINT, handle_signals);
 		signal(SIGQUIT, handle_signals);
