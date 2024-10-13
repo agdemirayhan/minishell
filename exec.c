@@ -116,7 +116,6 @@ void	execute_command(char **args)
 	int		status;
 	char	*e_path;
 
-
 	if (args[0] == NULL)
 	{
 		return ;
@@ -124,7 +123,8 @@ void	execute_command(char **args)
 	e_path = find_exec(args[0]);
 	if (!e_path)
 	{
-		printf("minishell: command not found: %s\n", args[0]);
+		perror("test");
+		// printf("minishell: command not found1111: %s\n", args[0]);
 		return ;
 	}
 	pid = fork();

@@ -7,6 +7,7 @@ void	remove_delimiter(char **str, const char *del)
 	char	*del_pos;
 	size_t	del_len;
 
+	del_len = ft_strlen(del);
 	del_pos = ft_strnstr(*str, del, del_len);
 	if (del_pos != NULL)
 	{
@@ -68,7 +69,7 @@ int	heredoc_handler(char *str[2], char *del)
 	close(fd[1]);
 	signal(SIGINT, handle_signals);
 	signal(SIGQUIT, handle_signals);
-	printf("g_status:%d\n", g_status);
+	// printf("g_status:%d\n", g_status);
 	if (g_status == 130)
 	{
 		close(fd[0]);

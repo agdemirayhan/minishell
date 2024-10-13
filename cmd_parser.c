@@ -77,7 +77,7 @@ static int	ft_count_words(const char *s, char *c, int i[2])
 	enum QuoteState	quote_state;
 
 	quote_state = NO_QUOTE;
-	printf("ft_count_words: %s\n", s);
+	// printf("ft_count_words: %s\n", s);
 	/*this needs to be removed its triggering me :( */
 	while (s[i[0]] != '\0')
 	{
@@ -237,10 +237,9 @@ void	free_content(void *content)
 	free(node);
 }
 
-static t_list	*stop_fill(t_list *cmds, char **args, char **temp)
+static t_list	*stop_fill(t_list *cmds, char **args)
 {
 	ft_lstclear(&cmds, free_content);
-	// ft_free_matrix(&temp);
 	ft_free_matrix(&args);
 	return (NULL);
 }
@@ -258,13 +257,11 @@ t_list	*fill_nodes(char **args)
 {
 	t_list	*cmds;
 	t_list	*last_cmd;
-	char	**temp[2];
 	int		i;
 	t_mini	*first_mini;
 
 	i = -1;
 	cmds = NULL;
-	temp[1] = args;
 	while (args[++i])
 	{
 		last_cmd = ft_lsttraverse(cmds);
@@ -285,8 +282,8 @@ t_list	*fill_nodes(char **args)
 		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		if (i < 0)
-			return (stop_fill(cmds, args, temp[1]));
-		printf("args[%d]: %s\n", i, args[i]);
+			return (stop_fill(cmds, args));
+		// printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
 			break ;
 	}
@@ -323,13 +320,13 @@ void	parse_command(char *input, t_data *data)
 	i = 0;
 	while (args[i])
 	{
-		printf("args:%s\n", args[i]);
 		trimmed_arg = ft_strtrim_all(args[i]);
+		// free(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
 	test.cmds = fill_nodes(args);
-	print_cmds(test.cmds);
+	// print_cmds(test.cmds);
 	if (test.cmds && test.cmds->next != NULL)
 	{
 		execute_pipes(test.cmds, data);
@@ -403,13 +400,6 @@ void	parse_command(char *input, t_data *data)
 			cmd_node = cmd_node->next;
 		}
 	}
-// 	i = 0;
-// 	while (args[i])
-// 	{
-// 		free(args[i]);
-// 		i++;
-// 	}
-// 	free(args);
 }
 
 // void	parse_command(char *input, t_data *data)
