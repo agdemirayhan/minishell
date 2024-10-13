@@ -18,12 +18,18 @@ int	get_fd(int oldfd, char *path, int flags[2])
 		fd = open(path, O_RDONLY);
 	else
 		fd = oldfd;
+	if (fd == -1)
+	{
+		perror(path); // Prints a detailed error message to stderr
+		g_status = 1;
+			// Set global status to indicate an error (usually 1 is for general errors)
+	}
 	return (fd);
 }
 
 void	outfile1(t_mini **node, char **args, int *i)
 {
-	int		flags[2];
+	int	flags[2];
 
 	flags[0] = 1;
 	flags[1] = 0;
@@ -34,13 +40,12 @@ void	outfile1(t_mini **node, char **args, int *i)
 
 void	outfile2(t_mini **node, char **args, int *i)
 {
-	int		flags[2];
+	int	flags[2];
 
 	flags[0] = 1;
 	flags[1] = 1;
 	if (args[++(*i)])
-	(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
-
+		(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
 }
 
 void	infile1(t_mini **node, char **args, int *i)
