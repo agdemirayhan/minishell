@@ -266,22 +266,20 @@ void	execute_builtin(char **args, t_data *data)
 		free(str);
 	}
 	else if (ft_strncmp(args[0], "env", ft_strlen("env") + 1) == 0)
-	{
+	
 		print_env_list(data->env_list);
-	}
+	
 	/* needs editing cause it shoudlnt be displayed in env if there is only name
 	without value, it should be only displayed when export is called! ughhhhh */
 	else if (ft_strncmp(args[0], "export", ft_strlen("export") + 1) == 0)
-	{
+	
 		execute_export(args, data);
-	}
+	
 	else if (ft_strncmp(args[0], "unset", ft_strlen("unset") + 1) == 0)
-	{
+	
 		execute_unset(args, data);
-	}
-	/*
-	OTHER CASES COME HERE ( ͡° ͜ʖ ͡° )
-	*/
+	
+
 }
 
 void clean_up(t_data *data)
