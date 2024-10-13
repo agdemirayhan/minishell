@@ -20,6 +20,8 @@ static t_mini	*mini_init(void)
  * @brief This function put spaces between tokens if necessary
  * @return a string
  */
+#include <stdlib.h>
+
 char	*token_spacer(char *s)
 {
 	char	*new_str;
@@ -244,6 +246,23 @@ static t_list	*stop_fill(t_list *cmds, char **args)
 	return (NULL);
 }
 
+void	free_mini(void *content)
+{
+	t_mini	*mini_cmd;
+
+	mini_cmd = (t_mini *)content;
+	if (mini_cmd)
+	{
+		if (mini_cmd->full_cmd)
+		{
+			// Free each command string in the full_cmd array
+			ft_free_matrix(&(mini_cmd->full_cmd));
+		}
+		// Free other dynamically allocated members of mini_cmd here, if any
+		free(mini_cmd); // Finally, free the t_mini structure itself
+	}
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -264,13 +283,15 @@ t_list	*fill_nodes(char **args)
 	cmds = NULL;
 	while (args[++i])
 	{
-		if ((args[i][0] == '|' && i == 0) || (args[i][0] == '|' && !args[i + 1]))
+		if ((args[i][0] == '|' && i == 0) || (args[i][0] == '|' && !args[i
+				+ 1]))
 		{
 			ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
 			ft_lstclear(&cmds, free_content);
 			return (NULL);
 		}
-		if (is_redirection(args[i]) && (!args[i + 1] || is_redirection(args[i + 1])))
+		if (is_redirection(args[i]) && (!args[i + 1] || is_redirection(args[i
+					+ 1])))
 		{
 			ft_putstr_fd("syntax error near unexpected token '", 2);
 			ft_putstr_fd(args[i], 2);
@@ -298,6 +319,7 @@ t_list	*fill_nodes(char **args)
 		if (!args[i])
 			break ;
 	}
+	ft_free_matrix(&args);
 	return (cmds);
 }
 
@@ -317,6 +339,7 @@ void	parse_command(char *input, t_data *data)
 	int			status;
 
 	new_str = token_spacer(input);
+	// printf("new_str:%s\n", new_str);
 	if (!new_str)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
@@ -338,7 +361,7 @@ void	parse_command(char *input, t_data *data)
 	while (args[i])
 	{
 		trimmed_arg = ft_strtrim_all(args[i]);
-		// free(args[i]);
+		free(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
@@ -409,6 +432,7 @@ void	parse_command(char *input, t_data *data)
 			cmd_node = cmd_node->next;
 		}
 	}
+	ft_lstclear(&test.cmds, free_mini);
 }
 
 // void	parse_command(char *input, t_data *data)

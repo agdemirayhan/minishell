@@ -40,10 +40,9 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 		}
 		temp = s[0];
 		s[0] = ft_strjoin(s[0], "\n");
-		free(temp);
 		temp = s[1];
 		s[1] = ft_strjoin(s[1], s[0]);
-		// free(temp);
+		free(temp);
 		len = ft_strlen(s[0]) - 1;
 		signal(SIGINT, handle_signals);
 		signal(SIGQUIT, handle_signals);
