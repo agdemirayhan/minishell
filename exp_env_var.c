@@ -30,15 +30,15 @@ void	*find_env_ref(t_env *env_list, char *name)
  */
 char	*expand_env_vars(char *input, t_data *data)
 {
-	size_t total_size;
-	size_t i;
-	size_t start;
-	char *var_name;
-	char *var_value;
-	char *result;
-	size_t result_len;
-	char *exit_stat;
-	int in_single_quote;
+	size_t	total_size;
+	size_t	i;
+	size_t	start;
+	char	*var_name;
+	char	*var_value;
+	char	*result;
+	size_t	result_len;
+	char	*exit_stat;
+	int		in_single_quote;
 
 	total_size = 1;
 	i = 0;

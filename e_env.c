@@ -27,12 +27,12 @@ t_env *init_env_list(char **envp)
 	t_env	*new_node;
 	char	*equal;
 	int		i;
-	// int		is_shlvl;
+	int		is_shlvl;
 
 	head = NULL;
 	curr = NULL;
 	i = 0;
-	// is_shlvl = 0;
+	is_shlvl = 0;
 	while (envp[i] != NULL)
 	{
 		new_node = malloc(sizeof(t_env));
@@ -51,7 +51,7 @@ t_env *init_env_list(char **envp)
 		}
 		if (ft_strncmp(new_node->name, "SHLVL", 6) == 0) //shlvl setter
 		{
-			// is_shlvl = 1;
+			is_shlvl = 1;
 			free(new_node->value);
 			new_node->value = ft_strdup("2");
 		}

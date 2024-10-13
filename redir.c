@@ -21,25 +21,30 @@ int	get_fd(int oldfd, char *path, int flags[2])
 	return (fd);
 }
 
-void	outfile(t_mini **node, char **args, int *i, int o)
+void	outfile1(t_mini **node, char **args, int *i)
 {
-	int	flags[2];
+	char	*nl;
+	int		flags[2];
 
-	if (o == 1)
-	{
-		flags[0] = 1;
-		flags[1] = 0;
-		(*i)++;
-		if (args[*i])
-			(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
-	}
-	else
-	{
-		flags[0] = 1;
-		flags[1] = 1;
-		if (args[++(*i)])
-			(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
-	}
+	flags[0] = 1;
+	flags[1] = 0;
+	(*i)++;
+	if (args[*i])
+		(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
+}
+
+void	outfile2(t_mini **node, char **args, int *i)
+{
+	int		flags[2];
+	char	*nl;
+	int		fd;
+
+	nl = "minishell: syntax error near unexpected token `newline'";
+	flags[0] = 1;
+	flags[1] = 1;
+	if (args[++(*i)])
+	(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
+
 }
 
 void	infile1(t_mini **node, char **args, int *i)
@@ -81,17 +86,30 @@ void	infile2(t_mini **node, char **args, int *i)
 
 void	get_redir(t_mini **node, char **args, int *i)
 {
-	//
+	// Check if the current argument is a redirection operator
 	if (args[*i])
 	{
+		// Double redirection '>>' (append to output file)
 		if (args[*i][0] == '>' && args[*i][1] && args[*i][1] == '>')
-			outfile(node, args, i, 2);
+		{
+			outfile2(node, args, i);
+		}
+		// Single redirection '>' (overwrite output file)
 		else if (args[*i][0] == '>')
-			outfile(node, args, i, 1);
+		{
+			printf("Outfile1\n");
+			outfile1(node, args, i);
+		}
+		// Double redirection '<<' (heredoc)
 		else if (args[*i][0] == '<' && args[*i][1] && args[*i][1] == '<')
+		{
 			infile2(node, args, i);
+			printf("Infile2\n");
+		}
+		// Single redirection '<' (input file)
 		else if (args[*i][0] == '<')
+		{
 			infile1(node, args, i);
+		}
 	}
 }
-
