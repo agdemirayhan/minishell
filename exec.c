@@ -116,7 +116,6 @@ void	execute_command(char **args, t_data *data)
 	int		status;
 	char	*e_path;
 
-
 	if (args[0] == NULL)
 	{
 		return ;

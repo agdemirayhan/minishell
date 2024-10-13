@@ -115,8 +115,6 @@ void	execute_builtin(char **args, t_data *data)
 	char	*dir;
 	int		newline;
 	char	*str;
-	char	*new_value;
-	char	*var_value;
 
 	// what happens when someone tries it with a directory which requires more than 1024 chars????? fails. using malloc for this?? eww. <--this is actually ok
 	// also it needs to handle cd ~ so it can go home ewwwwww.
