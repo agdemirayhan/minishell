@@ -1,22 +1,5 @@
 #include "minishell.h"
 
-// MORE TESTS
-
-/**
- * @brief This function put spaces between tokens if necessary
- * @return a string
- */
-
-
-
-
-/**
- * @brief This function splits words without removing the quotes
- * @return array of splitted strings.
- */
-
-
-
 
 int	is_redirection(char *arg)
 {

@@ -21,26 +21,25 @@ int	get_fd(int oldfd, char *path, int flags[2])
 	return (fd);
 }
 
-void	outfile1(t_mini **node, char **args, int *i)
+void	outfile(t_mini **node, char **args, int *i, int o)
 {
-	int		flags[2];
+	int	flags[2];
 
-	flags[0] = 1;
-	flags[1] = 0;
-	(*i)++;
-	if (args[*i])
-		(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
-}
-
-void	outfile2(t_mini **node, char **args, int *i)
-{
-	int		flags[2];
-
-	flags[0] = 1;
-	flags[1] = 1;
-	if (args[++(*i)])
-	(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
-
+	if (o == 1)
+	{
+		flags[0] = 1;
+		flags[1] = 0;
+		(*i)++;
+		if (args[*i])
+			(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
+	}
+	else
+	{
+		flags[0] = 1;
+		flags[1] = 1;
+		if (args[++(*i)])
+			(*node)->outfile = get_fd((*node)->outfile, args[*i], flags);
+	}
 }
 
 void	infile1(t_mini **node, char **args, int *i)
@@ -82,30 +81,17 @@ void	infile2(t_mini **node, char **args, int *i)
 
 void	get_redir(t_mini **node, char **args, int *i)
 {
-	// Check if the current argument is a redirection operator
+	//
 	if (args[*i])
 	{
-		// Double redirection '>>' (append to output file)
 		if (args[*i][0] == '>' && args[*i][1] && args[*i][1] == '>')
-		{
-			outfile2(node, args, i);
-		}
-		// Single redirection '>' (overwrite output file)
+			outfile(node, args, i, 2);
 		else if (args[*i][0] == '>')
-		{
-			printf("Outfile1\n");
-			outfile1(node, args, i);
-		}
-		// Double redirection '<<' (heredoc)
+			outfile(node, args, i, 1);
 		else if (args[*i][0] == '<' && args[*i][1] && args[*i][1] == '<')
-		{
 			infile2(node, args, i);
-			printf("Infile2\n");
-		}
-		// Single redirection '<' (input file)
 		else if (args[*i][0] == '<')
-		{
 			infile1(node, args, i);
-		}
 	}
 }
+
