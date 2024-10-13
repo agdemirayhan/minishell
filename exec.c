@@ -99,96 +99,48 @@ char	*find_exec(char *comm)
 	{
 		path = join_path(dirs[i], comm);
 		if (access(path, X_OK) == 0)
-		{
-			free_strarray(dirs);
-			return (path);
-		}
+			return (free_strarray(dirs), path);
 		free(path);
 		i++;
 	}
-	free_strarray(dirs);
-	return (NULL);
+	return (free_strarray(dirs), NULL);
+}
+
+void	handle_fork_and_execute(char *e_path, char **args)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		if (execve(e_path, args, NULL) == -1)
+			perror("minishell");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid < 0)
+		perror("minishell");
+	else
+	{
+		status = 0;
+		waitpid(pid, &status, WUNTRACED);
+		while (!WIFEXITED(status) && !WIFSIGNALED(status))
+			waitpid(pid, &status, WUNTRACED);
+	}
 }
 
 void	execute_command(char **args)
 {
-	pid_t	pid;
-	int		status;
 	char	*e_path;
 
-
 	if (args[0] == NULL)
-	{
 		return ;
-	}
 	e_path = find_exec(args[0]);
 	if (!e_path)
 	{
 		printf("minishell: command not found: %s\n", args[0]);
 		return ;
 	}
-	pid = fork();
-	if (pid == 0)
-	{
-		// Child process
-		if (execve(e_path, args, NULL) == -1)
-		{
-			perror("minishell");
-		}
-		exit(EXIT_FAILURE);
-	}
-	else if (pid < 0)
-	{
-		// Error forking
-		perror("minishell");
-	}
-	else
-	{
-		// Parent process
-		status = 0;
-		waitpid(pid, &status, WUNTRACED);
-		while (!WIFEXITED(status) && !WIFSIGNALED(status))
-		{
-			waitpid(pid, &status, WUNTRACED);
-		}
-		// do
-		//{
-		//	waitpid(pid, &status, WUNTRACED);
-		//} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-	}
+	handle_fork_and_execute(e_path, args);
 	free(e_path);
 }
-
-// void	execute_command(char **args)
-//{
-//	pid_t	pid;
-//	int		status;
-
-//	char	*path_env;
-//	path_env = getenv("PATH");
-//	// printf("%s\n",path_env);
-//	if (path_env == NULL)
-//	{
-//		return ;
-//	}
-//	pid = fork();
-//	if (pid == 0)
-//	{										// Child process
-//		if (execve(path_env, args, NULL) == -1)
-//		{
-//			perror("minishell");
-//		}
-//		exit(EXIT_FAILURE);
-//	}
-//	else if (pid < 0)
-//	{ // Error forking
-//		perror("minishell");
-//	}
-//	else
-//	{ // Parent process
-//		do
-//		{
-//			waitpid(pid, &status, WUNTRACED);
-//		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-//	}
-//}
