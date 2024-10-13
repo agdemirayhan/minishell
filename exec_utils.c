@@ -57,10 +57,6 @@ void	handle_external_command(t_mini *mini_cmd)
 
 void	execute_mini_command(t_mini *mini_cmd, t_data *data)
 {
-	int		saved_stdin;
-	int		saved_stdout;
-	pid_t	pid;
-	int		status;
 
 	if (is_builtin(mini_cmd->full_cmd[0]))
 	{

@@ -148,6 +148,7 @@ char					*ft_strtrim_all(const char *s1);
 int						get_fd(int oldfd, char *path, int flags[2]);
 void					outfile1(t_mini **node, char **args, int *i);
 void					get_redir(t_mini **node, char **args, int *i);
+int						is_redirection(char *arg);
 
 /* Print Functions */
 void					print_cmds(t_list *cmds);
@@ -159,9 +160,13 @@ char					*token_spacer(char *s);
 char					**split_with_quotes(const char *s, char *del);
 void					parse_command2(char *input, t_data *data,
 							t_prompt *test);
+char					**extend_matrix(char **matrix, char *new_entry);
+void					free_matrix(char ***m);
+void					free_content(void *content);
+char	**split_with_quotes(const char *s, char *del);
 
-/* Execution Functions */
-void	execute_mini_command(t_mini *mini_cmd, t_data *data);
+	/* Execution Functions */
+	void execute_mini_command(t_mini *mini_cmd, t_data *data);
 
 # ifndef DEBUG
 #  define DEBUG 0
