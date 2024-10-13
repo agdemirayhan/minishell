@@ -270,6 +270,23 @@ static t_list	*stop_fill(t_list *cmds, char **args)
 	return (NULL);
 }
 
+void	free_mini(void *content)
+{
+	t_mini	*mini_cmd;
+
+	mini_cmd = (t_mini *)content;
+	if (mini_cmd)
+	{
+		if (mini_cmd->full_cmd)
+		{
+			// Free each command string in the full_cmd array
+			ft_free_matrix(&(mini_cmd->full_cmd));
+		}
+		// Free other dynamically allocated members of mini_cmd here, if any
+		free(mini_cmd); // Finally, free the t_mini structure itself
+	}
+}
+
 /**
  * @brief Creates linked lists of commands split by pipes ('|').
  * Parses the input `args` array and creates separate linked
@@ -290,6 +307,22 @@ t_list	*fill_nodes(char **args)
 	cmds = NULL;
 	while (args[++i])
 	{
+		if ((args[i][0] == '|' && i == 0) || (args[i][0] == '|' && !args[i
+				+ 1]))
+		{
+			ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
+			ft_lstclear(&cmds, free_content);
+			return (NULL);
+		}
+		if (is_redirection(args[i]) && (!args[i + 1] || is_redirection(args[i
+					+ 1])))
+		{
+			ft_putstr_fd("syntax error near unexpected token '", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putstr_fd("'\n", 2);
+			ft_lstclear(&cmds, free_content);
+			return (NULL);
+		}
 		last_cmd = ft_lsttraverse(cmds);
 		if (i == 0 || (args[i][0] == '|' && args[i + 1] && args[i + 1][0]))
 		{
@@ -298,14 +331,11 @@ t_list	*fill_nodes(char **args)
 			last_cmd = ft_lsttraverse(cmds);
 		}
 		first_mini = (t_mini *)last_cmd->content;
-		// Check if the current argument is a redirection operator
-		if (!is_redirection(args[i])) // Skip if it's a redirection
+		if (!is_redirection(args[i]))
 		{
-			// Only add to full_cmd if it's not a redirection
 			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
 					args[i]);
 		}
-		// Handle redirection but skip adding it to the command list
 		get_redir(&first_mini, args, &i);
 		if (i < 0)
 			return (stop_fill(cmds, args));
@@ -313,6 +343,7 @@ t_list	*fill_nodes(char **args)
 		if (!args[i])
 			break ;
 	}
+	ft_free_matrix(&args);
 	return (cmds);
 }
 
@@ -332,6 +363,7 @@ void	parse_command(char *input, t_data *data)
 	int			status;
 
 	new_str = token_spacer(input);
+	// printf("new_str:%s\n", new_str);
 	if (!new_str)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
@@ -343,11 +375,17 @@ void	parse_command(char *input, t_data *data)
 		free(args);
 		return ;
 	}
+	if (args[0][0] == '|' && args[1] == NULL)
+	{
+		ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
+		free(args);
+		return ;
+	}
 	i = 0;
 	while (args[i])
 	{
 		trimmed_arg = ft_strtrim_all(args[i]);
-		// free(args[i]);
+		free(args[i]);
 		args[i] = trimmed_arg;
 		i++;
 	}
@@ -365,13 +403,10 @@ void	parse_command(char *input, t_data *data)
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
-				// Check if it's a built-in command
 				if (is_builtin(mini_cmd->full_cmd[0]))
 				{
-					// Save original file descriptors for stdin and stdout
 					saved_stdin = dup(STDIN_FILENO);
 					saved_stdout = dup(STDOUT_FILENO);
-					// Apply redirection for built-ins
 					if (mini_cmd->infile != STDIN_FILENO)
 					{
 						dup2(mini_cmd->infile, STDIN_FILENO);
@@ -382,22 +417,17 @@ void	parse_command(char *input, t_data *data)
 						dup2(mini_cmd->outfile, STDOUT_FILENO);
 						close(mini_cmd->outfile);
 					}
-					// Execute the built-in command
 					execute_builtin(mini_cmd->full_cmd, data);
-					// Restore standard input/output after the built-in execution
 					dup2(saved_stdin, STDIN_FILENO);
 					dup2(saved_stdout, STDOUT_FILENO);
-					// Close saved descriptors
 					close(saved_stdin);
 					close(saved_stdout);
 				}
 				else
 				{
-					// For non-built-in commands (external commands)
 					pid = fork();
 					if (pid == 0)
 					{
-						// Apply redirection before executing the command
 						if (mini_cmd->infile != STDIN_FILENO)
 						{
 							dup2(mini_cmd->infile, STDIN_FILENO);
@@ -408,7 +438,7 @@ void	parse_command(char *input, t_data *data)
 							dup2(mini_cmd->outfile, STDOUT_FILENO);
 							close(mini_cmd->outfile);
 						}
-						execute_command(mini_cmd->full_cmd);
+						execute_command(mini_cmd->full_cmd, data);
 						exit(EXIT_FAILURE);
 					}
 					else if (pid < 0)
@@ -426,6 +456,7 @@ void	parse_command(char *input, t_data *data)
 			cmd_node = cmd_node->next;
 		}
 	}
+	ft_lstclear(&test.cmds, free_mini);
 }
 
 // void	parse_command(char *input, t_data *data)

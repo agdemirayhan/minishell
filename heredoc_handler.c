@@ -48,6 +48,7 @@ char	*heredoc_str(char *s[2], size_t len, char *lim)
 		temp = s[1];
 		s[1] = ft_strjoin(s[1], s[0]);
 		free(temp); // Free the old result string (s[1])
+
 	}
 	free(s[0]); // Free the final s[0] after the loop
 	return (s[1]);

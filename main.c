@@ -7,6 +7,16 @@ void	init_shell(t_data *data)
 	data->mini_count = 1;
 }
 
+void	cleanup(t_data *data)
+{
+	if (data)
+	{
+		free_env_list(&(data->env_list)); // Free environment list
+		free(data);                       // Free t_data struct itself
+	}
+	clear_history(); // Free the history list (from readline)
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
@@ -24,7 +34,7 @@ int	main(int argc, char **argv, char **envp)
 	data->env_list = init_env_list(envp);
 	if (!data->env_list)
 	{
-		free(data);
+		cleanup(data);
 		exit(EXIT_FAILURE);
 	}
 	init_shell(data);
@@ -57,7 +67,8 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 		}
 		free_env_list(&(data->env_list));
-		free(data);
+		// free(data);
 	}
+	cleanup(data);
 	return (0);
 }
