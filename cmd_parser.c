@@ -368,6 +368,9 @@ void	parse_command(char *input, t_data *data)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
+	char *trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n"); //this is cause of $EMPTY
+	free(expanded_str);
+	expanded_str = trimmed_expanded_str;
 	args = split_with_quotes(expanded_str, " ");
 	free(expanded_str);
 	if (!args || args[0] == NULL)

@@ -37,8 +37,9 @@ char	*expand_env_vars(char *input, t_data *data)
 	char	*var_value;
 	char	*result;
 	size_t	result_len;
-	char	*exit_stat;
+	char	*exit_stat = ft_itoa(data->prev_exit_stat);;
 	int		in_single_quote;
+	char	cwd[1024];
 
 	total_size = 1;
 	i = 0;
@@ -60,6 +61,18 @@ char	*expand_env_vars(char *input, t_data *data)
 				total_size += ft_strlen(exit_stat);
 				i++;
 			}
+			else if (ft_strncmp(&input[i], "EMPTY", 5) == 0)
+			{
+				i += 5;
+			}
+			//else if (ft_strncmp(&input[i], "PWD", 3) == 0)
+			//{
+			//	if (getcwd(cwd, sizeof(cwd)) != NULL)
+			//		printf("%s\n", cwd);
+			//	else
+			//		perror("minishell");
+			//	i += 3;
+			//}
 			else
 			{
 				start = i;
@@ -104,6 +117,32 @@ char	*expand_env_vars(char *input, t_data *data)
 				result_len += ft_strlen(exit_stat);
 				i++;
 			}
+			else if (ft_strncmp(&input[i], "EMPTY", 5) == 0)
+			{
+				i += 5;
+			}
+			//else if (ft_strncmp(&input[i], "PWD", 3) == 0)
+			//{
+			//	if (getcwd(cwd, sizeof(cwd)) != NULL)
+			//	{
+			//		if (ft_strlen(&input[i]) == 3 || input[i + 3] == ' ' || input[i + 3] == '\0')
+			//		{
+			//			ft_putstr_fd("minishell: ", 2);
+			//			ft_putstr_fd(cwd, 2);
+			//			ft_putstr_fd(": is a directory\n", 2);
+			//			data->prev_exit_stat = 126;
+			//		}
+			//		else
+			//		{
+			//			ft_putstr_fd(cwd, 1);
+			//		}
+			//	}
+			//	else
+			//	{
+			//		perror("minishell");
+			//	}
+			//	i += 3;
+			//}
 			else
 			{
 				start = i;
@@ -136,3 +175,4 @@ char	*expand_env_vars(char *input, t_data *data)
 	result[result_len] = '\0';
 	return (result);
 }
+
