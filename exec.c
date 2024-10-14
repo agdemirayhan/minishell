@@ -16,40 +16,6 @@ void	free_strarray(char **array)
 	free(array);
 }
 
-// char *find_executable(char *command)
-//{
-//	char	*path_env = getenv("PATH");
-//	char	**paths;
-//	char	*full_path;
-//	struct stat buffer;
-//	int i = 0;
-
-//	if (!path_env)
-//		return (NULL);
-
-//	// Split the PATH variable into directories
-//	paths = ft_split(path_env, ':');
-//	if (!paths)
-//		return (NULL);
-
-//	// Loop through each directory in PATH
-//	while (paths[i])
-//	{
-//		full_path = ft_strjoin(paths[i], "/");
-//		full_path = free_strjoin(full_path, command);
-//		// Check if the file exists and is executable
-//		if (stat(full_path, &buffer) == 0 && (buffer.st_mode & S_IXUSR))
-//		{
-//			free_strarray(paths); // Free the split array
-//			return (full_path);
-//		}
-//		free(full_path); // Free full_path for this iteration
-//		i++;
-//	}
-//	free_strarray(paths); // Free the split array
-//	return (NULL); // Return NULL if command not found
-//}
-
 char	*join_path(const char *dir, const char *comm)
 {
 	char	*path;
@@ -123,8 +89,9 @@ void	execute_command(char **args, t_data *data)
 	e_path = find_exec(args[0]);
 	if (!e_path)
 	{
-		printf("minishell: %s: command not found\n", args[0]);
-		data->prev_exit_stat = 127;
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(args[0], STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		return ;
 	}
 	pid = fork();
@@ -155,36 +122,3 @@ void	execute_command(char **args, t_data *data)
 	free(e_path);
 }
 
-// void	execute_command(char **args)
-//{
-//	pid_t	pid;
-//	int		status;
-
-//	char	*path_env;
-//	path_env = getenv("PATH");
-//	// printf("%s\n",path_env);
-//	if (path_env == NULL)
-//	{
-//		return ;
-//	}
-//	pid = fork();
-//	if (pid == 0)
-//	{										// Child process
-//		if (execve(path_env, args, NULL) == -1)
-//		{
-//			perror("minishell");
-//		}
-//		exit(EXIT_FAILURE);
-//	}
-//	else if (pid < 0)
-//	{ // Error forking
-//		perror("minishell");
-//	}
-//	else
-//	{ // Parent process
-//		do
-//		{
-//			waitpid(pid, &status, WUNTRACED);
-//		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-//	}
-//}

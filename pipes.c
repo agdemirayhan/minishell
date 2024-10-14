@@ -62,7 +62,9 @@ void execute_pipes(t_list *cmds, t_data *data)
 				char *e_path = find_exec(mini_cmd->full_cmd[0]);
 				if (!e_path)
 				{
-					printf("minishell: %s: command not found\n", mini_cmd->full_cmd[0]);
+					ft_putstr_fd("minishell: ", STDERR_FILENO);
+					ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
+					ft_putstr_fd(": command not found\n", STDERR_FILENO);
 					exit(EXIT_FAILURE);
 				}
 				if (execve(e_path, mini_cmd->full_cmd, NULL) == -1)
