@@ -17,10 +17,24 @@ void	cleanup(t_data *data)
 	clear_history(); // Free the history list (from readline)
 }
 
+void	parsing_handler(char *input, t_data *data)
+{
+	t_prompt	test;
+	int i;
+
+	test.cmds = NULL;
+	parse_command(input, data, &test);
+	// print_cmds(test.cmds);
+	i = ft_lstsize(test.cmds);
+	// printf("lstsize:%d\n", i);
+	while (i-- > 0)
+		waitpid(-1, &data->prev_exit_stat, 0);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	char	*input;
-	t_data	*data;
+	char *input;
+	t_data *data;
 
 	if (argc != 1 || argv == NULL)
 		exit(EXIT_FAILURE);
@@ -47,7 +61,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		printf("Debug mode with input: %s\n", input);
 		add_history(input);
-		parse_command(input, data);
+		// parse_command(input, data);
 	}
 	else
 	{
@@ -63,7 +77,8 @@ int	main(int argc, char **argv, char **envp)
 			}
 			if (input[0] != '\0')
 				add_history(input);
-			parse_command(input, data);
+			parsing_handler(input, data);
+			// parse_command(input, data);
 			free(input);
 		}
 		free_env_list(&(data->env_list));

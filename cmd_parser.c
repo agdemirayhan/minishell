@@ -347,20 +347,19 @@ t_list	*fill_nodes(char **args)
 	return (cmds);
 }
 
-void	parse_command(char *input, t_data *data)
+void	parse_command(char *input, t_data *data, t_prompt *test)
 {
-	t_prompt	test;
-	char		*new_str;
-	char		*expanded_str;
-	char		**args;
-	int			i;
-	t_list		*cmd_node;
-	t_mini		*mini_cmd;
-	char		*trimmed_arg;
-	int			saved_stdin;
-	int			saved_stdout;
-	pid_t		pid;
-	int			status;
+	char	*new_str;
+	char	*expanded_str;
+	char	**args;
+	int		i;
+	t_list	*cmd_node;
+	t_mini	*mini_cmd;
+	char	*trimmed_arg;
+	int		saved_stdin;
+	int		saved_stdout;
+	pid_t	pid;
+	int		status;
 
 	new_str = token_spacer(input);
 	// printf("new_str:%s\n", new_str);
@@ -368,7 +367,8 @@ void	parse_command(char *input, t_data *data)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
-	char *trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n"); //this is cause of $EMPTY
+	char *trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n");
+		// this is cause of $EMPTY
 	free(expanded_str);
 	expanded_str = trimmed_expanded_str;
 	args = split_with_quotes(expanded_str, " ");
@@ -392,15 +392,15 @@ void	parse_command(char *input, t_data *data)
 		args[i] = trimmed_arg;
 		i++;
 	}
-	test.cmds = fill_nodes(args);
+	test->cmds = fill_nodes(args);
 	// print_cmds(test.cmds);
-	if (test.cmds && test.cmds->next != NULL)
+	if (test->cmds && test->cmds->next != NULL)
 	{
-		execute_pipes(test.cmds, data);
+		execute_pipes(test->cmds, data);
 	}
 	else
 	{
-		cmd_node = test.cmds;
+		cmd_node = test->cmds;
 		while (cmd_node)
 		{
 			mini_cmd = (t_mini *)cmd_node->content;
@@ -459,7 +459,7 @@ void	parse_command(char *input, t_data *data)
 			cmd_node = cmd_node->next;
 		}
 	}
-	ft_lstclear(&test.cmds, free_mini);
+	// ft_lstclear(&test->cmds, free_mini);
 }
 
 // void	parse_command(char *input, t_data *data)
@@ -491,7 +491,7 @@ void	parse_command(char *input, t_data *data)
 //		free(args);
 //		return ;
 //	}
-//	test.cmds = fill_nodes(args);
+//	test->cmds = fill_nodes(args);
 //	cmd_node = test.cmds;
 //	while (cmd_node)
 //	{
