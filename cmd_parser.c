@@ -287,89 +287,125 @@ void	free_mini(void *content)
 	}
 }
 
-/**
- * @brief Creates linked lists of commands split by pipes ('|').
- * Parses the input `args` array and creates separate linked
- * lists for each set of commands
- * and arguments divided by pipes. Returns an array of linked lists.
- * @param args Array of strings representing the parsed command input.
- * @return An array of linked lists,
- * each representing a command chain. The array ends with NULL.
- */
+int	fill_nodes_errorhandler(char **args, t_list *cmds, int *i)
+{
+	if ((args[*i][0] == '|' && *i == 0) || (args[*i][0] == '|' && !args[*i
+			+ 1]))
+	{
+		ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
+		ft_lstclear(&cmds, free_content);
+		return (0);
+	}
+	if (is_redirection(args[*i]) && (!args[*i + 1] || is_redirection(args[*i
+				+ 1])))
+	{
+		ft_putstr_fd("syntax error near unexpected token '", 2);
+		ft_putstr_fd(args[*i], 2);
+		ft_putstr_fd("'\n", 2);
+		ft_lstclear(&cmds, free_content);
+		return (0);
+	}
+	return (1);
+}
+
+void	fill_nodes_main(char **args, t_list **cmds, int *i, t_data *data)
+{
+	t_list	*last_cmd;
+	t_mini	*first_mini;
+
+	last_cmd = ft_lsttraverse(*cmds);
+	if (*i == 0 || (args[*i][0] == '|' && args[*i + 1] && args[*i + 1][0]))
+	{
+		*i += (args[*i][0] == '|');
+		ft_lst_insertattail(cmds, ft_lst_newlist(mini_init()));
+		last_cmd = ft_lsttraverse(*cmds);
+	}
+	first_mini = (t_mini *)last_cmd->content;
+	if (!is_redirection(args[*i]))
+		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[*i]);
+	get_redir(&first_mini, args, i, data);
+}
+
 t_list	*fill_nodes(char **args, t_data *data)
 {
 	t_list	*cmds;
-	t_list	*last_cmd;
 	int		i;
-	t_mini	*first_mini;
 
 	i = -1;
 	cmds = NULL;
 	while (args[++i])
 	{
-		if ((args[i][0] == '|' && i == 0) || (args[i][0] == '|' && !args[i
-				+ 1]))
-		{
-			ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
-			ft_lstclear(&cmds, free_content);
+		if (!fill_nodes_errorhandler(args, cmds, &i))
 			return (NULL);
-		}
-		if (is_redirection(args[i]) && (!args[i + 1] || is_redirection(args[i
-					+ 1])))
-		{
-			ft_putstr_fd("syntax error near unexpected token '", 2);
-			ft_putstr_fd(args[i], 2);
-			ft_putstr_fd("'\n", 2);
-			ft_lstclear(&cmds, free_content);
-			return (NULL);
-		}
-		last_cmd = ft_lsttraverse(cmds);
-		if (i == 0 || (args[i][0] == '|' && args[i + 1] && args[i + 1][0]))
-		{
-			i += (args[i][0] == '|');
-			ft_lst_insertattail(&cmds, ft_lst_newlist(mini_init()));
-			last_cmd = ft_lsttraverse(cmds);
-		}
-		first_mini = (t_mini *)last_cmd->content;
-		if (!is_redirection(args[i]))
-		{
-			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
-					args[i]);
-		}
-		get_redir(&first_mini, args, &i, data);
+		fill_nodes_main(args, &cmds, &i, data);
 		if (i < 0)
 			return (stop_fill(cmds, args));
-		// printf("args[%d]: %s\n", i, args[i]);
 		if (!args[i])
 			break ;
 	}
-	ft_free_matrix(&args);
-	return (cmds);
+	return (ft_free_matrix(&args), cmds);
+}
+
+void	builtin(t_data *data, t_mini *mini_cmd)
+{
+	int	saved_stdin;
+	int	saved_stdout;
+
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (mini_cmd->infile != STDIN_FILENO)
+	{
+		dup2(mini_cmd->infile, STDIN_FILENO);
+		close(mini_cmd->infile);
+	}
+	if (mini_cmd->outfile != STDOUT_FILENO)
+	{
+		dup2(mini_cmd->outfile, STDOUT_FILENO);
+		close(mini_cmd->outfile);
+	}
+	execute_builtin(mini_cmd->full_cmd, data);
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+}
+
+void	othercommands(t_data *data, t_mini *mini_cmd)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		if (mini_cmd->infile != STDIN_FILENO)
+		{
+			dup2(mini_cmd->infile, STDIN_FILENO);
+			close(mini_cmd->infile);
+		}
+		if (mini_cmd->outfile != STDOUT_FILENO)
+		{
+			dup2(mini_cmd->outfile, STDOUT_FILENO);
+			close(mini_cmd->outfile);
+		}
+		execute_command(mini_cmd->full_cmd, data);
+		exit(data->prev_exit_stat);
+	}
+	else if (pid < 0)
+		perror("minishell");
+	else
+		waitpid(pid, &status, 0);
 }
 
 void	parse_command(char **args, t_data *data, t_prompt *test)
 {
-	char	*new_str;
-	char	*expanded_str;
-	// char	**args;
-	int		i;
 	t_list	*cmd_node;
 	t_mini	*mini_cmd;
-	char	*trimmed_arg;
-	int		saved_stdin;
-	int		saved_stdout;
-	pid_t	pid;
-	int		status;
-	char	*trimmed_expanded_str;
-	int		j;
 
-	
 	test->cmds = fill_nodes(args, data);
 	// print_cmds(test.cmds);
 	if (test->cmds && test->cmds->next != NULL)
-	{
 		execute_pipes(test->cmds, data);
-	}
 	else
 	{
 		cmd_node = test->cmds;
@@ -379,157 +415,13 @@ void	parse_command(char **args, t_data *data, t_prompt *test)
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
 				if (is_builtin(mini_cmd->full_cmd[0]))
-				{
-					saved_stdin = dup(STDIN_FILENO);
-					saved_stdout = dup(STDOUT_FILENO);
-					if (mini_cmd->infile != STDIN_FILENO)
-					{
-						dup2(mini_cmd->infile, STDIN_FILENO);
-						close(mini_cmd->infile);
-					}
-					if (mini_cmd->outfile != STDOUT_FILENO)
-					{
-						dup2(mini_cmd->outfile, STDOUT_FILENO);
-						close(mini_cmd->outfile);
-					}
-					execute_builtin(mini_cmd->full_cmd, data);
-					dup2(saved_stdin, STDIN_FILENO);
-					dup2(saved_stdout, STDOUT_FILENO);
-					close(saved_stdin);
-					close(saved_stdout);
-				}
+					builtin(data, mini_cmd);
 				else
-				{
-					pid = fork();
-					if (pid == 0)
-					{
-						if (mini_cmd->infile != STDIN_FILENO)
-						{
-							dup2(mini_cmd->infile, STDIN_FILENO);
-							close(mini_cmd->infile);
-						}
-						if (mini_cmd->outfile != STDOUT_FILENO)
-						{
-							dup2(mini_cmd->outfile, STDOUT_FILENO);
-							close(mini_cmd->outfile);
-						}
-						execute_command(mini_cmd->full_cmd, data);
-						j = ft_lstsize(test->cmds);
-						// printf("lstsize:%d\n", i);
-						while (j-- > 0)
-						{
-							waitpid(-1, &data->prev_exit_stat, 0);
-							// printf("data->prev_exit_stat:%d\n",
-							// 	data->prev_exit_stat);
-						}
-						exit(data->prev_exit_stat);
-					}
-					else if (pid < 0)
-					{
-						perror("minishell");
-					}
-					else
-					{
-						waitpid(pid, &status, 0);
-					}
-				}
+					othercommands(data, mini_cmd);
 				check_and_update_shlvl(data, mini_cmd);
-				// it's here the shlvl checking!!!!!!
 			}
 			cmd_node = cmd_node->next;
 		}
 	}
 	// ft_lstclear(&test->cmds, free_mini);
 }
-
-// void	parse_command(char *input, t_data *data)
-//{
-//	t_prompt	test;
-//	char		*new_str;
-//	char		*expanded_str;
-//	int			has_heredoc;
-//	char		*delimiter;
-//	char		*heredoc_pos;
-//	char		**args;
-//	int			i;
-//	t_list		*cmd_node;
-//	t_mini		*mini_cmd;
-//	int			has_pipe;
-
-//	has_heredoc = 0;
-//	delimiter = NULL;
-//	has_pipe = 0;
-//	new_str = token_spacer(input);
-//	if (!new_str)
-//		return ;
-//	expanded_str = expand_env_vars(new_str, data);
-//	free(new_str);
-//	args = split_with_quotes(expanded_str, " ");
-//	free(expanded_str);
-//	if (!args || args[0] == NULL)
-//	{
-//		free(args);
-//		return ;
-//	}
-//	test->cmds = fill_nodes(args);
-//	cmd_node = test.cmds;
-//	while (cmd_node)
-//	{
-//		mini_cmd = (t_mini *)cmd_node->content;
-//		if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
-//		{
-//			if (ft_strchr(mini_cmd->full_cmd[0], '|'))
-//			{
-//				has_pipe = 1;
-//				break ;
-//			}
-//		}
-//		cmd_node = cmd_node->next;
-//	}
-//	if (has_pipe)
-//	{
-//		execute_pipes(test.cmds);
-//	}
-//	else
-//	{
-//		cmd_node = test.cmds;
-//		while (cmd_node)
-//		{
-//			mini_cmd = (t_mini *)cmd_node->content;
-//			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
-//			{
-//				if (is_builtin(mini_cmd->full_cmd[0]))
-//				{
-//					execute_builtin(mini_cmd->full_cmd, data);
-//				}
-//				else
-//				{
-//					execute_command(mini_cmd->full_cmd);
-//				}
-//			}
-//			cmd_node = cmd_node->next;
-//		}
-//	i = 0;
-//	while (args[i])
-//	{
-//		free(args[i]);
-//		i++;
-//	}
-//	free(args);
-//	//print_cmds(test.cmds);
-//	}
-//}
-
-// int	main(void)
-// {
-// 	char input[] = "echo '\"Hello, \\\"World\\\"\" and 'it\\'s a test";
-// 	char *processed = process_quotes(input);
-
-// 	if (processed)
-// 	{
-// 		printf("Processed: %s\n", processed);
-// 		free(processed);
-// 	}
-
-// 	return (0);
-// }
