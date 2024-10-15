@@ -129,7 +129,7 @@ void					init_shell(t_data *data);
 void					handle_signals(int signo);
 void					parse_command(char *input, t_data *data,
 							t_prompt *test);
-							 void free_strarray(char **array);
+void					free_strarray(char **array);
 char					*find_slash(char *comm);
 char					*find_exec(char *comm);
 // void				execute_command(char **args);
@@ -147,9 +147,9 @@ void					clean_up(t_data *data);
 char					*ft_strtrim_all(const char *s1);
 
 /* Redirection Functions */
-int						get_fd(int oldfd, char *path, int flags[2]);
-void					outfile1(t_mini **node, char **args, int *i);
-void					get_redir(t_mini **node, char **args, int *i);
+int	get_fd(int oldfd, char *path, int flags[2], t_data *data);
+	// void					outfile1(t_mini **node, char **args, int *i);
+	void get_redir(t_mini **node, char **args, int *i, t_data *data);
 
 /* Print Functions */
 void					print_cmds(t_list *cmds);

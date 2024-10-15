@@ -296,7 +296,7 @@ void	free_mini(void *content)
  * @return An array of linked lists,
  * each representing a command chain. The array ends with NULL.
  */
-t_list	*fill_nodes(char **args)
+t_list	*fill_nodes(char **args, t_data *data)
 {
 	t_list	*cmds;
 	t_list	*last_cmd;
@@ -336,7 +336,7 @@ t_list	*fill_nodes(char **args)
 			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
 					args[i]);
 		}
-		get_redir(&first_mini, args, &i);
+		get_redir(&first_mini, args, &i,data);
 		if (i < 0)
 			return (stop_fill(cmds, args));
 		// printf("args[%d]: %s\n", i, args[i]);
@@ -360,6 +360,7 @@ void	parse_command(char *input, t_data *data, t_prompt *test)
 	int		saved_stdout;
 	pid_t	pid;
 	int		status;
+	char	*trimmed_expanded_str;
 
 	new_str = token_spacer(input);
 	// printf("new_str:%s\n", new_str);
@@ -367,8 +368,8 @@ void	parse_command(char *input, t_data *data, t_prompt *test)
 		return ;
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
-	char *trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n");
-		// this is cause of $EMPTY
+	trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n");
+	// this is cause of $EMPTY
 	free(expanded_str);
 	expanded_str = trimmed_expanded_str;
 	args = split_with_quotes(expanded_str, " ");
@@ -392,7 +393,7 @@ void	parse_command(char *input, t_data *data, t_prompt *test)
 		args[i] = trimmed_arg;
 		i++;
 	}
-	test->cmds = fill_nodes(args);
+	test->cmds = fill_nodes(args, data);
 	// print_cmds(test.cmds);
 	if (test->cmds && test->cmds->next != NULL)
 	{

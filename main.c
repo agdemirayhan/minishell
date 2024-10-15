@@ -20,7 +20,7 @@ void	cleanup(t_data *data)
 void	parsing_handler(char *input, t_data *data)
 {
 	t_prompt	test;
-	int i;
+	int			i;
 
 	test.cmds = NULL;
 	parse_command(input, data, &test);
@@ -28,7 +28,10 @@ void	parsing_handler(char *input, t_data *data)
 	i = ft_lstsize(test.cmds);
 	// printf("lstsize:%d\n", i);
 	while (i-- > 0)
+	{
 		waitpid(-1, &data->prev_exit_stat, 0);
+		printf("data->prev_exit_stat:%d\n", data->prev_exit_stat);
+	}
 }
 
 int	main(int argc, char **argv, char **envp)
