@@ -92,6 +92,9 @@ void	execute_command(char **args, t_data *data)
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(args[0], STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		// printf("TESTT\n");
+		data->prev_exit_stat = 127;
+		// printf("data->prev_exit_stat:%d\n", data->prev_exit_stat);
 		return ;
 	}
 	pid = fork();
@@ -121,4 +124,3 @@ void	execute_command(char **args, t_data *data)
 	}
 	free(e_path);
 }
-
