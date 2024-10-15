@@ -23,7 +23,7 @@ int	get_fd(int oldfd, char *path, int flags[2], t_data *data)
 	{
 		perror(path); // Prints a detailed error message to stderr
 		data->prev_exit_stat = 1;
-		printf("data->prev_exit_stat:%d\n", data->prev_exit_stat);
+		// printf("data->prev_exit_stat:%d\n", data->prev_exit_stat);
 		// Set global status to indicate an error (usually 1 is for general errors)
 	}
 	return (fd);

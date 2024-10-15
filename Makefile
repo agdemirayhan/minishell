@@ -2,7 +2,7 @@
 NAME = minishell
 CC = cc
 # CFLAGS = -Wall -Wextra -Werror -fsanitize=address
-CFLAGS = -fsanitize=address -g
+# CFLAGS = -fsanitize=address -g
 LDFLAGS = -L/opt/homebrew/opt/readline/lib -L$(LIBFT_DIR) #added these two lines
 CPPFLAGS = -I/opt/homebrew/opt/readline/include -I$(LIBFT_DIR) #added these two lines bcs it wasn't working on my pc without these flags. just comment them out here and in Name target as well if it broke yours
 LIBS = -lreadline -lft

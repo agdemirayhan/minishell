@@ -336,7 +336,7 @@ t_list	*fill_nodes(char **args, t_data *data)
 			first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd,
 					args[i]);
 		}
-		get_redir(&first_mini, args, &i,data);
+		get_redir(&first_mini, args, &i, data);
 		if (i < 0)
 			return (stop_fill(cmds, args));
 		// printf("args[%d]: %s\n", i, args[i]);
@@ -347,11 +347,11 @@ t_list	*fill_nodes(char **args, t_data *data)
 	return (cmds);
 }
 
-void	parse_command(char *input, t_data *data, t_prompt *test)
+void	parse_command(char **args, t_data *data, t_prompt *test)
 {
 	char	*new_str;
 	char	*expanded_str;
-	char	**args;
+	// char	**args;
 	int		i;
 	t_list	*cmd_node;
 	t_mini	*mini_cmd;
@@ -361,38 +361,9 @@ void	parse_command(char *input, t_data *data, t_prompt *test)
 	pid_t	pid;
 	int		status;
 	char	*trimmed_expanded_str;
+	int		j;
 
-	new_str = token_spacer(input);
-	// printf("new_str:%s\n", new_str);
-	if (!new_str)
-		return ;
-	expanded_str = expand_env_vars(new_str, data);
-	free(new_str);
-	trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n");
-	// this is cause of $EMPTY
-	free(expanded_str);
-	expanded_str = trimmed_expanded_str;
-	args = split_with_quotes(expanded_str, " ");
-	free(expanded_str);
-	if (!args || args[0] == NULL)
-	{
-		free(args);
-		return ;
-	}
-	if (args[0][0] == '|' && args[1] == NULL)
-	{
-		ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
-		free(args);
-		return ;
-	}
-	i = 0;
-	while (args[i])
-	{
-		trimmed_arg = ft_strtrim_all(args[i]);
-		free(args[i]);
-		args[i] = trimmed_arg;
-		i++;
-	}
+	
 	test->cmds = fill_nodes(args, data);
 	// print_cmds(test.cmds);
 	if (test->cmds && test->cmds->next != NULL)
@@ -443,7 +414,15 @@ void	parse_command(char *input, t_data *data, t_prompt *test)
 							close(mini_cmd->outfile);
 						}
 						execute_command(mini_cmd->full_cmd, data);
-						exit(EXIT_FAILURE);
+						j = ft_lstsize(test->cmds);
+						// printf("lstsize:%d\n", i);
+						while (j-- > 0)
+						{
+							waitpid(-1, &data->prev_exit_stat, 0);
+							// printf("data->prev_exit_stat:%d\n",
+							// 	data->prev_exit_stat);
+						}
+						exit(data->prev_exit_stat);
 					}
 					else if (pid < 0)
 					{

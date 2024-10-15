@@ -127,9 +127,8 @@ char					*expand_env_vars(char *input, t_data *data);
 // void				init_shell(void);
 void					init_shell(t_data *data);
 void					handle_signals(int signo);
-void					parse_command(char *input, t_data *data,
-							t_prompt *test);
-void					free_strarray(char **array);
+void					parse_command(char **args, t_data *data,
+							t_prompt *test); void free_strarray(char **array);
 char					*find_slash(char *comm);
 char					*find_exec(char *comm);
 // void				execute_command(char **args);
@@ -147,12 +146,18 @@ void					clean_up(t_data *data);
 char					*ft_strtrim_all(const char *s1);
 
 /* Redirection Functions */
-int	get_fd(int oldfd, char *path, int flags[2], t_data *data);
-	// void					outfile1(t_mini **node, char **args, int *i);
-	void get_redir(t_mini **node, char **args, int *i, t_data *data);
+int						get_fd(int oldfd, char *path, int flags[2],
+							t_data *data);
+// void					outfile1(t_mini **node, char **args, int *i);
+void					get_redir(t_mini **node, char **args, int *i,
+							t_data *data);
 
 /* Print Functions */
 void					print_cmds(t_list *cmds);
+
+/* Parsing Functions */
+char					**split_with_quotes(const char *s, char *del);
+char					*token_spacer(char *s);
 
 # ifndef DEBUG
 #  define DEBUG 0
