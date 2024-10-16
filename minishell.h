@@ -109,7 +109,8 @@ void					update_env(t_env **env_list, char *name, char *value);
 // void				print_env(t_data *data);
 
 /* export functions */
-void					export_var(char **argv, t_env **env_list);
+//void					export_var(char **argv, t_env **env_list);
+void	export_var(char **argv, t_env **env_list, t_data *data);
 void					execute_export(char **argv, t_data *data);
 
 /* unset functions */
@@ -123,6 +124,7 @@ void					execute_unset(char **argv, t_data *data);
 /* dollar sign */
 void					*find_env_ref(t_env *env_list, char *name);
 char					*expand_env_vars(char *input, t_data *data);
+//char	*expand_env_vars(char *input, t_data *data, int is_echo);
 
 /* Function prototypes */
 // void				init_shell(void);
@@ -145,6 +147,7 @@ void					clean_up(t_data *data);
 
 /* Trim Functions */
 char					*ft_strtrim_all(const char *s1);
+//int is_only_pwd(t_mini *mini);
 
 /* Redirection Functions */
 int						get_fd(int oldfd, char *path, int flags[2],

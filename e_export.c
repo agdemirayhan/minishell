@@ -1,5 +1,34 @@
 #include "minishell.h"
 
+
+/**
+ * @brief Validates an environment variable name.
+ * @param name The name of the variable to validate.
+ * @return 1 if valid, 0 if invalid.
+ */
+int is_valid_var_name(const char *name)
+{
+	if (!name || !*name)
+		return 0;
+
+	if (!ft_isalpha(*name))
+		return 0;
+
+	for (int i = 1; name[i] != '\0'; i++)
+	{
+		if (!ft_isalnum(name[i]) && name[i] != '_')
+			return 0;
+	}
+	for (int i = 0; name[i] != '\0'; i++)
+	{
+		if (ft_isalpha(name[i]))
+			return 1;
+	}
+
+	return 0;
+}
+
+
 /**
  * @brief Executes the export command
  * @param argv The command line arguments passed to the export command
@@ -25,7 +54,7 @@ void	execute_export(char **argv, t_data *data)
 	i = 1;
 	while (argv[i])
 	{
-		export_var(&argv[i], &(data->env_list));
+		export_var(&argv[i], &(data->env_list), data);
 		i++;
 	}
 }
@@ -35,7 +64,7 @@ void	execute_export(char **argv, t_data *data)
  * @param argv Contains the variable name and optionally value.
  * @param env_list Points to the list of environment variables.
  */
-void	export_var(char **argv, t_env **env_list)
+void	export_var(char **argv, t_env **env_list, t_data *data)
 {
 
 	char *equal = ft_strchr(*argv, '=');
@@ -52,6 +81,16 @@ void	export_var(char **argv, t_env **env_list)
 	else
 	{
 		name = ft_strdup(*argv);
+	}
+	if (!is_valid_var_name(name))
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(name, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+		free(name);
+		free(value);
+		data->prev_exit_stat = 1;
+		return;
 	}
 	curr = *env_list;
 	while (curr)

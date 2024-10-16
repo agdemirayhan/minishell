@@ -59,6 +59,7 @@ int	parsing_helpers(char *input, t_data *data, char ***args)
 		trimmed_arg = ft_strtrim_all((*args)[i]);
 		free((*args)[i]);
 		(*args)[i] = trimmed_arg;
+
 		i++;
 	}
 }

@@ -40,6 +40,7 @@ char	*expand_env_vars(char *input, t_data *data)
 	char	*exit_stat = ft_itoa(data->prev_exit_stat);;
 	int		in_single_quote;
 	char	cwd[1024];
+	t_mini	*mini;
 
 	total_size = 1;
 	i = 0;
@@ -127,10 +128,10 @@ char	*expand_env_vars(char *input, t_data *data)
 			//	{
 			//		if (ft_strlen(&input[i]) == 3 || input[i + 3] == ' ' || input[i + 3] == '\0')
 			//		{
-			//			ft_putstr_fd("minishell: ", 2);
-			//			ft_putstr_fd(cwd, 2);
-			//			ft_putstr_fd(": is a directory\n", 2);
-			//			data->prev_exit_stat = 126;
+			//				ft_putstr_fd("minishell: ", 2);
+			//				ft_putstr_fd(cwd, 2);
+			//				ft_putstr_fd(": is a directory\n", 2);
+			//				data->prev_exit_stat = 126;
 			//		}
 			//		else
 			//		{
