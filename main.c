@@ -59,7 +59,6 @@ int	parsing_helpers(char *input, t_data *data, char ***args)
 		trimmed_arg = ft_strtrim_all((*args)[i]);
 		free((*args)[i]);
 		(*args)[i] = trimmed_arg;
-
 		i++;
 	}
 }
@@ -110,9 +109,9 @@ int	main(int argc, char **argv, char **envp)
 		input = getenv("DEBUG_INPUT");
 		if (input == NULL)
 		{
-			input = "minishell_tester/test_files/invalid_permission";
+			input = "minishell_tester/test_files";
 		}
-		printf("Debug mode with input: %s\n", input);
+		// printf("Debug mode with input: %s\n", input);
 		add_history(input);
 		parsing_handler(input, data);
 		// parse_command(input, data);
