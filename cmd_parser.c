@@ -374,25 +374,59 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 {
 	pid_t	pid;
 	int		status;
+	char	*e_path;
+	DIR		*dir;
 
+	dir = NULL;
+	if (mini_cmd->full_cmd)
+		dir = opendir(mini_cmd->full_cmd);
+	e_path = find_exec(mini_cmd->full_cmd[0]);
+	if (!e_path)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		data->prev_exit_stat = 127;
+		return ;
+	}
+	if (access(e_path, X_OK) == -1 || dir)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
+		ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
+		data->prev_exit_stat = 126;
+		free(e_path);
+		return ;
+	}
 	pid = fork();
 	if (pid == 0)
 	{
 		if (mini_cmd->infile != STDIN_FILENO)
 		{
-			dup2(mini_cmd->infile, STDIN_FILENO);
+			if (dup2(mini_cmd->infile, STDIN_FILENO) == -1)
+			{
+				perror("minishell: dup2 failed for infile");
+				exit(1);
+			}
 			close(mini_cmd->infile);
 		}
 		if (mini_cmd->outfile != STDOUT_FILENO)
 		{
-			dup2(mini_cmd->outfile, STDOUT_FILENO);
+			if (dup2(mini_cmd->outfile, STDOUT_FILENO) == -1)
+			{
+				perror("minishell: dup2 failed for outfile");
+				exit(1);
+			}
 			close(mini_cmd->outfile);
 		}
 		execute_command(mini_cmd->full_cmd, data);
 		exit(data->prev_exit_stat);
 	}
 	else if (pid < 0)
-		perror("minishell");
+	{
+		perror("minishell: fork failed");
+		data->prev_exit_stat = 1;
+	}
 	else
 	{
 		waitpid(pid, &status, 0);
@@ -401,7 +435,14 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 		else if (WIFSIGNALED(status))
 			data->prev_exit_stat = 128 + WTERMSIG(status);
 	}
+	free(e_path);
 }
+
+// if (!is_builtin(mini_cmd->full_cmd[0])
+// 	&& (!access(mini_cmd->full_cmd[0]->full_path, F_OK)) || dir)
+// 	data->prev_exit_stat = 126;
+// else if (!is_builtin(n) && n->full_cmd)
+// 	data->prev_exit_stat = 127;
 
 void	parse_command(char **args, t_data *data, t_prompt *test)
 {

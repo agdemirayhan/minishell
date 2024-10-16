@@ -87,6 +87,7 @@ void	execute_command(char **args, t_data *data)
 		return ;
 	}
 	e_path = find_exec(args[0]);
+	// printf("11e_path:%s\n",e_path);
 	if (!e_path)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);

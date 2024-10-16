@@ -12,6 +12,7 @@
 # include <sys/ioctl.h>
 # include <sys/wait.h>
 # include <unistd.h>
+#include <dirent.h>
 
 /* Readline Functions */
 # include <readline/history.h>

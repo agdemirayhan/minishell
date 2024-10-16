@@ -34,7 +34,7 @@ int	parsing_helpers(char *input, t_data *data, char ***args)
 
 	new_str = token_spacer(input);
 	if (!new_str)
-		return -1;
+		return (-1);
 	expanded_str = expand_env_vars(new_str, data);
 	free(new_str);
 	trimmed_expanded_str = ft_strtrim(expanded_str, " \t\n");
@@ -70,9 +70,8 @@ void	parsing_handler(char *input, t_data *data)
 	char		**args;
 
 	test.cmds = NULL;
-	if(parsing_helpers(input, data, &args) == -1)
-		return;
-	
+	if (parsing_helpers(input, data, &args) == -1)
+		return ;
 	parse_command(args, data, &test);
 	// print_cmds(test.cmds);
 	// i = ft_lstsize(test.cmds);
@@ -110,7 +109,7 @@ int	main(int argc, char **argv, char **envp)
 		input = getenv("DEBUG_INPUT");
 		if (input == NULL)
 		{
-			input = " ";
+			input = "minishell_tester/test_files/invalid_permission";
 		}
 		printf("Debug mode with input: %s\n", input);
 		add_history(input);
