@@ -59,6 +59,7 @@ int	parsing_helpers(char *input, t_data *data, char ***args)
 		trimmed_arg = ft_strtrim_all((*args)[i]);
 		free((*args)[i]);
 		(*args)[i] = trimmed_arg;
+
 		i++;
 	}
 }
@@ -72,7 +73,7 @@ void	parsing_handler(char *input, t_data *data)
 	test.cmds = NULL;
 	if(parsing_helpers(input, data, &args) == -1)
 		return;
-	
+
 	parse_command(args, data, &test);
 	// print_cmds(test.cmds);
 	// i = ft_lstsize(test.cmds);
