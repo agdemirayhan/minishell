@@ -394,7 +394,13 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 	else if (pid < 0)
 		perror("minishell");
 	else
+	{
 		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			data->prev_exit_stat = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			data->prev_exit_stat = 128 + WTERMSIG(status);
+	}
 }
 
 void	parse_command(char **args, t_data *data, t_prompt *test)
