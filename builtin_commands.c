@@ -129,6 +129,7 @@ void	execute_builtin(char **args, t_data *data)
 		if (chdir(dir) != 0)
 		{
 			perror("minishell");
+			data->prev_exit_stat = 1;
 		}
 		else
 			update_pwd(&(data->env_list));
@@ -144,46 +145,8 @@ void	execute_builtin(char **args, t_data *data)
 		{
 			if (check_exit_num(args[1], &exit_code))
 			{
-				data->prev_exit_stat = 1;
-				if (data->shlvl_history)
-				{
-					int previous_shlvl = data->shlvl_history->shlvl_value;
-					t_shlvl_node *temp = data->shlvl_history;
-					data->shlvl_history = data->shlvl_history->next;
-					free(temp);
-					if (data->mini_count == 1)
-					{
-						clean_up(data);
-						exit(data->prev_exit_stat);
-					}
-					else
-					{
-						data->mini_count--;
-						if (previous_shlvl > 0)
-						{
-							char *new_value = ft_itoa(previous_shlvl);
-							if (new_value)
-							{
-								update_env(&(data->env_list), "SHLVL", new_value);
-								free(new_value);
-							}
-						}
-						return;
-					}
-				}
-				else
-				{
-					if (data->mini_count == 1)
-					{
-						clean_up(data);
-						exit(data->prev_exit_stat);
-					}
-					else
-					{
-						data->mini_count--;
-						return ;
-					}
-				}
+				data->prev_exit_stat = 255;
+				return;
 			}
 			if (args[2] != NULL)
 			{
@@ -198,7 +161,7 @@ void	execute_builtin(char **args, t_data *data)
 			data->prev_exit_stat = 0;
 		}
 		if (data->shlvl_history)
-		 {
+		{
 			int previous_shlvl = data->shlvl_history->shlvl_value;
 			t_shlvl_node *temp = data->shlvl_history;
 			data->shlvl_history = data->shlvl_history->next;
