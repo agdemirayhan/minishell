@@ -370,17 +370,14 @@ void	builtin(t_data *data, t_mini *mini_cmd)
 	close(saved_stdout);
 }
 
-void	othercommands(t_data *data, t_mini *mini_cmd)
+void	othercommands(t_data *data, t_mini *mini_cmd, DIR *dir)
 {
 	pid_t	pid;
 	int		status;
 	char	*e_path;
-	DIR		*dir;
 
-	dir = NULL;
-	if (mini_cmd->full_cmd)
-		dir = opendir(mini_cmd->full_cmd);
 	e_path = find_exec(mini_cmd->full_cmd[0]);
+	// printf("e_path:%s\n",e_path);
 	if (!e_path)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
@@ -448,9 +445,11 @@ void	parse_command(char **args, t_data *data, t_prompt *test)
 {
 	t_list	*cmd_node;
 	t_mini	*mini_cmd;
+	DIR		*dir;
 
 	test->cmds = fill_nodes(args, data);
 	// print_cmds(test.cmds);
+	// print_cmds(test->cmds);
 	if (test->cmds && test->cmds->next != NULL)
 		execute_pipes(test->cmds, data);
 	else
@@ -459,12 +458,26 @@ void	parse_command(char **args, t_data *data, t_prompt *test)
 		while (cmd_node)
 		{
 			mini_cmd = (t_mini *)cmd_node->content;
+			if (mini_cmd && mini_cmd->full_cmd)
+				dir = opendir(mini_cmd->full_cmd[0]); // Try opening as a directory
+			// printf("full_cmd:%s\n", mini_cmd->full_cmd[0]);
+			if (dir) // If opendir succeeded
+			{
+				// printf("'%s' is a directory.\n", mini_cmd->full_cmd[0]);
+				closedir(dir); // Don't forget to close the directory when done
+			}
+			else // If opendir failed
+			{
+				// printf("'%s' is not a directory or could not be opened.\n",
+					// mini_cmd->full_cmd[0]);
+				perror("opendir");
+			}
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
 				if (is_builtin(mini_cmd->full_cmd[0]))
 					builtin(data, mini_cmd);
 				else
-					othercommands(data, mini_cmd);
+					othercommands(data, mini_cmd,dir);
 				check_and_update_shlvl(data, mini_cmd);
 			}
 			cmd_node = cmd_node->next;
