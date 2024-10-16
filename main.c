@@ -109,7 +109,7 @@ int	main(int argc, char **argv, char **envp)
 		input = getenv("DEBUG_INPUT");
 		if (input == NULL)
 		{
-			input = "minishell_tester/test_files/invalid_permission";
+			input = "./test_files/invalid_permission";
 		}
 		printf("Debug mode with input: %s\n", input);
 		add_history(input);

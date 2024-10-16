@@ -375,13 +375,14 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 	pid_t	pid;
 	int		status;
 	char	*e_path;
-	DIR		*dir;
 
-	dir = NULL;
-	if (mini_cmd->full_cmd)
-		dir = opendir(mini_cmd->full_cmd);
-	e_path = find_exec(mini_cmd->full_cmd[0]);
-	if (!e_path)
+	// DIR		*dir;
+	// dir = NULL;
+	// if (mini_cmd->full_cmd)
+	// dir = opendir(mini_cmd->full_cmd);
+	mini_cmd->full_path = find_exec(mini_cmd->full_cmd[0]);
+	// printf("inside othercommands:%s\n", mini_cmd->full_path);
+	if (!mini_cmd->full_path)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
@@ -389,13 +390,13 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 		data->prev_exit_stat = 127;
 		return ;
 	}
-	if (access(e_path, X_OK) == -1 || dir)
+	if (access(mini_cmd->full_path, X_OK) == -1)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
 		ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
 		data->prev_exit_stat = 126;
-		free(e_path);
+		// free(e_path);
 		return ;
 	}
 	pid = fork();
@@ -435,7 +436,7 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 		else if (WIFSIGNALED(status))
 			data->prev_exit_stat = 128 + WTERMSIG(status);
 	}
-	free(e_path);
+	// free(e_path);
 }
 
 // if (!is_builtin(mini_cmd->full_cmd[0])
@@ -444,13 +445,27 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 // else if (!is_builtin(n) && n->full_cmd)
 // 	data->prev_exit_stat = 127;
 
+int	ft_matrixlen(char **matrix)
+{
+	int	len;
+
+	len = 0;
+	while (matrix[len] != NULL)
+	{
+		len++;
+	}
+	return (len);
+}
+
 void	parse_command(char **args, t_data *data, t_prompt *test)
 {
 	t_list	*cmd_node;
 	t_mini	*mini_cmd;
+	char	**s;
+	DIR		*dir;
+	int		last_idx;
 
 	test->cmds = fill_nodes(args, data);
-	// print_cmds(test.cmds);
 	if (test->cmds && test->cmds->next != NULL)
 		execute_pipes(test->cmds, data);
 	else
@@ -459,16 +474,38 @@ void	parse_command(char **args, t_data *data, t_prompt *test)
 		while (cmd_node)
 		{
 			mini_cmd = (t_mini *)cmd_node->content;
+			if (mini_cmd && mini_cmd->full_cmd)
+				dir = opendir(mini_cmd->full_cmd); // Try opening as a directory
+			// Only process if full_cmd contains a '/' and is not a directory
+			if (mini_cmd && mini_cmd->full_cmd && ft_strchr(mini_cmd->full_cmd,
+					'/') && !dir)
+			{
+				s = ft_split(mini_cmd->full_cmd, '/');
+				if (s)
+				{
+					// Get the last part of the path
+					last_idx = ft_matrixlen(s) - 1;
+					mini_cmd->full_path = ft_strdup(s[last_idx]);
+					ft_free_matrix(s); // Free the split array
+				}
+			}
+			// printf("full_path-final: %s\n", mini_cmd->full_path);
+				// Print the full path
+			// Handle built-ins and other commands
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
 				if (is_builtin(mini_cmd->full_cmd[0]))
-					builtin(data, mini_cmd);
+					mini_cmd->full_path = NULL;
+						// Clear full_path if it's a built-in
+				if (is_builtin(mini_cmd->full_cmd[0]))
+					builtin(data, mini_cmd); // Execute built-in command
 				else
 					othercommands(data, mini_cmd);
+						// Execute non-built-in commands
 				check_and_update_shlvl(data, mini_cmd);
+					// Handle shell level updates
 			}
 			cmd_node = cmd_node->next;
 		}
 	}
-	// ft_lstclear(&test->cmds, free_mini);
 }

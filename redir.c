@@ -63,7 +63,7 @@ void	infile1(t_mini **node, char **args, int *i, t_data *data)
 		(*node)->infile = get_fd((*node)->infile, args[*i], flags, data);
 		if ((*node)->infile == -1)
 		{
-			ft_putendl_fd("Error: Cannot open input file", 2);
+			// ft_putendl_fd("Error: Cannot open input file", 2);
 			data->prev_exit_stat = 1; // Set an appropriate status code
 			*i = -1;                  // Stop the processing of further commands
 		}
