@@ -16,85 +16,110 @@ static t_mini	*mini_init(void)
 	return (mini);
 }
 
+void	token_helper(char *s, int i[2], enum QuoteState *quote_state,
+		char *new_str)
+{
+	if (s[i[0]] == '"' && (*quote_state != SINGLE_QUOTE))
+	{
+		if (*quote_state == NO_QUOTE)
+			*quote_state = DOUBLE_QUOTE;
+		else
+			*quote_state = NO_QUOTE;
+		if (new_str != NULL)
+			new_str[i[1]++] = s[i[0]];
+	}
+	else if (s[i[0]] == '\'' && (*quote_state != DOUBLE_QUOTE))
+	{
+		if (*quote_state == NO_QUOTE)
+			*quote_state = SINGLE_QUOTE;
+		else
+			*quote_state = NO_QUOTE;
+		if (new_str != NULL)
+			new_str[i[1]++] = s[i[0]];
+	}
+}
+
+void	token_counter(char *s, int i[2], enum QuoteState *quote_state)
+{
+	while (s[i[0]] != '\0')
+	{
+		token_helper(s, i, quote_state, NULL);
+		if (*quote_state == NO_QUOTE && (s[i[0]] == '\\' || s[i[0]] == '<'
+				|| s[i[0]] == '|' || s[i[0]] == '>'))
+		{
+			if (i[0] > 0 && s[i[0] - 1] != ' ')
+				i[1]++;
+			i[1]++;
+			if (s[i[0] + 1] != ' ')
+				i[1]++;
+		}
+		else
+			i[1]++;
+		i[0]++;
+	}
+}
+
+void	token_modifier(char *s, int i[2], enum QuoteState *quote_state,
+		char *new_str)
+{
+	while (s[i[0]] != '\0')
+	{
+		if (s[i[0]] == '"' && *quote_state != SINGLE_QUOTE)
+		{
+			if (*quote_state == NO_QUOTE)
+				*quote_state = DOUBLE_QUOTE;
+			else
+				*quote_state = NO_QUOTE;
+			new_str[i[1]++] = s[i[0]];
+		}
+		else if (s[i[0]] == '\'' && *quote_state != DOUBLE_QUOTE)
+		{
+			if (*quote_state == NO_QUOTE)
+				*quote_state = SINGLE_QUOTE;
+			else
+				*quote_state = NO_QUOTE;
+			new_str[i[1]++] = s[i[0]];
+		}
+		else if (*quote_state == NO_QUOTE && (s[i[0]] == '\\' || s[i[0]] == '<'
+				|| s[i[0]] == '|' || s[i[0]] == '>'))
+		{
+			if (i[0] > 0 && s[i[0] - 1] != ' ')
+				new_str[i[1]++] = ' ';
+			new_str[i[1]++] = s[i[0]];
+			if ((s[i[0] + 1] == '<' && s[i[0]] == '<') || (s[i[0] + 1] == '>'
+					&& s[i[0]] == '>'))
+				new_str[i[1]++] = s[++i[0]];
+			if (s[i[0] + 1] != ' ')
+				new_str[i[1]++] = ' ';
+		}
+		else
+			new_str[i[1]++] = s[i[0]];
+		i[0]++;
+	}
+}
+
 /**
- * @brief This function put spaces between tokens if necessary
+ * @brief This function puts spaces between tokens if necessary
  * @return a string
  */
-#include <stdlib.h>
-
 char	*token_spacer(char *s)
 {
-	char	*new_str;
-	int		i;
-	int		j;
-	int		in_double_quotes;
-	int		in_single_quotes;
+	char			*new_str;
+	enum QuoteState	quote_state;
+	int				i[2];
 
-	i = 0;
-	j = 0;
-	in_double_quotes = 0; // Variable to track if we are inside double quotes
-	in_single_quotes = 0; // Variable to track if we are inside single quotes
-	while (s[i] != '\0')
-	{
-		// Toggle double quotes when encountering a double quote and not in single quotes
-		if (s[i] == '"' && !in_single_quotes)
-			in_double_quotes = !in_double_quotes;
-		// Toggle single quotes when encountering a single quote and not in double quotes
-		if (s[i] == '\'' && !in_double_quotes)
-			in_single_quotes = !in_single_quotes;
-		if (!in_double_quotes && !in_single_quotes && (s[i] == '\\'
-				|| s[i] == '<' || s[i] == '|' || s[i] == '>'))
-		{
-			if (i > 0 && s[i - 1] != ' ')
-				j++;
-			j++;
-			if (s[i + 1] != ' ')
-				j++;
-		}
-		else
-			j++;
-		i++;
-	}
-	new_str = malloc(sizeof(char) * (j + 1));
+	i[0] = 0;
+	i[1] = 0;
+	quote_state = NO_QUOTE;
+	token_counter(s, i, &quote_state);
+	new_str = malloc(sizeof(char) * (i[1] + 1));
 	if (!new_str)
 		return (NULL);
-	i = 0;
-	j = 0;
-	in_double_quotes = 0;
-	in_single_quotes = 0;
-	while (s[i] != '\0')
-	{
-		if (s[i] == '"' && !in_single_quotes)
-		{
-			in_double_quotes = !in_double_quotes;
-			new_str[j++] = s[i];
-		}
-		else if (s[i] == '\'' && !in_double_quotes)
-		{
-			in_single_quotes = !in_single_quotes;
-			new_str[j++] = s[i];
-		}
-		else if (!in_double_quotes && !in_single_quotes && (s[i] == '\\'
-				|| s[i] == '<' || s[i] == '|' || s[i] == '>'))
-		{
-			if (i > 0 && s[i - 1] != ' ')
-				new_str[j++] = ' ';
-			new_str[j++] = s[i];
-			if ((s[i + 1] == '<' && s[i] == '<') || (s[i + 1] == '>'
-					&& s[i] == '>'))
-			{
-				new_str[j++] = s[++i];
-			}
-			if (s[i + 1] != ' ')
-				new_str[j++] = ' ';
-		}
-		else
-		{
-			new_str[j++] = s[i];
-		}
-		i++;
-	}
-	new_str[j] = '\0';
+	i[0] = 0;
+	i[1] = 0;
+	quote_state = NO_QUOTE;
+	token_modifier(s, i, &quote_state, new_str);
+	new_str[i[1]] = '\0';
 	return (new_str);
 }
 
@@ -103,15 +128,11 @@ static int	ft_count_words(const char *s, char *c, int i[2])
 	enum QuoteState	quote_state;
 
 	quote_state = NO_QUOTE;
-	// printf("ft_count_words: %s\n", s);
-	/*this needs to be removed its triggering me :( */
 	while (s[i[0]] != '\0')
 	{
-		// Check if not a delimiter or within quotes
 		while ((!ft_strchr(c, s[i[0]]) || quote_state != NO_QUOTE)
 			&& s[i[0]] != '\0')
 		{
-			// Toggle quote state when encountering quotes
 			if (quote_state == NO_QUOTE && (s[i[0]] == '\'' || s[i[0]] == '\"'))
 			{
 				if (s[i[0]] == '\'')
@@ -121,17 +142,38 @@ static int	ft_count_words(const char *s, char *c, int i[2])
 			}
 			else if ((quote_state == SINGLE_QUOTE && s[i[0]] == '\'')
 					|| (quote_state == DOUBLE_QUOTE && s[i[0]] == '\"'))
-			{
 				quote_state = NO_QUOTE;
-			}
 			i[0]++;
 		}
 		i[1]++;
-		// Skip delimiters to avoid infinite loops
 		while (ft_strchr(c, s[i[0]]) && s[i[0]] != '\0')
 			i[0]++;
 	}
 	return (i[1]);
+}
+
+void	split_helper(char *del, const char *s, int *i[3],
+		enum QuoteState *quote_state)
+{
+	*quote_state = NO_QUOTE;
+	while (ft_strchr(del, s[*i[0]]) && s[*i[0]] != '\0')
+		(*i[0])++;
+	*i[1] = *i[0];
+	while ((!ft_strchr(del, s[*i[0]]) || *quote_state != NO_QUOTE)
+		&& s[*i[0]] != '\0')
+	{
+		if (*quote_state == NO_QUOTE && (s[*i[0]] == '\'' || s[*i[0]] == '\"'))
+		{
+			if (s[*i[0]] == '\'')
+				*quote_state = SINGLE_QUOTE;
+			else
+				*quote_state = DOUBLE_QUOTE;
+		}
+		else if ((*quote_state == SINGLE_QUOTE && s[*i[0]] == '\'')
+				|| (*quote_state == DOUBLE_QUOTE && s[*i[0]] == '\"'))
+			*quote_state = NO_QUOTE;
+		(*i[0])++;
+	}
 }
 
 /**
@@ -147,49 +189,22 @@ char	**split_with_quotes(const char *s, char *del)
 	int				i[3] = {0};
 	int				counts[2] = {0};
 
-	quote_state = NO_QUOTE;
 	words_len = ft_count_words(s, del, counts);
 	arr = malloc((words_len + 1) * sizeof(char *));
 	if (arr == NULL)
 		return (NULL);
 	s_len = ft_strlen(s);
-	// Iterate over the string to split words
 	while (s[i[0]] != '\0')
 	{
-		// Skip delimiter characters
-		while (ft_strchr(del, s[i[0]]) && s[i[0]] != '\0')
-			i[0]++;
-		i[1] = i[0];
-		// Traverse the word, considering quotes
-		while ((!ft_strchr(del, s[i[0]]) || quote_state != NO_QUOTE)
-			&& s[i[0]] != '\0')
-		{
-			// Enter quote state if a quote is encountered
-			if (quote_state == NO_QUOTE && (s[i[0]] == '\'' || s[i[0]] == '\"'))
-			{
-				if (s[i[0]] == '\'')
-					quote_state = SINGLE_QUOTE;
-				else
-					quote_state = DOUBLE_QUOTE;
-			}
-			// Exit quote state if the matching quote is encountered again
-			else if ((quote_state == SINGLE_QUOTE && s[i[0]] == '\'')
-					|| (quote_state == DOUBLE_QUOTE && s[i[0]] == '\"'))
-				quote_state = NO_QUOTE;
-			i[0]++;
-		}
-		// Add the word to the array, handle empty case properly
+		split_helper(del, s, (int *[]){&i[0], &i[1], &i[2]}, &quote_state);
 		if (i[1] >= s_len)
 			arr[i[2]++] = "\0";
 		else
 			arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
 	}
 	if (quote_state != NO_QUOTE)
-	{
-		fprintf(stderr, "Error: Unclosed quotes detected\n");
-		free(arr); // Free the allocated memory if an error occurs
-		return (NULL);
-	}
+		return (ft_putstr_fd("Error: Unclosed quotes detected\n",
+				STDERR_FILENO), free(arr), NULL);
 	arr[words_len] = NULL;
 	return (arr);
 }
@@ -448,8 +463,6 @@ void	parse_command(char **args, t_data *data, t_prompt *test)
 	DIR		*dir;
 
 	test->cmds = fill_nodes(args, data);
-	// print_cmds(test.cmds);
-	// print_cmds(test->cmds);
 	if (test->cmds && test->cmds->next != NULL)
 		execute_pipes(test->cmds, data);
 	else
@@ -459,25 +472,13 @@ void	parse_command(char **args, t_data *data, t_prompt *test)
 		{
 			mini_cmd = (t_mini *)cmd_node->content;
 			if (mini_cmd && mini_cmd->full_cmd)
-				dir = opendir(mini_cmd->full_cmd[0]); // Try opening as a directory
-			// printf("full_cmd:%s\n", mini_cmd->full_cmd[0]);
-			if (dir) // If opendir succeeded
-			{
-				// printf("'%s' is a directory.\n", mini_cmd->full_cmd[0]);
-				closedir(dir); // Don't forget to close the directory when done
-			}
-			else // If opendir failed
-			{
-				// printf("'%s' is not a directory or could not be opened.\n",
-					// mini_cmd->full_cmd[0]);
-				perror("opendir");
-			}
+				dir = opendir(mini_cmd->full_cmd[0]);
 			if (mini_cmd && mini_cmd->full_cmd && mini_cmd->full_cmd[0])
 			{
 				if (is_builtin(mini_cmd->full_cmd[0]))
 					builtin(data, mini_cmd);
 				else
-					othercommands(data, mini_cmd,dir);
+					othercommands(data, mini_cmd, dir);
 				check_and_update_shlvl(data, mini_cmd);
 			}
 			cmd_node = cmd_node->next;
