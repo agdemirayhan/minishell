@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-// MORE TESTS
-
 void	free_mini(void *content)
 {
 	t_mini	*mini_cmd;
@@ -11,11 +9,9 @@ void	free_mini(void *content)
 	{
 		if (mini_cmd->full_cmd)
 		{
-			// Free each command string in the full_cmd array
 			ft_free_matrix(&(mini_cmd->full_cmd));
 		}
-		// Free other dynamically allocated members of mini_cmd here, if any
-		free(mini_cmd); // Finally, free the t_mini structure itself
+		free(mini_cmd);
 	}
 }
 
@@ -39,20 +35,19 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	char	**new_matrix;
 
 	i = 0;
-	while (matrix && matrix[i]) // Count existing elements
+	while (matrix && matrix[i])
 		i++;
-	// Allocate memory for new matrix (existing elements + 1 new entry + NULL)
 	new_matrix = malloc((i + 2) * sizeof(char *));
 	if (!new_matrix)
 		return (NULL);
 	i = 0;
 	while (matrix && matrix[i])
 	{
-		new_matrix[i] = matrix[i]; // Copy old entries
+		new_matrix[i] = matrix[i];
 		i++;
 	}
-	new_matrix[i] = ft_strdup(new_entry); // Add new entry
-	new_matrix[i + 1] = NULL;             // Null-terminate the array
+	new_matrix[i] = ft_strdup(new_entry);
+	new_matrix[i + 1] = NULL;
 	free(matrix);
 	return (new_matrix);
 }
@@ -60,15 +55,15 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 int	is_redir(char *arg)
 {
 	if (!arg)
-		return (0);                  // Null argument is not a redirection
-	if (ft_strcmp(arg, ">") == 0 ||  // Output redirection
-		ft_strcmp(arg, ">>") == 0 || // Append output redirection
-		ft_strcmp(arg, "<") == 0 ||  // Input redirection
-		ft_strcmp(arg, "<<") == 0)   // Here-document redirection
+		return (0);
+	if (ft_strcmp(arg, ">") == 0
+		|| ft_strcmp(arg, ">>") == 0
+		|| ft_strcmp(arg, "<") == 0
+		|| ft_strcmp(arg, "<<") == 0)
 	{
-		return (1); // It is a redirection operator
+		return (1);
 	}
-	return (0); // Not a redirection operator
+	return (0);
 }
 
 void	ft_free_matrix(char ***m)
@@ -87,5 +82,3 @@ void	ft_free_matrix(char ***m)
 		*m = NULL;
 	}
 }
-
-
