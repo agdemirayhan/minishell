@@ -6,6 +6,33 @@
  * @return the length of the new str w/o quotes.
  */
 
+void	newstr_len_helper(enum QuoteState *state, const char *s, int *length)
+{
+	if (*state == NO_QUOTE)
+	{
+		if (*s == '\'')
+			*state = SINGLE_QUOTE;
+		else if (*s == '"')
+			*state = DOUBLE_QUOTE;
+		else
+			(*length)++;
+	}
+	else if (*state == SINGLE_QUOTE)
+	{
+		if (*s == '\'')
+			*state = NO_QUOTE;
+		else
+			(*length)++;
+	}
+	else if (*state == DOUBLE_QUOTE)
+	{
+		if (*s == '"')
+			*state = NO_QUOTE;
+		else
+			(*length)++;
+	}
+}
+
 int	newstr_len(const char *s)
 {
 	enum QuoteState	state;
@@ -15,94 +42,72 @@ int	newstr_len(const char *s)
 	length = 0;
 	while (*s)
 	{
-		if (state == NO_QUOTE)
-		{
-			if (*s == '\'')
-				state = SINGLE_QUOTE;
-			else if (*s == '"')
-				state = DOUBLE_QUOTE;
-			else
-				length++;
-		}
-		else if (state == SINGLE_QUOTE)
-		{
-			if (*s == '\'')
-				state = NO_QUOTE;
-			else
-				length++;
-		}
-		else if (state == DOUBLE_QUOTE)
-		{
-			if (*s == '"')
-				state = NO_QUOTE;
-			else
-				length++;
-		}
+		newstr_len_helper(&state, s, &length);
 		s++;
 	}
 	return (length);
 }
 
-/**
- * @brief This function creates a new string by removing all unescaped single
- * and double quotes from the input string s1.
- * @return the new str.
- */
-char	*ft_strtrim_all(const char *s1)
+typedef struct s_trim_info
 {
-	enum QuoteState	state;
 	int				i;
 	int				j;
-	int				new_len;
+	enum QuoteState	state;
 	char			*trimmed;
+}					t_trim_info;
 
-	i = 0;
-	state = NO_QUOTE;
-	j = 0;
-	if (!s1)
-		return (NULL);
-	new_len = newstr_len(s1);
-	trimmed = (char *)malloc(sizeof(char) * (new_len + 1));
-	if (!trimmed)
-		return (NULL);
-	while (s1[i])
+int	handle_quotes(const char *s1, t_trim_info *info)
+{
+	if (info->state == NO_QUOTE)
 	{
-		if (state == NO_QUOTE)
-		{
-			if (s1[i] == '\'')
-				state = SINGLE_QUOTE;
-			else if (s1[i] == '"')
-				state = DOUBLE_QUOTE;
-			else
-				trimmed[j++] = s1[i];
-		}
-		else if (state == SINGLE_QUOTE)
-		{
-			if (s1[i] == '\'')
-				state = NO_QUOTE;
-			else
-				trimmed[j++] = s1[i];
-		}
-		else if (state == DOUBLE_QUOTE)
-		{
-			if (s1[i] == '"')
-				state = NO_QUOTE;
-			else
-				trimmed[j++] = s1[i];
-		}
-		i++;
+		if (s1[info->i] == '\'')
+			info->state = SINGLE_QUOTE;
+		else if (s1[info->i] == '"')
+			info->state = DOUBLE_QUOTE;
 	}
-	trimmed[j] = '\0';
-	return (trimmed);
+	else if ((info->state == SINGLE_QUOTE && s1[info->i] == '\'')
+		|| (info->state == DOUBLE_QUOTE && s1[info->i] == '"'))
+	{
+		info->state = NO_QUOTE;
+	}
+	else
+	{
+		info->trimmed[info->j] = s1[info->i];
+		info->j++;
+	}
+	info->i++;
+	return (info->j);
 }
 
-// int	main(void)
-// {
-// 	const char	*test_str = "echo \"hello there\" 'and more'";
-// 	char		*result;
+int	strtrim_all_helper(const char *s1, t_trim_info *info)
+{
+	if (s1[info->i] == '\'' || s1[info->i] == '"')
+		return (handle_quotes(s1, info));
+	else
+	{
+		info->trimmed[info->j] = s1[info->i];
+		info->j++;
+		info->i++;
+	}
+	return (info->j);
+}
 
-// 	result = ft_strtrim_all(test_str);
-// 	printf("Trimmed string: %s\n", result);
-// 	free(result);
-// 	return (0);
-// }
+char	*ft_strtrim_all(const char *s1)
+{
+	t_trim_info	info;
+	int			new_len;
+
+	if (!s1)
+		return (NULL);
+	info.i = 0;
+	info.j = 0;
+	info.state = NO_QUOTE;
+	new_len = newstr_len(s1);
+	info.trimmed = (char *)malloc(sizeof(char) * (new_len + 1));
+	if (!info.trimmed)
+		return (NULL);
+	while (s1[info.i])
+		strtrim_all_helper(s1, &info);
+	info.trimmed[info.j] = '\0';
+	return (info.trimmed);
+}
