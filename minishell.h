@@ -3,6 +3,7 @@
 # define MINISHELL_H
 
 # include "libft/libft.h"
+# include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <signal.h>
@@ -12,7 +13,6 @@
 # include <sys/ioctl.h>
 # include <sys/wait.h>
 # include <unistd.h>
-#include <dirent.h>
 
 /* Readline Functions */
 # include <readline/history.h>
@@ -110,7 +110,7 @@ void					update_env(t_env **env_list, char *name, char *value);
 
 /* export functions */
 //void					export_var(char **argv, t_env **env_list);
-void	export_var(char **argv, t_env **env_list, t_data *data);
+void					export_var(char **argv, t_env **env_list, t_data *data);
 void					execute_export(char **argv, t_data *data);
 
 /* unset functions */
@@ -131,7 +131,8 @@ char					*expand_env_vars(char *input, t_data *data);
 void					init_shell(t_data *data);
 void					handle_signals(int signo);
 void					parse_command(char **args, t_data *data,
-							t_prompt *test); void free_strarray(char **array);
+							t_prompt *test);
+void					free_strarray(char **array);
 char					*find_slash(char *comm);
 char					*find_exec(char *comm);
 // void				execute_command(char **args);
@@ -155,6 +156,7 @@ int						get_fd(int oldfd, char *path, int flags[2],
 // void					outfile1(t_mini **node, char **args, int *i);
 void					get_redir(t_mini **node, char **args, int *i,
 							t_data *data);
+int						is_redir(char *arg);
 
 /* Print Functions */
 void					print_cmds(t_list *cmds);
@@ -162,6 +164,11 @@ void					print_cmds(t_list *cmds);
 /* Parsing Functions */
 char					**split_with_quotes(const char *s, char *del);
 char					*token_spacer(char *s);
+t_list					*fill_nodes(char **args, t_data *data);
+void					free_content(void *content);
+char					**ft_extend_matrix(char **matrix, char *new_entry);
+void					ft_free_matrix(char ***m);
+static t_mini	*mini_init(void);
 
 # ifndef DEBUG
 #  define DEBUG 0

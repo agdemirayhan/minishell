@@ -2,211 +2,37 @@
 
 // MORE TESTS
 
-static t_mini	*mini_init(void)
-{
-	t_mini	*mini;
 
-	mini = malloc(sizeof(t_mini));
-	if (!mini)
-		return (NULL);
-	mini->full_cmd = NULL;
-	mini->full_path = NULL;
-	mini->infile = STDIN_FILENO;
-	mini->outfile = STDOUT_FILENO;
-	return (mini);
-}
 
-void	token_helper(char *s, int i[2], enum QuoteState *quote_state,
-		char *new_str)
+void	free_mini(void *content)
 {
-	if (s[i[0]] == '"' && (*quote_state != SINGLE_QUOTE))
-	{
-		if (*quote_state == NO_QUOTE)
-			*quote_state = DOUBLE_QUOTE;
-		else
-			*quote_state = NO_QUOTE;
-		if (new_str != NULL)
-			new_str[i[1]++] = s[i[0]];
-	}
-	else if (s[i[0]] == '\'' && (*quote_state != DOUBLE_QUOTE))
-	{
-		if (*quote_state == NO_QUOTE)
-			*quote_state = SINGLE_QUOTE;
-		else
-			*quote_state = NO_QUOTE;
-		if (new_str != NULL)
-			new_str[i[1]++] = s[i[0]];
-	}
-}
+	t_mini	*mini_cmd;
 
-void	token_counter(char *s, int i[2], enum QuoteState *quote_state)
-{
-	while (s[i[0]] != '\0')
+	mini_cmd = (t_mini *)content;
+	if (mini_cmd)
 	{
-		token_helper(s, i, quote_state, NULL);
-		if (*quote_state == NO_QUOTE && (s[i[0]] == '\\' || s[i[0]] == '<'
-				|| s[i[0]] == '|' || s[i[0]] == '>'))
+		if (mini_cmd->full_cmd)
 		{
-			if (i[0] > 0 && s[i[0] - 1] != ' ')
-				i[1]++;
-			i[1]++;
-			if (s[i[0] + 1] != ' ')
-				i[1]++;
+			// Free each command string in the full_cmd array
+			ft_free_matrix(&(mini_cmd->full_cmd));
 		}
-		else
-			i[1]++;
-		i[0]++;
+		// Free other dynamically allocated members of mini_cmd here, if any
+		free(mini_cmd); // Finally, free the t_mini structure itself
 	}
 }
 
-void	token_modifier(char *s, int i[2], enum QuoteState *quote_state,
-		char *new_str)
+void	free_content(void *content)
 {
-	while (s[i[0]] != '\0')
-	{
-		if (s[i[0]] == '"' && *quote_state != SINGLE_QUOTE)
-		{
-			if (*quote_state == NO_QUOTE)
-				*quote_state = DOUBLE_QUOTE;
-			else
-				*quote_state = NO_QUOTE;
-			new_str[i[1]++] = s[i[0]];
-		}
-		else if (s[i[0]] == '\'' && *quote_state != DOUBLE_QUOTE)
-		{
-			if (*quote_state == NO_QUOTE)
-				*quote_state = SINGLE_QUOTE;
-			else
-				*quote_state = NO_QUOTE;
-			new_str[i[1]++] = s[i[0]];
-		}
-		else if (*quote_state == NO_QUOTE && (s[i[0]] == '\\' || s[i[0]] == '<'
-				|| s[i[0]] == '|' || s[i[0]] == '>'))
-		{
-			if (i[0] > 0 && s[i[0] - 1] != ' ')
-				new_str[i[1]++] = ' ';
-			new_str[i[1]++] = s[i[0]];
-			if ((s[i[0] + 1] == '<' && s[i[0]] == '<') || (s[i[0] + 1] == '>'
-					&& s[i[0]] == '>'))
-				new_str[i[1]++] = s[++i[0]];
-			if (s[i[0] + 1] != ' ')
-				new_str[i[1]++] = ' ';
-		}
-		else
-			new_str[i[1]++] = s[i[0]];
-		i[0]++;
-	}
-}
+	t_mini	*node;
 
-/**
- * @brief This function puts spaces between tokens if necessary
- * @return a string
- */
-char	*token_spacer(char *s)
-{
-	char			*new_str;
-	enum QuoteState	quote_state;
-	int				i[2];
-
-	i[0] = 0;
-	i[1] = 0;
-	quote_state = NO_QUOTE;
-	token_counter(s, i, &quote_state);
-	new_str = malloc(sizeof(char) * (i[1] + 1));
-	if (!new_str)
-		return (NULL);
-	i[0] = 0;
-	i[1] = 0;
-	quote_state = NO_QUOTE;
-	token_modifier(s, i, &quote_state, new_str);
-	new_str[i[1]] = '\0';
-	return (new_str);
-}
-
-static int	ft_count_words(const char *s, char *c, int i[2])
-{
-	enum QuoteState	quote_state;
-
-	quote_state = NO_QUOTE;
-	while (s[i[0]] != '\0')
-	{
-		while ((!ft_strchr(c, s[i[0]]) || quote_state != NO_QUOTE)
-			&& s[i[0]] != '\0')
-		{
-			if (quote_state == NO_QUOTE && (s[i[0]] == '\'' || s[i[0]] == '\"'))
-			{
-				if (s[i[0]] == '\'')
-					quote_state = SINGLE_QUOTE;
-				else if (s[i[0]] == '\"')
-					quote_state = DOUBLE_QUOTE;
-			}
-			else if ((quote_state == SINGLE_QUOTE && s[i[0]] == '\'')
-					|| (quote_state == DOUBLE_QUOTE && s[i[0]] == '\"'))
-				quote_state = NO_QUOTE;
-			i[0]++;
-		}
-		i[1]++;
-		while (ft_strchr(c, s[i[0]]) && s[i[0]] != '\0')
-			i[0]++;
-	}
-	return (i[1]);
-}
-
-void	split_helper(char *del, const char *s, int *i[3],
-		enum QuoteState *quote_state)
-{
-	*quote_state = NO_QUOTE;
-	while (ft_strchr(del, s[*i[0]]) && s[*i[0]] != '\0')
-		(*i[0])++;
-	*i[1] = *i[0];
-	while ((!ft_strchr(del, s[*i[0]]) || *quote_state != NO_QUOTE)
-		&& s[*i[0]] != '\0')
-	{
-		if (*quote_state == NO_QUOTE && (s[*i[0]] == '\'' || s[*i[0]] == '\"'))
-		{
-			if (s[*i[0]] == '\'')
-				*quote_state = SINGLE_QUOTE;
-			else
-				*quote_state = DOUBLE_QUOTE;
-		}
-		else if ((*quote_state == SINGLE_QUOTE && s[*i[0]] == '\'')
-				|| (*quote_state == DOUBLE_QUOTE && s[*i[0]] == '\"'))
-			*quote_state = NO_QUOTE;
-		(*i[0])++;
-	}
-}
-
-/**
- * @brief This function splits words without removing the quotes
- * @return array of splitted strings.
- */
-char	**split_with_quotes(const char *s, char *del)
-{
-	char			**arr;
-	int				words_len;
-	int				s_len;
-	enum QuoteState	quote_state;
-	int				i[3] = {0};
-	int				counts[2] = {0};
-
-	words_len = ft_count_words(s, del, counts);
-	arr = malloc((words_len + 1) * sizeof(char *));
-	if (arr == NULL)
-		return (NULL);
-	s_len = ft_strlen(s);
-	while (s[i[0]] != '\0')
-	{
-		split_helper(del, s, (int *[]){&i[0], &i[1], &i[2]}, &quote_state);
-		if (i[1] >= s_len)
-			arr[i[2]++] = "\0";
-		else
-			arr[i[2]++] = ft_substr(s, i[1], i[0] - i[1]);
-	}
-	if (quote_state != NO_QUOTE)
-		return (ft_putstr_fd("Error: Unclosed quotes detected\n",
-				STDERR_FILENO), free(arr), NULL);
-	arr[words_len] = NULL;
-	return (arr);
+	node = content;
+	ft_free_matrix(&node->full_cmd);
+	free(node->full_path);
+	if (node->infile != STDIN_FILENO)
+		close(node->infile);
+	if (node->outfile != STDOUT_FILENO)
+		close(node->outfile);
+	free(node);
 }
 
 char	**ft_extend_matrix(char **matrix, char *new_entry)
@@ -233,7 +59,7 @@ char	**ft_extend_matrix(char **matrix, char *new_entry)
 	return (new_matrix);
 }
 
-int	is_redirection(char *arg)
+int	is_redir(char *arg)
 {
 	if (!arg)
 		return (0);                  // Null argument is not a redirection
@@ -262,103 +88,6 @@ void	ft_free_matrix(char ***m)
 		free(m[0]);
 		*m = NULL;
 	}
-}
-
-void	free_content(void *content)
-{
-	t_mini	*node;
-
-	node = content;
-	ft_free_matrix(&node->full_cmd);
-	free(node->full_path);
-	if (node->infile != STDIN_FILENO)
-		close(node->infile);
-	if (node->outfile != STDOUT_FILENO)
-		close(node->outfile);
-	free(node);
-}
-
-static t_list	*stop_fill(t_list *cmds, char **args)
-{
-	ft_lstclear(&cmds, free_content);
-	ft_free_matrix(&args);
-	return (NULL);
-}
-
-void	free_mini(void *content)
-{
-	t_mini	*mini_cmd;
-
-	mini_cmd = (t_mini *)content;
-	if (mini_cmd)
-	{
-		if (mini_cmd->full_cmd)
-		{
-			// Free each command string in the full_cmd array
-			ft_free_matrix(&(mini_cmd->full_cmd));
-		}
-		// Free other dynamically allocated members of mini_cmd here, if any
-		free(mini_cmd); // Finally, free the t_mini structure itself
-	}
-}
-
-int	fill_nodes_errorhandler(char **args, t_list *cmds, int *i)
-{
-	if ((args[*i][0] == '|' && *i == 0) || (args[*i][0] == '|' && !args[*i
-			+ 1]))
-	{
-		ft_putstr_fd("syntax error near unexpected token '|'\n", 2);
-		ft_lstclear(&cmds, free_content);
-		return (0);
-	}
-	if (is_redirection(args[*i]) && (!args[*i + 1] || is_redirection(args[*i
-				+ 1])))
-	{
-		ft_putstr_fd("syntax error near unexpected token '", 2);
-		ft_putstr_fd(args[*i], 2);
-		ft_putstr_fd("'\n", 2);
-		ft_lstclear(&cmds, free_content);
-		return (0);
-	}
-	return (1);
-}
-
-void	fill_nodes_main(char **args, t_list **cmds, int *i, t_data *data)
-{
-	t_list	*last_cmd;
-	t_mini	*first_mini;
-
-	last_cmd = ft_lsttraverse(*cmds);
-	if (*i == 0 || (args[*i][0] == '|' && args[*i + 1] && args[*i + 1][0]))
-	{
-		*i += (args[*i][0] == '|');
-		ft_lst_insertattail(cmds, ft_lst_newlist(mini_init()));
-		last_cmd = ft_lsttraverse(*cmds);
-	}
-	first_mini = (t_mini *)last_cmd->content;
-	if (!is_redirection(args[*i]))
-		first_mini->full_cmd = ft_extend_matrix(first_mini->full_cmd, args[*i]);
-	get_redir(&first_mini, args, i, data);
-}
-
-t_list	*fill_nodes(char **args, t_data *data)
-{
-	t_list	*cmds;
-	int		i;
-
-	i = -1;
-	cmds = NULL;
-	while (args[++i])
-	{
-		if (!fill_nodes_errorhandler(args, cmds, &i))
-			return (NULL);
-		fill_nodes_main(args, &cmds, &i, data);
-		if (i < 0)
-			return (stop_fill(cmds, args));
-		if (!args[i])
-			break ;
-	}
-	return (ft_free_matrix(&args), cmds);
 }
 
 void	builtin(t_data *data, t_mini *mini_cmd)
