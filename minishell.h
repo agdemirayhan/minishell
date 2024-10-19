@@ -168,7 +168,8 @@ t_list					*fill_nodes(char **args, t_data *data);
 void					free_content(void *content);
 char					**ft_extend_matrix(char **matrix, char *new_entry);
 void					ft_free_matrix(char ***m);
-static t_mini	*mini_init(void);
+static t_mini			*mini_init(void);
+void	free_mini(void *content);
 
 # ifndef DEBUG
 #  define DEBUG 0

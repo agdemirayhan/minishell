@@ -37,7 +37,7 @@ char	*expand_env_vars(char *input, t_data *data)
 	char	*var_value;
 	char	*result;
 	size_t	result_len;
-	char	*exit_stat = ft_itoa(data->prev_exit_stat);;
+	char	*exit_stat;
 	int		in_single_quote;
 	char	cwd[1024];
 	t_mini	*mini;
