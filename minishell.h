@@ -86,6 +86,13 @@ typedef struct s_data
 	t_shlvl_node		*shlvl_history;
 }						t_data;
 
+typedef struct s_split_state
+{
+	int i[3];                    // Indices for string processing
+	int counts[2];               // Word counts and other information
+	enum QuoteState quote_state; // Current quote state
+}						t_split_state;
+
 /* token functions */
 t_ttype					check_type(char *value);
 
@@ -109,7 +116,7 @@ void					update_env(t_env **env_list, char *name, char *value);
 // void				print_env(t_data *data);
 
 /* export functions */
-//void					export_var(char **argv, t_env **env_list);
+// void					export_var(char **argv, t_env **env_list);
 void					export_var(char **argv, t_env **env_list, t_data *data);
 void					execute_export(char **argv, t_data *data);
 
@@ -124,7 +131,7 @@ void					execute_unset(char **argv, t_data *data);
 /* dollar sign */
 void					*find_env_ref(t_env *env_list, char *name);
 char					*expand_env_vars(char *input, t_data *data);
-//char	*expand_env_vars(char *input, t_data *data, int is_echo);
+// char	*expand_env_vars(char *input, t_data *data, int is_echo);
 
 /* Function prototypes */
 // void				init_shell(void);
@@ -148,7 +155,7 @@ void					clean_up(t_data *data);
 
 /* Trim Functions */
 char					*ft_strtrim_all(const char *s1);
-//int is_only_pwd(t_mini *mini);
+// int is_only_pwd(t_mini *mini);
 
 /* Redirection Functions */
 int						get_fd(int oldfd, char *path, int flags[2],
@@ -169,7 +176,7 @@ void					free_content(void *content);
 char					**ft_extend_matrix(char **matrix, char *new_entry);
 void					ft_free_matrix(char ***m);
 static t_mini			*mini_init(void);
-void	free_mini(void *content);
+void					free_mini(void *content);
 
 # ifndef DEBUG
 #  define DEBUG 0
