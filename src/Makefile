@@ -22,6 +22,7 @@ SRCS =	main.c \
 		execution/exec.c \
 		execution/heredoc_handler.c \
 		execution/pipes.c \
+		execution/pipes2.c \
 		execution/redir.c \
 		execution/redir2.c \
 		execution/shlvl.c \

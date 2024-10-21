@@ -102,6 +102,17 @@ typedef struct s_trim_info
 	char				*trimmed;
 }						t_trim_info;
 
+typedef struct s_pipe_e_st
+{
+	int pipefd[2];          // File descriptors for pipes
+	int in_fd;              // Input file descriptor for redirection
+	pid_t pid;              // Process ID for forked processes
+	int status;             // Status of the child processes
+	pid_t child_pids[1024]; // Array of child process IDs
+	int child_count;        // Number of child processes
+	int i;                  // Loop index
+}						t_pipe_e_st;
+
 /* token functions */
 t_ttype					check_type(char *value);
 
@@ -161,10 +172,10 @@ void					update_shlvl(t_data *data, t_mini *mini_cmd);
 void					check_and_update_shlvl(t_data *data, t_mini *mini_cmd);
 void					free_shlvl_history(t_data *data);
 void					clean_up(t_data *data);
-void	free_strarray(char **array);
+void					free_strarray(char **array);
 
-	/* Trim Functions */
-	char *ft_strtrim_all(const char *s1);
+/* Trim Functions */
+char					*ft_strtrim_all(const char *s1);
 // int is_only_pwd(t_mini *mini);
 
 /* Redirection Functions */
@@ -201,6 +212,12 @@ void					b_exit(char **args, t_data *data);
 void					b_echo(char **args);
 void					b_pwd(void);
 void					b_cd(char **args, t_data *data);
+
+/* Pipe Functions */
+void					wait_for_all_children(t_pipe_e_st *e_st);
+void					setup_pipe(t_pipe_e_st *e_st);
+void	child_process_helper(t_pipe_e_st *e_st, t_list *cmd_node,
+		t_mini *mini_cmd, t_data *data);
 
 # ifndef DEBUG
 #  define DEBUG 0
