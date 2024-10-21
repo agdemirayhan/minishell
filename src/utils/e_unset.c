@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   e_unset.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/21 21:55:29 by aagdemir          #+#    #+#             */
+/*   Updated: 2024/10/21 21:55:35 by aagdemir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 /**
@@ -7,8 +19,8 @@
  */
 void	unset_var(char *name, t_env **env_list)
 {
-	t_env *curr;
-	t_env *prev;
+	t_env	*curr;
+	t_env	*prev;
 
 	curr = *env_list;
 	prev = NULL;

@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:44:06 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 21:34:55 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/21 16:46:40 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	handle_quote_state(const char *s, int *i, enum QuoteState *q_state)
 			*q_state = DOUBLE_QUOTE;
 	}
 	else if ((*q_state == SINGLE_QUOTE && s[*i] == '\'')
-			|| (*q_state == DOUBLE_QUOTE && s[*i] == '\"'))
+		|| (*q_state == DOUBLE_QUOTE && s[*i] == '\"'))
 		*q_state = NO_QUOTE;
 	(*i)++;
 }
@@ -66,7 +66,7 @@ void	split_helper(char *del, const char *s, int *i[3],
 				*quote_state = DOUBLE_QUOTE;
 		}
 		else if ((*quote_state == SINGLE_QUOTE && s[*i[0]] == '\'')
-				|| (*quote_state == DOUBLE_QUOTE && s[*i[0]] == '\"'))
+			|| (*quote_state == DOUBLE_QUOTE && s[*i[0]] == '\"'))
 			*quote_state = NO_QUOTE;
 		(*i[0])++;
 	}

@@ -1,23 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/20 13:50:59 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 13:51:16 by aagdemir         ###   ########.fr       */
+/*   Created: 2024/10/21 22:01:43 by aagdemir          #+#    #+#             */
+/*   Updated: 2024/10/21 22:01:47 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
-t_ttype	check_type(char *value)
+char	*ft_strndup(const char *s1, size_t n)
 {
-	if (ft_strncmp(value, "|", 1) == 0)
-		return (PIPE);
-	else if (ft_strncmp(value, "<", 1) == 0 || ft_strncmp(value, ">", 1) == 0)
-		return (REDIRECTION);
-	else
-		return (WORD);
+	size_t len;
+	char *str;
+
+	len = ft_strlen(s1);
+	if (len > n)
+		len = n;
+	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+		return (0);
+	str = ft_memcpy(str, s1, len);
+	str[len] = '\0';
+	return (str);
 }

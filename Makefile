@@ -15,9 +15,38 @@ ifeq ($(MAKECMDGOALS),debug)
     DEBUG_FLAG = 1
 endif
 
-SRCS =	main.c cmd_parser.c builtin_commands.c exec.c signal_handling.c e_env.c e_export.c \
-		e_unset.c e_pwd.c exp_env_var.c remove_quotes.c print_cmds.c redir.c heredoc_handler.c \
-		pipes.c shlvl.c token_spacer.c splitter.c fill_nodes.c parsing_commands.c
+SRCS =	src/main.c \
+		src/env/e_env.c \
+		src/env/env_helpers.c \
+		src/env/exp_env_var.c \
+		src/execution/builtin_commands.c \
+		src/execution/exec.c \
+		src/execution/heredoc_handler.c \
+		src/execution/pipes.c \
+		src/execution/pipes2.c \
+		src/execution/redir.c \
+		src/execution/redir2.c \
+		src/execution/shlvl.c \
+		src/execution/signal_handling.c \
+		src/parsing/cmd_parser.c \
+		src/parsing/fill_nodes.c \
+		src/parsing/parsing_commands.c \
+		src/parsing/remove_quotes.c \
+		src/parsing/splitter.c \
+		src/parsing/token_spacer.c \
+		src/parsing/tokenizer.c \
+		src/builtins/b_exit.c \
+		src/builtins/b_echo.c \
+		src/builtins/b_pwd.c \
+		src/builtins/b_cd.c \
+		src/utils/e_export.c \
+		src/utils/e_pwd.c \
+		src/utils/env_helpers.c \
+		src/utils/e_unset.c \
+		src/utils/initialize_data.c \
+		src/utils/parsing_utils.c \
+		src/utils/print_cmds.c \
+		src/utils/free_strarr.c
 OBJS = $(SRCS:.c=.o)
 
 LIBFT_DIR = libft

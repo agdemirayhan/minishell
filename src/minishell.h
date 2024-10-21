@@ -206,6 +206,7 @@ char					**ft_extend_matrix(char **matrix, char *new_entry);
 void					ft_free_matrix(char ***m);
 static t_mini			*mini_init(void);
 void					free_mini(void *content);
+void					parsing_handler(char *input, t_data *data);
 
 /* Builtin Functions*/
 void					b_exit(char **args, t_data *data);
@@ -216,8 +217,18 @@ void					b_cd(char **args, t_data *data);
 /* Pipe Functions */
 void					wait_for_all_children(t_pipe_e_st *e_st);
 void					setup_pipe(t_pipe_e_st *e_st);
-void	child_process_helper(t_pipe_e_st *e_st, t_list *cmd_node,
-		t_mini *mini_cmd, t_data *data);
+void					child_process_helper(t_pipe_e_st *e_st,
+							t_list *cmd_node, t_mini *mini_cmd, t_data *data);
+
+/* Error Functions */
+int						handle_syntax_error(char **args);
+
+/* utils*/
+t_data					*initialize_data(char **envp);
+void					cleanup(t_data *data);
+void					curr_loop(t_env *curr, char *value, char *name);
+void					export_error(t_data *data, char *name, char *value);
+int	is_valid_var_name(const char *name);
 
 # ifndef DEBUG
 #  define DEBUG 0

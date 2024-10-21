@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 23:46:27 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 23:46:30 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/21 21:54:38 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	free_strarray(char **array)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!array)
