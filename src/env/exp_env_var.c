@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:10:35 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 23:27:15 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/21 23:37:52 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,15 +82,11 @@ void	handle_regular_env_variable(const char *input, size_t *i,
 	free(var_name);
 }
 
-void	handle_env_variable(const char *input, t_expand_state *state,
+void	handle_special_var(const char *input, t_expand_state *state,
 		t_data *data)
 {
-	char	*var_name;
-	char	*var_value;
-	size_t	start;
 	char	*exit_stat;
 
-	state->i++;
 	if (input[state->i] == '?')
 	{
 		exit_stat = ft_itoa(data->prev_exit_stat);
@@ -99,9 +95,70 @@ void	handle_env_variable(const char *input, t_expand_state *state,
 		state->i++;
 	}
 	else if (ft_strncmp(&input[state->i], "EMPTY", 5) == 0)
-	{
 		state->i += 5;
+}
+
+void	handle_regular_var(const char *input, t_expand_state *state,
+		t_data *data)
+{
+	char	*var_name;
+	char	*var_value;
+	size_t	start;
+
+	start = state->i;
+	while (input[state->i] && (ft_isalnum(input[state->i])
+			|| input[state->i] == '_'))
+		state->i++;
+	var_name = ft_strndup(input + start, state->i - start);
+	var_value = find_env_ref(data->env_list, var_name);
+	if (var_value)
+		state->total_size += ft_strlen(var_value);
+	else
+		state->total_size += state->i - start;
+	free(var_name);
+}
+
+void	handle_env_variable(const char *input, t_expand_state *state,
+		t_data *data)
+{
+	state->i++;
+	if (input[state->i] == '?' || ft_strncmp(&input[state->i], "EMPTY", 5) == 0)
+		handle_special_var(input, state, data);
+	else
+		handle_regular_var(input, state, data);
+}
+
+void	handle_other_characters(const char *input, t_expand_state *state)
+{
+	state->total_size++;
+	state->i++;
+}
+
+void	handle_single_quote_in_result(const char *input, t_expand_state *state)
+{
+	state->in_single_quote = !state->in_single_quote;
+	state->result[state->result_len++] = input[state->i++];
+}
+
+void	expand_variable_in_result(const char *input, t_expand_state *state,
+		t_data *data)
+{
+	char	*exit_stat;
+	char	*var_name;
+	char	*var_value;
+	size_t	start;
+
+	if (input[state->i] == '?')
+	{
+		exit_stat = ft_itoa(data->prev_exit_stat);
+		ft_strlcpy(state->result + state->result_len, exit_stat,
+			ft_strlen(exit_stat) + 1);
+		state->result_len += ft_strlen(exit_stat);
+		free(exit_stat);
+		state->i++;
 	}
+	else if (ft_strncmp(&input[state->i], "EMPTY", 5) == 0)
+		state->i += 5;
 	else
 	{
 		start = state->i;
@@ -111,75 +168,43 @@ void	handle_env_variable(const char *input, t_expand_state *state,
 		var_name = ft_strndup(input + start, state->i - start);
 		var_value = find_env_ref(data->env_list, var_name);
 		if (var_value)
-			state->total_size += ft_strlen(var_value);
+		{
+			ft_strlcpy(state->result + state->result_len, var_value,
+				ft_strlen(var_value) + 1);
+			state->result_len += ft_strlen(var_value);
+		}
 		else
-			state->total_size += state->i - start;
+		{
+			ft_strlcpy(state->result + state->result_len, var_name,
+				ft_strlen(var_name) + 1);
+			state->result_len += ft_strlen(var_name);
+		}
 		free(var_name);
 	}
 }
 
-void	handle_other_characters(const char *input, t_expand_state *state)
+void	process_character_for_result(const char *input, t_expand_state *state,
+		t_data *data)
 {
-	state->total_size++;
-	state->i++;
+	if (input[state->i] == '\'')
+		handle_single_quote_in_result(input, state);
+	else if (input[state->i] == '$' && input[state->i + 1] != '\0'
+		&& !state->in_single_quote)
+	{
+		state->i++;
+		expand_variable_in_result(input, state, data);
+	}
+	else
+		state->result[state->result_len++] = input[state->i++];
 }
 
 void	build_result_string(const char *input, t_expand_state *state,
 		t_data *data)
 {
-	char	*exit_stat;
-	size_t	start;
-	char	*var_name;
-	char	*var_value;
-
 	state->i = 0;
 	while (input[state->i] != '\0')
 	{
-		if (input[state->i] == '\'')
-		{
-			state->in_single_quote = !state->in_single_quote;
-			state->result[state->result_len++] = input[state->i++];
-		}
-		else if (input[state->i] == '$' && input[state->i + 1] != '\0'
-			&& !state->in_single_quote)
-		{
-			state->i++;
-			if (input[state->i] == '?')
-			{
-				exit_stat = ft_itoa(data->prev_exit_stat);
-				ft_strlcpy(state->result + state->result_len, exit_stat,
-					ft_strlen(exit_stat) + 1);
-				state->result_len += ft_strlen(exit_stat);
-				free(exit_stat);
-				state->i++;
-			}
-			else if (ft_strncmp(&input[state->i], "EMPTY", 5) == 0)
-				state->i += 5;
-			else
-			{
-				start = state->i;
-				while (input[state->i] && (ft_isalnum(input[state->i])
-						|| input[state->i] == '_'))
-					state->i++;
-				var_name = ft_strndup(input + start, state->i - start);
-				var_value = find_env_ref(data->env_list, var_name);
-				if (var_value)
-				{
-					ft_strlcpy(state->result + state->result_len, var_value,
-						ft_strlen(var_value) + 1);
-					state->result_len += ft_strlen(var_value);
-				}
-				else
-				{
-					ft_strlcpy(state->result + state->result_len, var_name,
-						ft_strlen(var_name) + 1);
-					state->result_len += ft_strlen(var_name);
-				}
-				free(var_name);
-			}
-		}
-		else
-			state->result[state->result_len++] = input[state->i++];
+		process_character_for_result(input, state, data);
 	}
 }
 
