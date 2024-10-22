@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 20:33:55 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 20:42:09 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:59:31 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ int	parsing_helpers(char *input, t_data *data, char ***args)
 void	parsing_handler(char *input, t_data *data)
 {
 	t_prompt	test;
-	int			i;
 	char		**args;
 
 	test.cmds = NULL;

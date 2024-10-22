@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 20:59:02 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 21:04:11 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:59:22 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	handle_mini_count(t_data *data, int previous_shlvl)
 	}
 }
 
-void	handle_shlvl_and_exit(t_data *data, int exit_code)
+void	handle_shlvl_and_exit(t_data *data)
 {
 	int				previous_shlvl;
 	t_shlvl_node	*temp;
@@ -107,5 +107,5 @@ void	b_exit(char **args, t_data *data)
 		if (handle_exit_args(args, &exit_code, data))
 			return ;
 	}
-	handle_shlvl_and_exit(data, exit_code);
+	handle_shlvl_and_exit(data);
 }

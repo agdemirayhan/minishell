@@ -6,13 +6,13 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:49:50 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 21:34:59 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:52:02 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	counter_helper(char *s, int i[2], enum QuoteState *quote_state,
+void	counter_helper(char *s, int i[2], enum e_QuoteState *quote_state,
 		char *new_str)
 {
 	if (s[i[0]] == '"' && (*quote_state != SINGLE_QUOTE))
@@ -35,7 +35,7 @@ void	counter_helper(char *s, int i[2], enum QuoteState *quote_state,
 	}
 }
 
-void	token_counter(char *s, int i[2], enum QuoteState *quote_state)
+void	token_counter(char *s, int i[2], enum e_QuoteState *quote_state)
 {
 	while (s[i[0]] != '\0')
 	{
@@ -67,7 +67,7 @@ void	modifier_helper(char *s, int i[2], char *new_str)
 		new_str[i[1]++] = ' ';
 }
 
-void	token_modifier(char *s, int i[2], enum QuoteState *quote_state,
+void	token_modifier(char *s, int i[2], enum e_QuoteState *quote_state,
 		char *new_str)
 {
 	while (s[i[0]] != '\0')
@@ -104,7 +104,7 @@ void	token_modifier(char *s, int i[2], enum QuoteState *quote_state,
 char	*token_spacer(char *s)
 {
 	char			*new_str;
-	enum QuoteState	quote_state;
+	enum e_QuoteState	quote_state;
 	int				i[2];
 
 	i[0] = 0;

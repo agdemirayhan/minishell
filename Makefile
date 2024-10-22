@@ -1,9 +1,8 @@
 # Variables
 NAME = minishell
 CC = cc
-# CFLAGS = -Wall -Wextra -Werror -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 # CFLAGS = -fsanitize=address -g
-CFLAGS =  -g
 LDFLAGS = -L/opt/homebrew/opt/readline/lib -L$(LIBFT_DIR) #added these two lines
 CPPFLAGS = -I/opt/homebrew/opt/readline/include -I$(LIBFT_DIR) #added these two lines bcs it wasn't working on my pc without these flags. just comment them out here and in Name target as well if it broke yours
 LIBS = -lreadline -lft
@@ -19,6 +18,8 @@ SRCS =	src/main.c \
 		src/env/e_env.c \
 		src/env/env_helpers.c \
 		src/env/exp_env_var.c \
+		src/env/exp_quote_utils.c \
+		src/env/exp_result_utils.c \
 		src/execution/builtin_commands.c \
 		src/execution/exec.c \
 		src/execution/heredoc_handler.c \

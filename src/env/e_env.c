@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 21:57:00 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 22:02:51 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:35:03 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,6 @@ t_env	*init_new_env_node(char *env_str)
 	return (new_node);
 }
 
-/**
-
-	* @brief Initializes and returns a linked list of environment variables from the given array.
- * @return A pointer to the head of the linked list,
-	or NULL if allocation fails.
- */
 t_env	*init_env_list(char **envp)
 {
 	t_env	*head;
@@ -81,11 +75,11 @@ t_env	*init_env_list(char **envp)
 	i = 0;
 	while (envp[i] != NULL)
 	{
-		new_node = init_new_env_node(envp[i]); // Initialize a new node
+		new_node = init_new_env_node(envp[i]);
 		if (!new_node)
 			return (NULL);
-		handle_special_cases(new_node);          // Handle SHLVL and _ cases
-		append_env_node(&head, &curr, new_node); // Append node to list
+		handle_special_cases(new_node);
+		append_env_node(&head, &curr, new_node);
 		i++;
 	}
 	return (head);
@@ -93,8 +87,8 @@ t_env	*init_env_list(char **envp)
 
 void	free_env_list(t_env **env)
 {
-	t_env *current;
-	t_env *next;
+	t_env	*current;
+	t_env	*next;
 
 	current = *env;
 	while (current != NULL)

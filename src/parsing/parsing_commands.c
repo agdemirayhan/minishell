@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 14:10:37 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 20:30:59 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:57:37 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	othercommands_helper(t_data *data, t_mini *mini_cmd, DIR *dir)
 		ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		data->prev_exit_stat = 127;
-		exit(127) ;
+		exit(127);
 	}
 	if (access(e_path, X_OK) == -1 || dir)
 	{
@@ -91,14 +91,13 @@ void	othercommands(t_data *data, t_mini *mini_cmd)
 	int		status;
 	DIR		*dir;
 
+	dir = NULL;
 	if (mini_cmd && mini_cmd->full_cmd)
 		dir = opendir(mini_cmd->full_cmd[0]);
 	othercommands_helper(data, mini_cmd, dir);
 	pid = fork();
 	if (pid == 0)
-	{
 		forker(data, mini_cmd);
-	}
 	else if (pid < 0)
 	{
 		perror("minishell: fork failed");

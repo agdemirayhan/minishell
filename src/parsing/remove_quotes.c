@@ -6,13 +6,13 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:56:30 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 21:34:52 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:52:14 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	newstr_len_helper(enum QuoteState *state, const char *s, int *length)
+void	newstr_len_helper(enum e_QuoteState *state, const char *s, int *length)
 {
 	if (*state == NO_QUOTE)
 	{
@@ -41,7 +41,7 @@ void	newstr_len_helper(enum QuoteState *state, const char *s, int *length)
 
 int	newstr_len(const char *s)
 {
-	enum QuoteState	state;
+	enum e_QuoteState	state;
 	int				length;
 
 	state = NO_QUOTE;

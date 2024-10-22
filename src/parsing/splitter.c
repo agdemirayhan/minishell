@@ -6,13 +6,13 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:44:06 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 16:46:40 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:58:38 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	handle_quote_state(const char *s, int *i, enum QuoteState *q_state)
+void	handle_quote_state(const char *s, int *i, enum e_QuoteState *q_state)
 {
 	if (*q_state == NO_QUOTE && (s[*i] == '\'' || s[*i] == '\"'))
 	{
@@ -27,7 +27,7 @@ void	handle_quote_state(const char *s, int *i, enum QuoteState *q_state)
 	(*i)++;
 }
 
-static int	ft_count_words(const char *s, char *c, enum QuoteState *q_state)
+static int	ft_count_words(const char *s, char *c, enum e_QuoteState *q_state)
 {
 	int	i[2];
 
@@ -49,7 +49,7 @@ static int	ft_count_words(const char *s, char *c, enum QuoteState *q_state)
 }
 
 void	split_helper(char *del, const char *s, int *i[3],
-		enum QuoteState *quote_state)
+		enum e_QuoteState *quote_state)
 {
 	*quote_state = NO_QUOTE;
 	while (ft_strchr(del, s[*i[0]]) && s[*i[0]] != '\0')
@@ -102,7 +102,6 @@ char	**split_with_quotes(const char *s, char *del)
 {
 	char			**arr;
 	int				words_len;
-	int				s_len;
 	t_split_state	state;
 
 	state.quote_state = NO_QUOTE;
@@ -115,7 +114,6 @@ char	**split_with_quotes(const char *s, char *del)
 	arr = malloc((words_len + 1) * sizeof(char *));
 	if (arr == NULL)
 		return (NULL);
-	s_len = ft_strlen(s);
 	process_split(s, del, arr, &state);
 	if (state.quote_state != NO_QUOTE)
 	{

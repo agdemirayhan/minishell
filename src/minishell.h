@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/22 09:38:21 by aagdemir          #+#    #+#             */
+/*   Updated: 2024/10/22 09:55:27 by aagdemir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -34,15 +45,14 @@ typedef struct s_mini
 	int					outfile;
 }						t_mini;
 
-enum					QuoteState
+enum					e_QuoteState
 {
 	NO_QUOTE,
 	SINGLE_QUOTE,
 	DOUBLE_QUOTE
 };
 
-// Enum for count tracking
-enum					Counts
+enum					e_Counts
 {
 	COUNT_INDEX,
 	COUNT_WORDS
@@ -91,27 +101,36 @@ typedef struct s_split_state
 {
 	int					i[3];
 	int					counts[2];
-	enum QuoteState		quote_state;
+	enum e_QuoteState	quote_state;
 }						t_split_state;
 
 typedef struct s_trim_info
 {
 	int					i;
 	int					j;
-	enum QuoteState		state;
+	enum e_QuoteState	state;
 	char				*trimmed;
 }						t_trim_info;
 
 typedef struct s_pipe_e_st
 {
-	int pipefd[2];          // File descriptors for pipes
-	int in_fd;              // Input file descriptor for redirection
-	pid_t pid;              // Process ID for forked processes
-	int status;             // Status of the child processes
-	pid_t child_pids[1024]; // Array of child process IDs
-	int child_count;        // Number of child processes
-	int i;                  // Loop index
+	int					pipefd[2];
+	int					in_fd;
+	pid_t				pid;
+	int					status;
+	pid_t				child_pids[1024];
+	int					child_count;
+	int					i;
 }						t_pipe_e_st;
+
+typedef struct s_expand_state
+{
+	char				*result;
+	size_t				result_len;
+	int					in_single_quote;
+	size_t				total_size;
+	size_t				i;
+}						t_expand_state;
 
 /* token functions */
 t_ttype					check_type(char *value);
@@ -129,14 +148,9 @@ t_env					*init_env_list(char **envp);
 void					print_env_list(t_env *env);
 void					free_env_list(t_env **env);
 void					update_env(t_env **env_list, char *name, char *value);
-// void				add_env(t_data *data, char *env_var);
-// void				ft_store_env(t_data *data, char **env);
-// void				initialize(t_data *data, char **env);
-// void				free_env_list(t_data *data);
-// void				print_env(t_data *data);
 
 /* export functions */
-// void					export_var(char **argv, t_env **env_list);
+
 void					export_var(char **argv, t_env **env_list, t_data *data);
 void					execute_export(char **argv, t_data *data);
 
@@ -144,17 +158,12 @@ void					execute_export(char **argv, t_data *data);
 void					unset_var(char *name, t_env **env_list);
 void					execute_unset(char **argv, t_data *data);
 
-/* signals */
-// void	set_signal_fn(void);
-// void	set_sig(int sig);
-
 /* dollar sign */
 void					*find_env_ref(t_env *env_list, char *name);
 char					*expand_env_vars(char *input, t_data *data);
-// char	*expand_env_vars(char *input, t_data *data, int is_echo);
 
 /* Function prototypes */
-// void				init_shell(void);
+
 void					init_shell(t_data *data);
 void					handle_signals(int signo);
 void					parse_command(char **args, t_data *data,
@@ -162,7 +171,7 @@ void					parse_command(char **args, t_data *data,
 void					free_strarray(char **array);
 char					*find_slash(char *comm);
 char					*find_exec(char *comm);
-// void				execute_command(char **args);
+
 void					execute_command(char **args, t_data *data);
 int						is_builtin(char *command);
 void					execute_builtin(char **args, t_data *data);
@@ -176,12 +185,11 @@ void					free_strarray(char **array);
 
 /* Trim Functions */
 char					*ft_strtrim_all(const char *s1);
-// int is_only_pwd(t_mini *mini);
 
 /* Redirection Functions */
 int						get_fd(int oldfd, char *path, int flags[2],
 							t_data *data);
-// void					outfile1(t_mini **node, char **args, int *i);
+
 void					get_redir(t_mini **node, char **args, int *i,
 							t_data *data);
 int						is_redir(char *arg);
@@ -204,7 +212,7 @@ t_list					*fill_nodes(char **args, t_data *data);
 void					free_content(void *content);
 char					**ft_extend_matrix(char **matrix, char *new_entry);
 void					ft_free_matrix(char ***m);
-static t_mini			*mini_init(void);
+// static t_mini			*mini_init(void);
 void					free_mini(void *content);
 void					parsing_handler(char *input, t_data *data);
 
@@ -228,7 +236,18 @@ t_data					*initialize_data(char **envp);
 void					cleanup(t_data *data);
 void					curr_loop(t_env *curr, char *value, char *name);
 void					export_error(t_data *data, char *name, char *value);
-int	is_valid_var_name(const char *name);
+int						is_valid_var_name(const char *name);
+
+/* Expand Functions */
+void					expand_variable_in_result(const char *input,
+							t_expand_state *state, t_data *data);
+void					handle_other_characters(t_expand_state *state);
+void					handle_env_variable(const char *input,
+							t_expand_state *state, t_data *data);
+void					handle_single_quote(const char *input,
+							t_expand_state *state);
+void					process_character_for_result(const char *input,
+							t_expand_state *state, t_data *data);
 
 # ifndef DEBUG
 #  define DEBUG 0
