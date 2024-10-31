@@ -53,27 +53,59 @@ OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
+MINI_LOADING_MSG = "Loading minishell...\n"\
+"		\n"\
+"	█▀▄▀█ █ █▄░█ █ █▀ █░█ █▀▀ █░░ █░░ \n"\
+"	█░▀░█ █ █░▀█ █ ▄█ █▀█ ██▄ █▄▄ █▄▄ \n"\
+"									\n"\
+"                  ░▒▒▒▒▒▒▒▒▒▒▒▒▒░\n"\
+"                ░▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒░\n"\
+"             ░▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▒▓▓▓▒▓▒░\n"\
+"         ░░▒▒░░░▒▒▒▒▒▒▒▒▒▒▒░░░▒▒▒▒▓▓▓▓▓▓▒▒░\n"\
+"       ░░▒░░▒▒▓▓▓▒▒░░▒▒▒▒▒▒▒▓▓▓▒▒▓▓▒░▒▓▓▒▒▒░\n"\
+"        ░░▒▓██████▒░▒▒▒▒░▒▓█████▓▓▓▓▓▓▓▓▓▒▒▒░\n"\
+"        ░▓███▒▓███▓▒▒▒▒▒▒▓█▓░█████▓▓▓█▓▓▓▓▒▒░\n"\
+"       ░░▓██████▓▓▒▒▒▒▒▒▒▓████████▓▓▓▒▒▓▓▓▓▒░\n"\
+"       ░▒▓▓███▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓█████▓▓▓▓▒▒▒▓▓▒░\n"\
+"       ░░░▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▒▒▓▒▓▓▓▓▓▓▓▓▒░▒▒▓▒▒\n"\
+"      ░░░▒▒▒▒▒▒▒▓▒▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▒░░▒▒▒░\n"\
+"      ░░░░░░░░░▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▒▒░░░░\n"\
+"      ░░░░░░░░░░░░░▒░░▒▓▒░▒▒▒▒▓▓▓▓▓▓▒▒░░░░▒░░\n"\
+"        ░░░░░░░░░░░▒▒▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒▒▒▒░░\n"\
+"            ░░░░░░░▒▒░░░░░░░▒▒▒░░░░▒▒▒\n"\
+"                ░░░░░░░░░░░░░░░░░░░▒▒▒▒▒\n"\
+"            ░▒▒▓▓▓▒▒░░░▒▓▒▒▒▒░░░░░▒▒▒▒\n"\
+"                            ▒▒▒▒▒▒▒"
+
+
 # Targets
-all: $(NAME)
+all: $(LIBFT) mini_message $(NAME)
+
+mini_message:
+	@echo $(MINI_LOADING_MSG)
 
 $(NAME): $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT):
-	make -C $(LIBFT_DIR)
+	@make -C $(LIBFT_DIR)
 
 clean:
-	rm -f $(OBJS)
-	make -C $(LIBFT_DIR) clean
+	@rm -f $(OBJS)
+	@make -C $(LIBFT_DIR) clean
 
 fclean: clean
-	rm -f $(NAME)
-	make -C $(LIBFT_DIR) fclean
+	@rm -f $(NAME)
+	@make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
 debug: $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
+	@echo -e $(LOADING_MSG)
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
 	@echo "\033[0;31mDebug mode activated. DEBUG=$(DEBUG_FLAG)\033[0m"
 
 .PHONY: all clean fclean re

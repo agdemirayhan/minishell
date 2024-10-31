@@ -15,17 +15,29 @@ OBJS = $(SRCS:.c=.o)
 CC = cc
 
 CFLAGS = -Wall -Wextra -Werror
+LOADING_MSG = "Loading libft...\n"\
+"	 __    ____  ____  ____  ____\n"\
+"	(  )  (_  _)(  _ \( ___)(_  _)\n"\
+"	 )(__  _)(_  ) _ < )__)   )(\n"\
+"	(____)(____)(____/(__)   (__)\n"\
+"						"
 
-all:	$(NAME)
+all: message $(NAME)
+
+message:
+	@echo $(LOADING_MSG)
 
 $(NAME): $(OBJS)
-	ar rcs $(NAME) $(OBJS)
+	@ar rcs $(NAME) $(OBJS)
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	@rm -f $(OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 
 re: fclean $(NAME)
 
