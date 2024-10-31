@@ -1,5 +1,17 @@
 NAME = libft.a
 
+# Colors
+RED = \033[0;31m
+GREEN = \033[0;32m
+YELLOW = \033[38;5;229m
+BLUE = \033[0;34m
+MAGENTA = \033[0;35m
+LIGHT_CYAN = \033[1;36m
+CYAN = \033[0;36m
+DARK_CYAN = \033[2;36m
+WHITE = \033[0;37m
+RESET = \033[0m
+
 SRCS =  ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c\
 		ft_strlen.c ft_memset.c ft_bzero.c ft_memcpy.c ft_memmove.c ft_strlcpy.c\
 		ft_strlcat.c ft_toupper.c ft_tolower.c ft_strchr.c\
@@ -15,12 +27,12 @@ OBJS = $(SRCS:.c=.o)
 CC = cc
 
 CFLAGS = -Wall -Wextra -Werror
-LOADING_MSG = "Loading libft...\n"\
-"	 __    ____  ____  ____  ____\n"\
-"	(  )  (_  _)(  _ \( ___)(_  _)\n"\
-"	 )(__  _)(_  ) _ < )__)   )(\n"\
-"	(____)(____)(____/(__)   (__)\n"\
-"						"
+LOADING_MSG = "$(YELLOW)Loading libft...\n"\
+"		\n"\
+"$(DARK_CYAN)	█░░░$(CYAN)▀█▀░$(LIGHT_CYAN)█▀▄░$(CYAN)█▀▀░$(DARK_CYAN)▀█▀$(RESET)\n"\
+"$(DARK_CYAN)	█░░░$(CYAN)░█░░$(LIGHT_CYAN)█▀▄░$(CYAN)█▀▀░$(DARK_CYAN)░█░$(RESET)\n"\
+"$(DARK_CYAN)	▀▀▀░$(CYAN)▀▀▀░$(LIGHT_CYAN)▀▀░░$(CYAN)▀░░░$(DARK_CYAN)░▀░$(RESET)\n"\
+
 
 all: message $(NAME)
 
