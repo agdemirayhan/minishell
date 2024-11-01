@@ -69,37 +69,47 @@ CYAN = \033[0;36m
 WHITE = \033[0;37m
 RESET = \033[0m
 
-MINI_LOADING_MSG = "$(YELLOW)Loading minishell...$(RESET)\n"\
-"		\n"\
-"									\n"\
-"                    ▒▒▒▒▒▒▒▒▒▒▒▒▒█\n"\
-"                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█\n"\
-"          ██▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▒▒███▒▓▒█\n"\
-"        ██▓▓███▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█▓▓▒▒█▓▓▒▒█\n"\
-"       ██▒██▒▒▓▓▓▓▒██▒▒▒▒▒▒▒▓▒▓▓▓▓▓▒▒▓▓▒▒▒█\n"\
-"        ██▒▓░░░░░░▓▓▒▒▒▒▓▓▓░░░░░▓▓▓▓▓▒▒▒▒▒▒▒█\n"\
-"        █▓░░░▒▓░░░▓▒▒▒▒▒▒▓░▓▒░░░░░▓▓▓▒▒▒▒▒▒█\n"\
-"       ██▓░░░░░░▓▓▒▒▒▒▒▒▒▓░░░░░░░░▓▓▓▒▒▓▓▒▒▒█\n"\
-"       █▒▓▓░░░▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓░░░░░▓▓▓▓▒▒▒▓▓▒█\n"\
-"       ███▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒█▒▒▓▒▒\n"\
-"      ███▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▒██▒▒▒█\n"\
-"      ██████▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▒█████\n"\
-"      ████████▒▒▒▒███▒▒▒▒▒▒▒▓▓▓▓▓▓▒▒████▒██\n"\
-"        ████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██▒▒▒▒██\n"\
-"            ██████▒▒▒▒▒▒█████▒▒▒████▒▒▒\n"\
-"               ███████████████████▒▒▒▒▒\n"\
-"             █▒▒▓▓▓▒▒███▒▓▒▒▒▒█████▒▒▒▒$(MAGENTA_DARK)	█▀▄▀█ $(MAGENTA_DEEP)█ $(MAGENTA_BRIGHT)█▄░█ $(MAGENTA_LIGHT)█ $(MAGENTA_PALE)█▀ $(MAGENTA_LIGHT)█░█ $(MAGENTA_BRIGHT)█▀▀ $(MAGENTA_DEEP)█░░ $(MAGENTA_DARK)█░░ $(RESET)\n"\
-"                             ▒▒▒▒▒▒▒   $(MAGENTA_DARK)	█░▀░█ $(MAGENTA_DEEP)█ $(MAGENTA_BRIGHT)█░▀█ $(MAGENTA_LIGHT)█ $(MAGENTA_PALE)▄█ $(MAGENTA_LIGHT)█▀█ $(MAGENTA_BRIGHT)██▄ $(MAGENTA_DEEP)█▄▄ $(MAGENTA_DARK)█▄▄ $(RESET)\n"\
+#MINI_LOADING_MSG = "$(MAGENTA_BRIGHT)Loading minishell...$(RESET)"
+LOADING_COMPLETE = \
+					"		\n"\
+					"                    ▒▒▒▒▒▒▒▒▒▒▒▒▒█\n"\
+					"                ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█\n"\
+					"          ██▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓$(MAGENTA_PALE)███$(RESET)▒▒$(MAGENTA_PALE)███$(RESET)█\n"\
+					"        ██▓▓███▒▒▒▒▒▒▒▒▒▒▒▒▒▒$(MAGENTA_PALE)█▓▓▓██▓▓▓█$(RESET)▒▒█\n"\
+					"       ██▒██▒▒▓▓▓▓▒██▒▒▒▒▒▒▒▓▒$(MAGENTA_PALE)███$(RESET)▒▒$(MAGENTA_PALE)███$(RESET)▒▒▒█\n"\
+					"        ██▒▓░░░░░░▓▓▒▒▒▒▓▓▓░░░░░▓▓▓▓▓▒▒▒▒▒▒▒█\n"\
+					"        █▓░░░▒▓░░░▓▒▒▒▒▒▒▓░▓▒░░░░░▓▓▓▒▒▒▒▒▒█\n"\
+					"       ██▓░░░░░░▓▓▒▒▒▒▒▒▒▓░░░░░░░░▓▓▓▒▒▓▓▒▒▒█\n"\
+					"       █▒▓▓░░░▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓░░░░░▓▓▓▓▒▒▒▓▓▒█\n"\
+					"       ███▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒█▒▒▓▒▒\n"\
+					"      ███▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▒██▒▒▒█\n"\
+					"      ██████▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▒█████\n"\
+					"      ████████▒▒▒▒███▒▒▒▒▒▒▒▓▓▓▓▓▓▒▒████▒██\n"\
+					"        ████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██▒▒▒▒██\n"\
+					"            ██████▒▒▒▒▒▒█████▒▒▒████▒▒▒\n"\
+					"               ███████████████████▒▒▒▒▒\n"\
+					"             █▒▒▓▓▓▒▒███▒▓▒▒▒▒█████▒▒▒▒$(MAGENTA_DARK)	█▀▄▀█ $(MAGENTA_DEEP)█ $(MAGENTA_BRIGHT)█▄░█ $(MAGENTA_LIGHT)█ $(MAGENTA_PALE)█▀ $(MAGENTA_LIGHT)█░█ $(MAGENTA_BRIGHT)█▀▀ $(MAGENTA_DEEP)█░░ $(MAGENTA_DARK)█░░ $(RESET)\n"\
+					"                             ▒▒▒▒▒▒▒   $(MAGENTA_DARK)	█░▀░█ $(MAGENTA_DEEP)█ $(MAGENTA_BRIGHT)█░▀█ $(MAGENTA_LIGHT)█ $(MAGENTA_PALE)▄█ $(MAGENTA_LIGHT)█▀█ $(MAGENTA_BRIGHT)██▄ $(MAGENTA_DEEP)█▄▄ $(MAGENTA_DARK)█▄▄ $(RESET)\n"\
 
 
 # Targets
 all: $(LIBFT) mini_message $(NAME)
 
 mini_message:
-	@echo $(MINI_LOADING_MSG)
+	@printf "$(MAGENTA_BRIGHT)Loading minishell  "
+	@spin='-\|/'; \
+	i=0; \
+	while [ $$i -lt 12 ]; do \
+		printf "\b$$(expr $$i % 4)"; \
+		printf "\b$${spin:$$((i % 4)):1}"; \
+		sleep 0.25; \
+		i=$$((i + 1)); \
+	done
+	@printf "$(RESET)\n"
 
 $(NAME): $(LIBFT) $(OBJS)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
+	@echo $(LOADING_COMPLETE)
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
