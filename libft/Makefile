@@ -27,20 +27,31 @@ OBJS = $(SRCS:.c=.o)
 CC = cc
 
 CFLAGS = -Wall -Wextra -Werror
-LOADING_MSG = "$(YELLOW)Loading libft...\n"\
-"		\n"\
-"$(DARK_CYAN)	█░░░$(CYAN)▀█▀░$(LIGHT_CYAN)█▀▄░$(CYAN)█▀▀░$(DARK_CYAN)▀█▀$(RESET)\n"\
-"$(DARK_CYAN)	█░░░$(CYAN)░█░░$(LIGHT_CYAN)█▀▄░$(CYAN)█▀▀░$(DARK_CYAN)░█░$(RESET)\n"\
-"$(DARK_CYAN)	▀▀▀░$(CYAN)▀▀▀░$(LIGHT_CYAN)▀▀░░$(CYAN)▀░░░$(DARK_CYAN)░▀░$(RESET)\n"\
+#LOADING_MSG = "$(CYAN)Loading libft...$(RESET)"
+LOADING_COMPLETE = \
+					"		\n"\
+					"$(DARK_CYAN)	█░░░$(CYAN)▀█▀░$(LIGHT_CYAN)█▀▄░$(CYAN)█▀▀░$(DARK_CYAN)▀█▀$(RESET)\n"\
+					"$(DARK_CYAN)	█░░░$(CYAN)░█░░$(LIGHT_CYAN)█▀▄░$(CYAN)█▀▀░$(DARK_CYAN)░█░$(RESET)\n"\
+					"$(DARK_CYAN)	▀▀▀░$(CYAN)▀▀▀░$(LIGHT_CYAN)▀▀░░$(CYAN)▀░░░$(DARK_CYAN)░▀░$(RESET)\n"\
 
 
 all: message $(NAME)
 
 message:
-	@echo $(LOADING_MSG)
+	@printf "$(CYAN)Loading libft  "
+	@spin='-\|/'; \
+	i=0; \
+	while [ $$i -lt 12 ]; do \
+		printf "\b$$(expr $$i % 4)"; \
+		printf "\b$${spin:$$((i % 4)):1}"; \
+		sleep 0.25; \
+		i=$$((i + 1)); \
+	done
+	@printf "$(RESET)\n"
 
 $(NAME): $(OBJS)
 	@ar rcs $(NAME) $(OBJS)
+	@echo $(LOADING_COMPLETE)
 
 %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
