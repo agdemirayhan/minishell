@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 16:52:59 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 21:53:53 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:32:23 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,37 +38,23 @@ void	execute_export(char **argv, t_data *data)
 	}
 }
 
-void	parse_and_validate_var(char **argv, char **name, char **value,
-		t_data *data)
+void	export_var_helpnew(t_env **env_list, char *value,
+		char *name)
 {
-	char	*equal;
-
-	equal = ft_strchr(*argv, '=');
-	if (equal)
-	{
-		*name = ft_strndup(*argv, equal - *argv);
-		*value = ft_strdup(equal + 1);
-	}
-	else
-	{
-		*name = ft_strdup(*argv);
-		*value = NULL;
-	}
-	if (!is_valid_var_name(*name))
-		export_error(data, *name, *value);
-}
-
-void	update_env_list(t_env **env_list, char *name, char *value)
-{
-	t_env	*curr;
 	t_env	*new_node;
+	t_env	*curr;
 
 	curr = *env_list;
 	while (curr)
 	{
 		if (ft_strncmp(curr->name, name, ft_strlen(name)) == 0)
 		{
-			curr_loop(curr, name, value);
+			if (value)
+			{
+				free(curr->value);
+				curr->value = value;
+			}
+			free(name);
 			return ;
 		}
 		curr = curr->next;
@@ -84,12 +70,28 @@ void	update_env_list(t_env **env_list, char *name, char *value)
 
 void	export_var(char **argv, t_env **env_list, t_data *data)
 {
+	char	*equal;
 	char	*name;
 	char	*value;
 
+	equal = ft_strchr(*argv, '=');
 	value = NULL;
-	parse_and_validate_var(argv, &name, &value, data);
-	if (data->prev_exit_stat == 1)
+	if (equal)
+	{
+		name = ft_strndup(*argv, equal - *argv);
+		value = ft_strdup(equal + 1);
+	}
+	else
+		name = ft_strdup(*argv);
+	if (!is_valid_var_name(name))
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(name, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+		free(name);
+		free(value);
+		data->prev_exit_stat = 1;
 		return ;
-	update_env_list(env_list, name, value);
+	}
+	export_var_helpnew(env_list, value, name);
 }
