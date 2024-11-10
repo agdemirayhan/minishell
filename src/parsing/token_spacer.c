@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:49:50 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/22 09:52:02 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:15:04 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ void	token_modifier(char *s, int i[2], enum e_QuoteState *quote_state,
 				*quote_state = NO_QUOTE;
 			new_str[i[1]++] = s[i[0]];
 		}
-		else if (*quote_state == NO_QUOTE && (s[i[0]] == '\\' || s[i[0]] == '<'
-				|| s[i[0]] == '|' || s[i[0]] == '>'))
+		else if (*quote_state == NO_QUOTE && (s[i[0]] == '\\'
+				|| s[i[0]] == '<' || s[i[0]] == '|' || s[i[0]] == '>'))
 			modifier_helper(s, i, new_str);
 		else
 			new_str[i[1]++] = s[i[0]];
@@ -103,9 +103,9 @@ void	token_modifier(char *s, int i[2], enum e_QuoteState *quote_state,
  */
 char	*token_spacer(char *s)
 {
-	char			*new_str;
+	char				*new_str;
 	enum e_QuoteState	quote_state;
-	int				i[2];
+	int					i[2];
 
 	i[0] = 0;
 	i[1] = 0;

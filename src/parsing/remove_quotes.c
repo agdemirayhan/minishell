@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:56:30 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/22 09:52:14 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:12:43 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	newstr_len_helper(enum e_QuoteState *state, const char *s, int *length)
 int	newstr_len(const char *s)
 {
 	enum e_QuoteState	state;
-	int				length;
+	int					length;
 
 	state = NO_QUOTE;
 	length = 0;

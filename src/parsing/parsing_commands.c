@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 14:10:37 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/22 09:57:37 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:12:19 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,8 @@ void	othercommands_helper(t_data *data, t_mini *mini_cmd, DIR *dir)
 	e_path = find_exec(mini_cmd->full_cmd[0]);
 	if (!e_path)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(mini_cmd->full_cmd[0], STDERR_FILENO);
-		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		data->prev_exit_stat = 127;
-		exit(127);
+		return ;
 	}
 	if (access(e_path, X_OK) == -1 || dir)
 	{

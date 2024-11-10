@@ -3,8 +3,8 @@ NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 # CFLAGS = -fsanitize=address -g
-LDFLAGS = -L/opt/homebrew/opt/readline/lib -L$(LIBFT_DIR) #added these two lines
-CPPFLAGS = -I/opt/homebrew/opt/readline/include -I$(LIBFT_DIR) #added these two lines bcs it wasn't working on my pc without these flags. just comment them out here and in Name target as well if it broke yours
+LDFLAGS =-L$(LIBFT_DIR) #added these two lines
+# CPPFLAGS = -I/opt/homebrew/opt/readline/include -I$(LIBFT_DIR) #added these two lines bcs it wasn't working on my pc without these flags. just comment them out here and in Name target as well if it broke yours
 LIBS = -lreadline -lft
 
 # DEBUGGER. Use 'make debug' in order to run it. Change the input string in main.c
@@ -129,7 +129,7 @@ re: fclean all
 
 debug: $(OBJS) $(LIBFT)
 	@echo -e $(LOADING_MSG)
-	@$(CC) $(CFLAGS) $(CPPFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS) $(LIBS)
 	@echo "\033[0;31mDebug mode activated. DEBUG=$(DEBUG_FLAG)\033[0m"
 
 .PHONY: all clean fclean re

@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 13:44:06 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/22 09:58:38 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:13:31 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ void	split_helper(char *del, const char *s, int *i[3],
 	while ((!ft_strchr(del, s[*i[0]]) || *quote_state != NO_QUOTE)
 		&& s[*i[0]] != '\0')
 	{
-		if (*quote_state == NO_QUOTE && (s[*i[0]] == '\'' || s[*i[0]] == '\"'))
+		if (*quote_state == NO_QUOTE && (s[*i[0]] == '\''
+				|| s[*i[0]] == '\"'))
 		{
 			if (s[*i[0]] == '\'')
 				*quote_state = SINGLE_QUOTE;
