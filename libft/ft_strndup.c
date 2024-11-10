@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:01:43 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/21 22:01:47 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:17:31 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 char	*ft_strndup(const char *s1, size_t n)
 {
-	size_t len;
-	char *str;
+	size_t	len;
+	char	*str;
 
 	len = ft_strlen(s1);
 	if (len > n)

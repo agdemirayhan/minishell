@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 14:14:05 by msoklova          #+#    #+#             */
-/*   Updated: 2024/10/06 15:27:47 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:16:48 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,6 @@ t_list				*insert_at_tail(t_list *stack, char *new);
 t_list				*ft_lst_newlist(void *content);
 t_list				*ft_lsttraverse(t_list *lst);
 void				ft_lst_insertattail(t_list **lst, t_list *newnode);
-int	ft_strcmp(const char *s1, const char *s2);
+int					ft_strcmp(const char *s1, const char *s2);
 
 #endif
