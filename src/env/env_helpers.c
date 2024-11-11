@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 22:02:56 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/22 09:34:02 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/11 23:14:42 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@ void	update_env(t_env **env_list, char *name, char *value)
  */
 void	print_env_list(t_env *env)
 {
+	if (env == NULL)
+	{
+		ft_putstr_fd("env: No such file or directory\n", STDERR_FILENO);
+		return ;
+	}
 	while (env != NULL)
 	{
 		if (ft_strncmp(env->name, "_", 1) == 0 && !(ft_strncmp(env->name, "__",

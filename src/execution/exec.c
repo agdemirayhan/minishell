@@ -6,7 +6,7 @@
 /*   By: aagdemir <aagdemir@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/20 21:43:23 by aagdemir          #+#    #+#             */
-/*   Updated: 2024/10/20 23:57:39 by aagdemir         ###   ########.fr       */
+/*   Updated: 2024/11/11 23:13:41 by aagdemir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,13 @@ void	execute_command(char **args, t_data *data)
 	if (args[0] == NULL)
 		return ;
 	e_path = find_exec(args[0]);
+	if (data->env_list == NULL && ft_strncmp(e_path, "/bin/ls",
+			ft_strlen("/bin/ls") + 1) == 0)
+	{
+		ft_putstr_fd(args[0], STDERR_FILENO);
+		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+		return ;
+	}
 	if (!e_path)
 	{
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
