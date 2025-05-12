@@ -30,6 +30,8 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
+# define PROMPT "\r\033[K\033[36m\033[1mminishell : \033[0m\033[0m"
+
 typedef struct s_prompt
 {
 	t_list				*cmds;
