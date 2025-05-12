@@ -52,7 +52,7 @@ void	interactive_shell_loop(t_data *data)
 	{
 		signal(SIGINT, handle_signals);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("minishell> ");
+		input = readline(PROMPT);
 		if (!input)
 		{
 			printf("exit\n");
